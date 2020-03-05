@@ -20,19 +20,8 @@ var coreLib = {
         return await comms.send(hashS);
     },
     //input: json; output: string
-    verify: async function (data) {
+    getProof: async function (data) {
         let hashS = this.genHash(data);
         return await comms.verify(hashS);
     }
 }
-
-coreLib.write({a:1, b:"asdf"}).then(function(ret){
-    console.log(ret);
-});
-
-coreLib.verify({a:1, b:"asdf"}).then(function(ret){
-    console.log(ret);
-}).catch(function(err){
-    console.log(err);
-});
-
