@@ -1,1 +1,1 @@
-# enchainte-sdk-js
+# Enchainte SDK Javascript
