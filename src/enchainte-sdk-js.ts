@@ -1,11 +1,7 @@
 import Hash from './hash';
+import { API_URL } from './constants';
 
 export default class EnchainteSDK {
-    private url: string;
-
-    constructor(url: string) {
-        this.url = url;
-    }
 
     public write(hash: Hash) {
         return this.send(hash.getHash());
@@ -16,8 +12,10 @@ export default class EnchainteSDK {
     }
 
     private async send(data: string): Promise<boolean> {
-        const postmsg = { "hash": data };
-        const res = await fetch(`${this.url}/send`, {
+        const postmsg = {
+            hash: data
+        };
+        const res = await fetch(`${API_URL}/send`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
@@ -32,8 +30,10 @@ export default class EnchainteSDK {
     }
 
     private async verify(data: string): Promise<string> {
-        const postmsg = { "hash": data };
-        const res = await fetch(`${this.url}/verify`, {
+        const postmsg = {
+            hash: data
+        };
+        const res = await fetch(`${API_URL}/verify`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"

@@ -1,6 +1,7 @@
 import EnchainteSDK from "../src/enchainte-sdk-js"
 import fetch, { enableFetchMocks } from 'jest-fetch-mock';
 import Hash from "../src/hash";
+import { API_URL } from "../src/constants";
 
 /**
  * Dummy test
@@ -15,11 +16,11 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it('initializes', () => {
-    expect(new EnchainteSDK("https://enchainte.com/api")).toBeInstanceOf(EnchainteSDK)
+    expect(new EnchainteSDK()).toBeInstanceOf(EnchainteSDK)
   })
 
   it("Write function success", () => {
-    let sdk = new EnchainteSDK("https://enchainte.com/api");
+    let sdk = new EnchainteSDK();
     
     fetch.mockResponseOnce(JSON.stringify({ hash: 'ab8e3ff984fce36be6e6cf01ec215df86556089bdebc20a663b4305f2fb67dc9' }))
 
@@ -28,11 +29,11 @@ describe("Enchainte SDK Tests", () => {
     })
 
     expect(fetch.mock.calls.length).toEqual(1)
-    expect(fetch.mock.calls[0][0]).toEqual('https://enchainte.com/api/send')
+    expect(fetch.mock.calls[0][0]).toEqual(`${API_URL}/send`)
   })
 
   it("Write function error", () => {
-    let sdk = new EnchainteSDK("https://enchainte.com/api");
+    let sdk = new EnchainteSDK();
     
     fetch.mockResponseOnce(JSON.stringify(null), { status: 400 });
 
@@ -41,11 +42,11 @@ describe("Enchainte SDK Tests", () => {
     })
 
     expect(fetch.mock.calls.length).toEqual(1)
-    expect(fetch.mock.calls[0][0]).toEqual('https://enchainte.com/api/send')
+    expect(fetch.mock.calls[0][0]).toEqual(`${API_URL}/send`)
   })
 
   it("Get proof function success", () => {
-    let sdk = new EnchainteSDK("https://enchainte.com/api");
+    let sdk = new EnchainteSDK();
     
     fetch.mockResponseOnce(JSON.stringify({ proof: 'ab8e3ff984fce36be6e6cf01ec215df86556089bdebc20a663b4305f2fb67dc9' }))
 
@@ -54,11 +55,11 @@ describe("Enchainte SDK Tests", () => {
     })
 
     expect(fetch.mock.calls.length).toEqual(1)
-    expect(fetch.mock.calls[0][0]).toEqual('https://enchainte.com/api/verify')
+    expect(fetch.mock.calls[0][0]).toEqual(`${API_URL}/verify`)
   })
 
   it("Get proof function error", () => {
-    let sdk = new EnchainteSDK("https://enchainte.com/api");
+    let sdk = new EnchainteSDK();
     
     fetch.mockResponseOnce(JSON.stringify(null), { status: 400 });
 
@@ -67,6 +68,6 @@ describe("Enchainte SDK Tests", () => {
     })
 
     expect(fetch.mock.calls.length).toEqual(1)
-    expect(fetch.mock.calls[0][0]).toEqual('https://enchainte.com/api/verify')
+    expect(fetch.mock.calls[0][0]).toEqual(`${API_URL}/verify`)
   })
 })
