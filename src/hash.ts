@@ -1,6 +1,6 @@
 import * as blake2b from "blakejs";
 
-export default class Hash {
+class Hash {
 
     private hash: string;
 
@@ -30,3 +30,5 @@ export default class Hash {
         return this.hash;
     }
 }
+
+export default Hash;

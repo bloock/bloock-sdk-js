@@ -1,5 +1,4 @@
 import Deferred from "../src/deferred";
-import Hash from "../src/hash"
 
 /**
  * Dummy test

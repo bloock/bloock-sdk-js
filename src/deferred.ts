@@ -1,4 +1,4 @@
-export default class Deferred {
+class Deferred {
 
     public promise: Promise<any>;
     public reject: any;
@@ -15,3 +15,5 @@ export default class Deferred {
         return this.promise;
     }
   }
+
+  export default Deferred;

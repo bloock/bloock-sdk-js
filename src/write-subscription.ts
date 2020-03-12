@@ -1,15 +1,16 @@
 import Hash from './hash';
 import Deferred from './deferred';
 import { API_URL } from './constants';
+import axios from 'axios';
 
-export default class WriteSubscription {
+class WriteSubscription {
     private static instance: WriteSubscription;
 
     private tasks: Map<Hash, Deferred> = new Map();
 
     private constructor() {
-        setInterval(() => {
-            this.send().then();
+        setInterval(async () => {
+            await this.send()
         }, 1000);
     }
 
@@ -22,9 +23,13 @@ export default class WriteSubscription {
     }
 
     private async send() {
+        if (!this.tasks.size) {
+            return;
+        }
+
         const currentTasks = new Map<Hash, Deferred>(this.tasks);
 
-        this.tasks = new Map<Hash, Deferred>();
+        this.tasks.clear();
 
         let dataToSend: string[] = [];
 
@@ -35,23 +40,18 @@ export default class WriteSubscription {
         const postmsg = {
             hash: dataToSend
         };
-        const res = await fetch(`${API_URL}/send`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify(postmsg)
-        });
 
-        currentTasks.forEach((deferred: Deferred) => {
-            if (res.ok) {
+        try {
+            const res = await axios.post(`${API_URL}/send`, postmsg);
+    
+            currentTasks.forEach((deferred: Deferred) => {
                 deferred.resolve(true);
-            } else {
+            })
+        } catch (error) {
+            currentTasks.forEach((deferred: Deferred) => {
                 deferred.reject(false);
-            }
-        })
-
-        return res.ok;
+            })
+        }
     }
 
     public static getInstance(): WriteSubscription {
@@ -62,3 +62,5 @@ export default class WriteSubscription {
         return WriteSubscription.instance;
     }
 }
+
+export default WriteSubscription;

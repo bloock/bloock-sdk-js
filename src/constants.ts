@@ -1,2 +1,2 @@
-export const API_URL = "https://enchainte.com/api";
+export const API_URL = "https://enchainte-api.azurewebsites.net";
 export const SEND_INTERVAL = 1000;

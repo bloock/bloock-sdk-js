@@ -1,4 +1,3 @@
-import EnchainteSDK from "../src/enchainte-sdk-js"
 import Hash from "../src/hash"
 
 /**
