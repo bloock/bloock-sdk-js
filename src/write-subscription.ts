@@ -38,11 +38,11 @@ class WriteSubscription {
         });
 
         const postmsg = {
-            hash: dataToSend
+            messages: dataToSend
         };
 
         try {
-            const res = await axios.post(`${API_URL}/send`, postmsg);
+            const res = await axios.post(`${API_URL}/send/bulk`, postmsg);
     
             currentTasks.forEach((deferred: Deferred) => {
                 deferred.resolve(true);

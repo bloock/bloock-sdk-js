@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -24,7 +24,7 @@
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs",
-    "start": "tsc --module commonjs",
+    "start": "tsc --module commonjs && node dist/lib/index.js",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache"
@@ -89,6 +89,11 @@
     "collectCoverageFrom": [
       "src/*.{js,ts}"
     ],
-    "coverageReporters": ["json", "lcovonly", "text", "clover"]
+    "coverageReporters": [
+      "json",
+      "lcovonly",
+      "text",
+      "clover"
+    ]
   }
 }
