@@ -2,6 +2,7 @@ import Hash from './hash';
 import { API_URL } from './constants';
 import axios from 'axios';
 import WriteSubscription from './write-subscription';
+import Verifier from './verifier';
 
 class EnchainteClient {
 
@@ -12,6 +13,10 @@ class EnchainteClient {
 
     public getProof(hash: Hash) {
         return this.verify(hash.getHash());
+    }
+
+    public verifyProof(proof: Hash[]): boolean {
+        return Verifier.verify(proof);
     }
 
     private async verify(data: string): Promise<string> {

@@ -29,6 +29,10 @@ class Hash {
     public getHash(): string {
         return this.hash;
     }
+
+    public getUint8ArrayHash(): Uint8Array {
+        return Uint8Array.from(Buffer.from(this.hash, 'hex'));
+    }
 }
 
 export default Hash;

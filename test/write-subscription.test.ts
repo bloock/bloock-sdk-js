@@ -122,7 +122,7 @@ describe("Write Subscription Tests", () => {
 
     jest.runOnlyPendingTimers();
 
-    expect(mockedAxios.post).toBeCalledWith(`${API_URL}/send`, { hash: [hash1.getHash(), hash2.getHash()] })
+    expect(mockedAxios.post).toBeCalledWith(`${API_URL}/send/bulk`, { messages: [hash1.getHash(), hash2.getHash()] })
     expect(mockedAxios.post).toBeCalledTimes(1);
     
   });
