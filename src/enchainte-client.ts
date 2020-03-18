@@ -1,5 +1,5 @@
 import Hash from './hash';
-import { API_URL } from './constants';
+import { API_URL, SMT_URL } from './constants';
 import axios from 'axios';
 import WriteSubscription from './write-subscription';
 import Verifier from './verifier';
@@ -11,27 +11,20 @@ class EnchainteClient {
         return subscription.push(hash);
     }
 
-    public getProof(hash: Hash) {
-        return this.verify(hash.getHash());
-    }
-
-    public verifyProof(proof: Hash[]): boolean {
+    public verify(proof: string[]): boolean {
         return Verifier.verify(proof);
     }
 
-    private async verify(data: string): Promise<string> {
+    public async getProof(data: Hash): Promise<string[]> {
         const postmsg = {
-            hash: data
+            hash: data.getHash()
         };
 
         try {
-            const res = await axios.post(`${API_URL}/verify`, postmsg, {
-                headers: {
-                    "Content-Type": "application/json;charset=utf-8"
-                }
-            });
+            const res = await axios.post(`${SMT_URL}/proof`, postmsg);
 
             const jres = await res.data;
+
             return jres.proof;
         } catch (error) {
             throw new Error("Proof could not be generated");

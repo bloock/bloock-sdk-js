@@ -2,7 +2,12 @@ import Hash from "./hash";
 
 class Verifier {
 
-    public static verify(proof: Uint8Array[]): boolean {
+    public static verify(proofHex: string[]): boolean {
+        let proof: Uint8Array[] = [];
+        proofHex.forEach(item => {
+            proof.push(Uint8Array.from(Buffer.from(item, 'hex')));
+        })
+
         let hash: Uint8Array;
 
         if (Verifier.getPath(proof[proof.length - 1], proof.length - 3)) {
