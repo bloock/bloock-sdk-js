@@ -1,4 +1,5 @@
 import * as blake2b from "blakejs";
+import { Buffer } from "buffer";
 
 class Hash {
 

@@ -21,13 +21,17 @@ class EnchainteClient {
         };
 
         try {
-            const res = await axios.post(`${SMT_URL}/proof`, postmsg);
+            const res = await axios.get(`${SMT_URL}/proof`, {
+                params: {
+                  ...postmsg
+                }
+              });
 
             const jres = await res.data;
 
             return jres.proof;
         } catch (error) {
-            throw new Error("Proof could not be generated");
+            throw new Error("Proof could not be generated: " + error);
         }
     }
 }

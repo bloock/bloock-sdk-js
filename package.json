@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "0.0.10",
+  "version": "0.0.16",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -69,7 +69,8 @@
   "dependencies": {
     "axios": "^0.19.2",
     "blake2b-wasm": "^2.1.0",
-    "blakejs": "^1.1.0"
+    "blakejs": "^1.1.0",
+    "buffer": "^5.5.0"
   },
   "jest": {
     "transform": {

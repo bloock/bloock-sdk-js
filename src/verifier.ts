@@ -1,4 +1,5 @@
 import Hash from "./hash";
+import { Buffer } from "buffer";
 
 class Verifier {
 
