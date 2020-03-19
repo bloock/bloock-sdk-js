@@ -17,7 +17,7 @@ subscription.push = jest.fn();
  */
 describe("Enchainte SDK Tests", () => {
   beforeEach(() => {
-    mockedAxios.post.mockClear();
+    mockedAxios.get.mockClear();
   })
 
   it('initializes', () => {
@@ -83,7 +83,7 @@ describe("Enchainte SDK Tests", () => {
   it("Get proof success", done => {
     let client = new EnchainteClient();
     
-    mockedAxios.post.mockResolvedValue({ data: {
+    mockedAxios.get.mockResolvedValue({ data: {
       proof: [
         "dc48d20062ef377852b9385c676758069169af67ec5b9b0eff538dfbfb1972c8",
         "7f5f92ca6d84f8ec81a3226c6a21beab47959692a90cc2471f9339c2a6cd0c88",
@@ -101,19 +101,19 @@ describe("Enchainte SDK Tests", () => {
         done();
       })
 
-    expect(mockedAxios.post).toHaveBeenCalled();
+    expect(mockedAxios.get).toHaveBeenCalled();
   })
 
   it("Get proof error", done => {
     let client = new EnchainteClient();
     
-    mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+    mockedAxios.get.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
 
     client.getProof(Hash.fromString('ycgmjvu5llj8o1xuq38qx9'))
       .catch(error => {
         done();
       })
 
-    expect(mockedAxios.post).toHaveBeenCalled();
+    expect(mockedAxios.get).toHaveBeenCalled();
   })
 })

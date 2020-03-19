@@ -17,7 +17,7 @@ class Verifier {
             hash = Verifier.merge(proof[proof.length - 1], proof[proof.length - 2]);
         }
 
-        for (let i = proof.length - 3; i >= 1; --i) {            
+        for (let i = proof.length - 3; i >= 1; --i) {      
             if (Verifier.getPath(proof[proof.length - 1], i - 1)) {
                 hash = Verifier.merge(proof[i], hash);
             } else {
@@ -44,7 +44,7 @@ class Verifier {
     }
 
     private static getPath(key: Uint8Array, bit: number) {
-        return (key[Math.floor(Math.abs(key.length - ((255-bit)/8) - 1))] & (1 << ((255-bit) % 8))) > 0;
+        return (key[key.length - Math.floor((255-bit)/8) - 1] & (1 << ((255-bit) % 8))) > 0;
     }
 }
 
