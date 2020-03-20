@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
