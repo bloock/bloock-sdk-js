@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "0.0.19",
+  "version": "0.1.0",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -68,9 +68,11 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "bignumber.js": "^9.0.0",
     "blake2b-wasm": "^2.1.0",
     "blakejs": "^1.1.0",
-    "buffer": "^5.5.0"
+    "buffer": "^5.5.0",
+    "web3": "^1.2.6"
   },
   "jest": {
     "transform": {

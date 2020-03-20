@@ -1,5 +1,5 @@
 import * as blake2b from "blakejs";
-import { Buffer } from "buffer";
+import Utils from "./utils";
 
 class Hash {
 
@@ -10,12 +10,12 @@ class Hash {
     }
 
     static fromHex(hex: string): Hash {
-        let dataArray = Uint8Array.from(Buffer.from(hex, 'hex'));
+        let dataArray = Utils.hexToBytes(hex);
         return Hash.generateBlake2b(dataArray);
     }
 
     static fromString(_string: string): Hash {
-        let dataArray = Uint8Array.from(Buffer.from(_string));
+        let dataArray = Utils.stringToBytes(_string);
         return Hash.generateBlake2b(dataArray);
     }
 
@@ -32,7 +32,7 @@ class Hash {
     }
 
     public getUint8ArrayHash(): Uint8Array {
-        return Uint8Array.from(Buffer.from(this.hash, 'hex'));
+        return Utils.hexToBytes(this.hash);
     }
 }
 

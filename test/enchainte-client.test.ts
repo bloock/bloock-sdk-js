@@ -1,15 +1,14 @@
 import { EnchainteClient } from "../src"
-import Hash from "../src/hash";
+import Hash from "../src/utils/hash";
+import Writer from "../src/write/writer";
 
 jest.mock('axios');
 import axios from 'axios';
 
-import WriteSubscription from "../src/write-subscription";
-import { SMT_URL } from "../src/constants";
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const subscription = WriteSubscription.getInstance();
+const subscription = Writer.getInstance();
 subscription.push = jest.fn();
 
 /**
@@ -46,7 +45,7 @@ describe("Enchainte SDK Tests", () => {
     })
   })
 
-  it("Verify function success - true", () => {
+  it("Verify function success - true", async () => {
     let client = new EnchainteClient();
     
     let proof = [
@@ -57,11 +56,11 @@ describe("Enchainte SDK Tests", () => {
       "0101010101010101010101010101010101010101010101010101010101010101"
     ];
 
-    let valid = client.verify(proof)
+    let valid = await client.verify(proof)
     expect(valid).toBe(true);
   })
 
-  it("Verify function success - false", () => {
+  it("Verify function success - false", async () => {
     let client = new EnchainteClient();
     
     let proof = [
@@ -75,7 +74,7 @@ describe("Enchainte SDK Tests", () => {
         "5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1"
       ];
 
-    let valid = client.verify(proof)
+    let valid = await client.verify(proof)
     
     expect(valid).toBe(false);
   })

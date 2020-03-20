@@ -1,11 +1,11 @@
-import Hash from "../src/hash";
-import Verifier from "../src/verifier";
+import Hash from "../src/utils/hash";
+import Verifier from "../src/verify/verifier";
 
 /**
  * Dummy test
  */
 describe("Verifier Tests", () => {
-  it('verifies proof 1', () => {
+  it('verifies proof 1', async () => {
     const proof = [
       'd3cdbf5dd81579eeec4871236a2aa22828ef2654f29023c32bcffee7b59bd715',
       '0000000000000000000000000000000000000000000000000000000000000000',
@@ -16,10 +16,10 @@ describe("Verifier Tests", () => {
       '4040404040404040404040404040404040404040404040404040404040404040'
     ]
 
-    expect(Verifier.verify(proof)).toBe(true);
+    expect(await Verifier.verify(proof)).toBe(true);
   });
 
-  it('verifies proof 2', () => {
+  it('verifies proof 2', async () => {
     const proof = [
       'd3cdbf5dd81579eeec4871236a2aa22828ef2654f29023c32bcffee7b59bd715',
       '0000000000000000000000000000000000000000000000000000000000000000',
@@ -28,12 +28,12 @@ describe("Verifier Tests", () => {
       '0101010101010101010101010101010001010101010101010101010101010101'
     ];
 
-    expect(Verifier.verify(proof)).toBe(false);
+    expect(await Verifier.verify(proof)).toBe(false);
   });
 
-  it('verifies proof 3', () => {
+  it('verifies proof 3', async () => {
     const proof = ["af07643e31e51173c0a6207003dd7d038eef90cfb3158369865b9dc3dddbae6c", "33d61bc1d1fbc9fcc4552908cf6190a9df6d54dd162bed31d054efc9db385e1e", "849d493c2463d2a5a4623b938702a3eb70c37c589425febfb1f75dd6d1a5e201", "464ac2495dee37bcc59a8573ede2b3f06edf95734ae032e064eeaf50a1dfccb5", "0b46e2dbd0b79d29d14dc5b71fae96c7896668414b9f63fdbea4f0417e4843d6", "8865717e1680bd32a2313feb73884e75f9ad1581e12f9fba02cb052b66a05769", "ee7f7f9425030e50618831cf338fac7b5e5e855e04e0084a32414c5243e3aa54", "0000000000000000000000000000000000000000000000000000000000000000", "85244f8bcf94b24b8104781b39170529f558cf5c210e48c437265004690e4dcf", "e9df6a33c4c5e6e2e8e6e1397d5ab7dc5c06605beeda030eae0544f113200436", "e94e1f5ac2f4ab1ba9064cbc3fb0402f2356be15ef89a4f5f55f1a2cacb53fd2"];
 
-    expect(Verifier.verify(proof)).toBe(true);
+    expect(await Verifier.verify(proof)).toBe(true);
   });
 })

@@ -1,38 +1,21 @@
-import Hash from './hash';
-import { API_URL, SMT_URL } from './constants';
-import axios from 'axios';
-import WriteSubscription from './write-subscription';
-import Verifier from './verifier';
+import Hash from './utils/hash';
+import Writer from './write/writer';
+import Verifier from './verify/verifier';
+import ApiService from './comms/api.service';
 
 class EnchainteClient {
 
     public write(hash: Hash) {
-        const subscription = WriteSubscription.getInstance();
+        const subscription = Writer.getInstance();
         return subscription.push(hash);
     }
 
-    public verify(proof: string[]): boolean {
+    public verify(proof: string[]): Promise<boolean> {
         return Verifier.verify(proof);
     }
 
     public async getProof(data: Hash): Promise<string[]> {
-        const postmsg = {
-            hash: data.getHash()
-        };
-
-        try {
-            const res = await axios.get(`${SMT_URL}/proof`, {
-                params: {
-                  ...postmsg
-                }
-              });
-
-            const jres = await res.data;
-
-            return jres.proof;
-        } catch (error) {
-            throw new Error("Proof could not be generated: " + error);
-        }
+        return ApiService.getProof(data);
     }
 }
 

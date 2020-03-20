@@ -1,12 +1,13 @@
-import Hash from "./hash";
-import { Buffer } from "buffer";
+import Hash from "../utils/hash";
+import Utils from "../utils/utils";
+import Web3Service from "../comms/web3.service";
 
 class Verifier {
 
-    public static verify(proofHex: string[]): boolean {
+    public static async verify(proofHex: string[]): Promise<boolean> {
         let proof: Uint8Array[] = [];
         proofHex.forEach(item => {
-            proof.push(Uint8Array.from(Buffer.from(item, 'hex')));
+            proof.push(Utils.hexToBytes(item));
         })
 
         let hash: Uint8Array;
@@ -32,7 +33,11 @@ class Verifier {
             }
         })
 
-        return result;
+        if (result) {
+            result = await Web3Service.validateRoot(proof[0])
+        }
+        
+        return Promise.resolve(result);
     }
 
     private static merge(left: Uint8Array, right: Uint8Array): Uint8Array {

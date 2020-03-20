@@ -1,4 +1,4 @@
-import Hash from "../src/hash"
+import Hash from "../src/utils/hash"
 
 /**
  * Dummy test

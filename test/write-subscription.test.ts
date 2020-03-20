@@ -1,8 +1,7 @@
-import fetch, { enableFetchMocks } from 'jest-fetch-mock';
-import WriteSubscription from "../src/write-subscription"
-import Hash from "../src/hash";
+import Hash from "../src/utils/hash";
+import Writer from "../src/write/writer";
+import { API_URL } from '../src/utils/constants';
 import axios from 'axios';
-import { API_URL } from '../src/constants';
 
 jest.mock('axios');
 
@@ -24,22 +23,22 @@ describe("Write Subscription Tests", () => {
   })
 
   it('Initializes', () => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
 
-    expect(writeSubscription).toBeInstanceOf(WriteSubscription);
+    expect(writerInstance).toBeInstanceOf(Writer);
   });
 
   it('should be singleton', () => {
-    let writeSubscription = WriteSubscription.getInstance();
-    let secondWriteSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
+    let secondWriterInstance = Writer.getInstance();
 
-    expect(writeSubscription).toBe(secondWriteSubscription);
+    expect(writerInstance).toBe(secondWriterInstance);
   });
 
   it('should callback when sended successfuly', done => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
     
-    let promise = writeSubscription.push(Hash.fromString("enchainte"));
+    let promise = writerInstance.push(Hash.fromString("enchainte"));
 
     promise.then(res => {
       expect(res).toBe(true);
@@ -52,9 +51,9 @@ describe("Write Subscription Tests", () => {
   });
 
   it('should callback when sended and failed', done => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
     
-    let promise = writeSubscription.push(Hash.fromString("enchainte"));
+    let promise = writerInstance.push(Hash.fromString("enchainte"));
 
     promise.catch(err => {
       expect(err).toBe(false);
@@ -67,10 +66,10 @@ describe("Write Subscription Tests", () => {
   });
 
   it('each pusher should recieve the callback if success', async () => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
     
-    let promiseOne = writeSubscription.push(Hash.fromString("enchainte1"));
-    let promiseTwo = writeSubscription.push(Hash.fromString("enchainte2"));
+    let promiseOne = writerInstance.push(Hash.fromString("enchainte1"));
+    let promiseTwo = writerInstance.push(Hash.fromString("enchainte2"));
 
     mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 
@@ -87,10 +86,10 @@ describe("Write Subscription Tests", () => {
   it('each pusher should recieve the callback if fails', async () => {
     expect.assertions(2);
 
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
     
-    let promiseOne = writeSubscription.push(Hash.fromString("enchainte1"));
-    let promiseTwo = writeSubscription.push(Hash.fromString("enchainte2"));
+    let promiseOne = writerInstance.push(Hash.fromString("enchainte1"));
+    let promiseTwo = writerInstance.push(Hash.fromString("enchainte2"));
 
     mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
 
@@ -110,13 +109,13 @@ describe("Write Subscription Tests", () => {
   });
 
   it('should call API once every second', async () => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
 
     const hash1 = Hash.fromString("enchainte1");
     const hash2 = Hash.fromString("enchainte2");
     
-    writeSubscription.push(hash1);
-    writeSubscription.push(hash2);
+    writerInstance.push(hash1);
+    writerInstance.push(hash2);
 
     mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 
@@ -128,7 +127,7 @@ describe("Write Subscription Tests", () => {
   });
 
   it('should not trigger if no pushes', async () => {
-    let writeSubscription = WriteSubscription.getInstance();
+    let writerInstance = Writer.getInstance();
 
     mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 

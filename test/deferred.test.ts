@@ -1,4 +1,4 @@
-import Deferred from "../src/deferred";
+import Deferred from "../src/utils/deferred";
 
 /**
  * Dummy test

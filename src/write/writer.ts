@@ -1,10 +1,10 @@
-import Hash from './hash';
-import Deferred from './deferred';
-import { API_URL } from './constants';
+import Hash from '../utils/hash';
+import Deferred from '../utils/deferred';
+import { API_URL } from '../utils/constants';
 import axios from 'axios';
 
-class WriteSubscription {
-    private static instance: WriteSubscription;
+class Writer {
+    private static instance: Writer;
 
     private tasks: Map<Hash, Deferred> = new Map();
 
@@ -54,13 +54,13 @@ class WriteSubscription {
         }
     }
 
-    public static getInstance(): WriteSubscription {
-        if (!WriteSubscription.instance) {
-            WriteSubscription.instance = new WriteSubscription();
+    public static getInstance(): Writer {
+        if (!Writer.instance) {
+            Writer.instance = new Writer();
         }
 
-        return WriteSubscription.instance;
+        return Writer.instance;
     }
 }
 
-export default WriteSubscription;
+export default Writer;
