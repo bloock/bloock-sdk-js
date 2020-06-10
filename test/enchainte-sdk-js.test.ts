@@ -1,11 +1,10 @@
 import { EnchainteClient, Hash } from "../src";
 
-/**
- * Dummy test
- */
+const mockAPIKey = "MockedAPIKeyOf64CharactersLong--MockedAPIKeyOf64CharactersLong";
+
 describe("Index Tests", () => {
   it('Initializes sdk', () => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
 
     expect(client).toBeInstanceOf(EnchainteClient);
   });

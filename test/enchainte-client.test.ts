@@ -5,6 +5,7 @@ import Writer from "../src/write/writer";
 jest.mock('axios');
 import axios from 'axios';
 
+const mockAPIKey = "MockedAPIKeyOf64CharactersLong--MockedAPIKeyOf64CharactersLong";
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
@@ -20,11 +21,11 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it('initializes', () => {
-    expect(new EnchainteClient()).toBeInstanceOf(EnchainteClient)
+    expect(new EnchainteClient(mockAPIKey)).toBeInstanceOf(EnchainteClient)
   })
 
   it("Write function success", done => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
 
     (subscription.push as jest.Mock<any>).mockResolvedValueOnce(true);
 
@@ -35,7 +36,7 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it("Write function error", done => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
     
     (subscription.push as jest.Mock<any>).mockResolvedValueOnce(false);
 
@@ -46,7 +47,7 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it("Verify function success - true", async () => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
     
     let proof = [
       "785c6e630cfd60b6e998aac429ada1d24943f0397aa0109f480a4f7c11f1e553",
@@ -61,7 +62,7 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it("Verify function success - false", async () => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
     
     let proof = [
         "dc48d20062ef377852b9385c676758069169af67ec5b9b0eff538dfbfb1972c8",
@@ -80,9 +81,9 @@ describe("Enchainte SDK Tests", () => {
   })
 
   it("Get proof success", done => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
     
-    mockedAxios.get.mockResolvedValue({ data: {
+    mockedAxios.post.mockResolvedValue({ data: {
       proof: [
         "dc48d20062ef377852b9385c676758069169af67ec5b9b0eff538dfbfb1972c8",
         "7f5f92ca6d84f8ec81a3226c6a21beab47959692a90cc2471f9339c2a6cd0c88",
@@ -100,19 +101,19 @@ describe("Enchainte SDK Tests", () => {
         done();
       })
 
-    expect(mockedAxios.get).toHaveBeenCalled();
+    expect(mockedAxios.post).toHaveBeenCalled();
   })
 
   it("Get proof error", done => {
-    let client = new EnchainteClient();
+    let client = new EnchainteClient(mockAPIKey);
     
-    mockedAxios.get.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+    mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
 
     client.getProof(Hash.fromString('ycgmjvu5llj8o1xuq38qx9'))
       .catch(error => {
         done();
       })
 
-    expect(mockedAxios.get).toHaveBeenCalled();
+    expect(mockedAxios.post).toHaveBeenCalled();
   })
 })

@@ -24,4 +24,11 @@ describe("Enchainte SDK Tests", () => {
     expect(hash).toBeInstanceOf(Hash);
     expect(hash.getHash()).toBe("e283ce217acedb1b0f71fc5ebff647a1a17a2492a6d2f34fb76b994a23ca8931")
   });
+
+  it('Initialize from hash', () => {
+    let hash = Hash.fromHash('c4635b1a2898593fce2716446b429bd62396cba1e0189dbc9c34b5608deacc63');
+
+    expect(hash).toBeInstanceOf(Hash);
+    expect(hash.getHash()).toBe("c4635b1a2898593fce2716446b429bd62396cba1e0189dbc9c34b5608deacc63")
+  });
 })

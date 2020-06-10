@@ -9,6 +9,10 @@ class Hash {
         this.hash = hash;
     }
 
+    static fromHash(hash: string): Hash {
+        return new Hash(hash);
+    }
+
     static fromHex(hex: string): Hash {
         let dataArray = Utils.hexToBytes(hex);
         return Hash.generateBlake2b(dataArray);

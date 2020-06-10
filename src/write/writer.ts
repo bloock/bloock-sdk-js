@@ -2,6 +2,7 @@ import Hash from '../utils/hash';
 import Deferred from '../utils/deferred';
 import { API_URL } from '../utils/constants';
 import axios from 'axios';
+import ApiService from '../comms/api.service';
 
 class Writer {
     private static instance: Writer;
@@ -37,12 +38,8 @@ class Writer {
             dataToSend.push(hash.getHash());
         });
 
-        const postmsg = {
-            messages: dataToSend
-        };
-
         try {
-            const res = await axios.post(`${API_URL}/send/bulk`, postmsg);
+            await ApiService.write(dataToSend)
     
             currentTasks.forEach((deferred: Deferred) => {
                 deferred.resolve(true);

@@ -5,6 +5,10 @@ import ApiService from './comms/api.service';
 
 class EnchainteClient {
 
+    constructor(apiKey: string) {
+        ApiService.apiKey = apiKey;
+    }
+
     public write(hash: Hash) {
         const subscription = Writer.getInstance();
         return subscription.push(hash);
