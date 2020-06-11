@@ -4,40 +4,36 @@ import Web3Service from "../comms/web3.service";
 
 class Verifier {
 
-    public static async verify(proofHex: string[]): Promise<boolean> {
+    public static async verify(leaves: Uint8Array[], nodes: Uint8Array[], depth: Uint8Array, bitmap: Uint8Array): Promise<boolean> {
         let proof: Uint8Array[] = [];
-        proofHex.forEach(item => {
-            proof.push(Utils.hexToBytes(item));
-        })
-
-        let hash: Uint8Array;
-
-        if (Verifier.getPath(proof[proof.length - 1], proof.length - 3)) {
-            hash = Verifier.merge(proof[proof.length - 2], proof[proof.length - 1]);
-        } else {
-            hash = Verifier.merge(proof[proof.length - 1], proof[proof.length - 2]);
-        }
-
-        for (let i = proof.length - 3; i >= 1; --i) {      
-            if (Verifier.getPath(proof[proof.length - 1], i - 1)) {
-                hash = Verifier.merge(proof[i], hash);
-            } else {
-                hash = Verifier.merge(hash, proof[i]);
-            }
-        }
-
-        let result = true;
-        proof[0].forEach((value: number, index: number) => {
-            if (value !== hash[index]) {
-                result = false;
-            }
-        })
-
-        if (result) {
-            result = await Web3Service.validateRoot(proof[0])
-        }
+        let it_leaves = 0;
+        let it_nodes = 0;
+        let it_bitmap = 0;
+        let curr_bit = 0;
+        let stack: [Uint8Array,number][]= [];
         
-        return Promise.resolve(result);
+        while (it_nodes < nodes.length-1 || it_leaves < leaves.length) {
+            let bitmap_byte = bitmap[it_bitmap];
+            let is_leaf = (bitmap[it_bitmap] & (1 << (7 - (curr_bit%8)))) > 0;
+            let act_hash: Uint8Array;
+            if (is_leaf) { act_hash = leaves[it_leaves];}
+            else { act_hash = nodes[it_nodes];}
+            let act_depth = depth[it_nodes + it_leaves];
+
+            while (stack.length > 0 && (stack[stack.length-1][1] == act_depth)) {
+                let last_hash = stack[stack.length-1][0];
+                stack.pop();
+                act_hash = Verifier.merge(last_hash, act_hash);
+                act_depth -= 1;
+            }
+            stack.push([act_hash, act_depth]);
+
+            if (is_leaf) { it_leaves += 1;}
+            else { it_nodes += 1;}
+            curr_bit = (curr_bit + 1) %8;
+            if (curr_bit == 0) { it_bitmap += 1;}
+        }
+        return Verifier.compare_keys(stack[0][0], nodes[it_nodes]);    
     }
 
     private static merge(left: Uint8Array, right: Uint8Array): Uint8Array {
@@ -48,8 +44,14 @@ class Verifier {
         return Hash.fromUint8Array(concat).getUint8ArrayHash();
     }
 
-    private static getPath(key: Uint8Array, bit: number) {
-        return (key[key.length - Math.floor((255-bit)/8) - 1] & (1 << ((255-bit) % 8))) > 0;
+    private static compare_keys(left: Uint8Array, right: Uint8Array): boolean {
+        let result = true;
+        left.forEach((value: number, index: number) => {
+            if (value !== right[index]) {
+                result = false;
+            }
+        });
+        return result;
     }
 }
 

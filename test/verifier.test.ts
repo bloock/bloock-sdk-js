@@ -6,70 +6,86 @@ import Verifier from "../src/verify/verifier";
  */
 describe("Verifier Tests", () => {
   it('verifies proof 1', async () => {
-    const proof = [
-      "107e9e779fd5dab76e83e7581dbd1107d8b6dd8fe9d8a11f9a000166306157ae",
-      "86f6faa7920551050bfac8d1c436335f2b41e840d362d5e5f9c9d0efd4e3bdeb",
-      "88978949b4db14f0eae62abc78fb1150009ae2ce2d1136259a8ede77f2a3e352",
-      "5251b5babfaa4dc44238dc2fa19e42a2d200054d5bfd2f3a33e7761fd63f7b0d",
-      "2bda40f0a4b3313442b5bb62138163289a8b125ae04e4fb7be2d1926c1026fe1",
-      "b051c4a09d2213755a356ed3c01e162ca683317609e4e21fc6934d47ad176895",
-      "b5d36d8259d459073433c9fbc3fedaf1ab4e6c935f1dbe53c7baa48ad6f618dd",
-      "984614a99b023294f5a5a272d32fa6329282756b0ca1242538c943de8ec3df18",
-      "c7cdcdf23c7b8a787f180175b29c07f5dc68c6ce1757ee4882349d9ec3ee5386",
-      "b64083379b0727921b4048e764ae8c165de0a94a3c62aef79d0e0a0fd8d99851",
-      "bec8531fd5f190be21a18cb16f0324d15d0a26b814a0665d5dcc5ca9e245a24d",
-      "bf4f47149ba67d27dbe473d8dc61258e390762fdbb335152409d3c0376ecc6d1",
-      "0c144646f2370b4731e69ffb750922545f18dfe230d37cf689294536f081ad9b",
-      "9b080aa4aacde267ca22f271861e9d6545ac53e347a1ccf1af1b55e1beea4861",
-      "1c53015b603541cce27daeed0593bb906c2cc983d3e8ca31079df768b9df1cb5",
-      "e29e308ddfba5ad30a522d9f4f87a30af0d4423eac056e4c4321e4e6c806b197",
-      "58524bd1556735c749b900b4af80cceb027a6fddf38154c7605b67d2597f8090",
-      "0000000000000000000000000000000000000000000000000000000000000000",
-      "0000000000000000000000000000000000000000000000000000000000000000",
-      "5853beae1f3120a9a082b62a8ff7f85aec9ffee31770febda0343bfff20391a5",
-      "585389f0e435352f1ab4e20edf11f006b0e2f859fad1486441598561d357cded"
-    ]
+    //proof form test_verify_multiproof_4_leaves_pairs_X_0_X_0
+    const leaves: Uint8Array[] = [
+      new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      new Uint8Array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+    ];
+    const nodes: Uint8Array[] = [
+      new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+      new Uint8Array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]),
+      new Uint8Array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144, 13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234])  
+    ];
+    const depth: Uint8Array = new Uint8Array([1,1,1,1,0]);
+    const bitmap: Uint8Array = new Uint8Array([160]);
 
-    expect(await Verifier.verify(proof)).toBe(true);
+    expect(await Verifier.verify(leaves, nodes, depth, bitmap)).toBe(true);
   });
 
   it('verifies proof 2', async () => {
-    const proof = [
-      'd3cdbf5dd81579eeec4871236a2aa22828ef2654f29023c32bcffee7b59bd715',
-      '0000000000000000000000000000000000000000000000000000000000000000',
-      '3645d7b51c1df3d97572ffec8f95afef87536278d2b676ff002f08b3798c6301',
-      '2020202020202020202020202020202020202020202020202020202020202020',
-      '0101010101010101010101010101010001010101010101010101010101010101'
+    //proof form test_verify_multiproof_4_leaves_pairs_0_X_0_X
+    const leaves: Uint8Array[] = [
+      new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+      new Uint8Array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
     ];
+    const nodes: Uint8Array[] = [
+      new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      new Uint8Array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]),
+      new Uint8Array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144, 13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234])  
+    ];
+    const depth: Uint8Array = new Uint8Array([1,1,1,1,0]);
+    const bitmap: Uint8Array = new Uint8Array([80]);
 
-    expect(await Verifier.verify(proof)).toBe(false);
+    expect(await Verifier.verify(leaves, nodes, depth, bitmap)).toBe(true);
   });
 
   it('verifies proof 3', async () => {
-    const proof = [
-      "107e9e779fd5dab76e83e7581dbd1107d8b6dd8fe9d8a11f9a000166306157ae",
-      "4bbdd3d9225adb1dc1d3770482ec54aa115831107f03ee17db8a0877aba501c9",
-      "121eac93209c3cdb9439f183df4e1227dc78540371d09f09af420460a14f217b",
-      "c781088335c265099c24acf42d749ae939ad71b135296e7cacda61417d745754",
-      "4a124e43a512fa277c28c34679041f7eb9125dea18edcf4dece4cffcc2059c23",
-      "cd8ac43f517678b38fd7d912dfd33aa56a7144d68d1f888f0b92fc44434d34d6",
-      "5fa707a2e0b803fda3bba3071c1b9b4f9055ee70daf23204ea4aa0db0664e96b",
-      "8dcbda3cce205bdee3c39c193c6537d19b6868f404261598f627dd56bc5ca2f6",
-      "df2cf61a7eac77847b057879cc13c69c46821c151888bdba8194687b9fb907e5",
-      "0a3a6dec277f9e5429ee2d3c84569e43e8bd2283f4ec98298309b5244542f64e",
-      "57cf20a00b487ac4ed68b05e29f029be3314fdb91c54b9e91a47b622022af23e",
-      "b7c736b76879bc0c0113d457e8ac04c68218ef4906e9af786391906a28864a6c",
-      "8ecd0907e1850e243677ec9edd231fac98754b3efdf1a3d35a8a0d3f219a3f70",
-      "7efde9ab7443fea092e1f95ecf9b887f784adaa8144c83d79e171624895cdcb2",
-      "763e539815e477bf63e261f5f174acccf23ee4ab632a1ff82e043365adab6792",
-      "bf988a0ac855d03b1021bddcad98cfa53f5f367cead30899f94fddde600a5779",
-      "a494f8feaf57aeb85638a18bf430da0f23280a9db03c68b4cf1402d34b4304c5",
-      "0000000000000000000000000000000000000000000000000000000000000000",
-      "f60d18917f1964c5bf63f1ab007fd4947d391f0515875c6c5f952529f04e5d81",
-      "f60d6cf1e680227c9c6953b41d35291172c1110267b4a3a85f75c765fed5a3f0",
-      "f60d45a48c6e463c5e6754fc69e612100d39db8339bc89ffdcc4bd8bdaec5490"
+    //proof form test_verify_multiproof_4_leaves_pairs_0_0_X_X
+    const leaves: Uint8Array[] = [
+      new Uint8Array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]),
+      new Uint8Array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
     ];
+    const nodes: Uint8Array[] = [
+      new Uint8Array([3, 127, 45, 161, 237, 218, 238, 67, 106, 133, 220, 204, 7, 34, 69, 228, 123, 196, 15, 21, 154, 156, 67, 94, 39, 81, 41, 150, 54, 177, 239, 3]),
+      new Uint8Array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144, 13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234])  
+    ];
+    const depth: Uint8Array = new Uint8Array([0,1,1,0]);
+    const bitmap: Uint8Array = new Uint8Array([96]);
 
-    expect(await Verifier.verify(proof)).toBe(true);
+    expect(await Verifier.verify(leaves, nodes, depth, bitmap)).toBe(true);
+  });
+
+  it('verifies proof 4', async () => {
+    //proof form test_verify_multiproof_4_leaves_pairs_X_0_0_X
+    const leaves: Uint8Array[] = [
+      new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      new Uint8Array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3])
+    ];
+    const nodes: Uint8Array[] = [
+      new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+      new Uint8Array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]),
+      new Uint8Array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144, 13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234])  
+    ];
+    const depth: Uint8Array = new Uint8Array([1,1,1,1,0]);
+    const bitmap: Uint8Array = new Uint8Array([144]);
+
+    expect(await Verifier.verify(leaves, nodes, depth, bitmap)).toBe(true);
+  });
+
+  it('verifies proof 5', async () => {
+    //proof form test_verify_multiproof_4_leaves_pairs_0_X_X_0
+    const leaves: Uint8Array[] = [
+      new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+      new Uint8Array([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+    ];
+    const nodes: Uint8Array[] = [
+      new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      new Uint8Array([3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]),
+      new Uint8Array([236, 45, 107, 94, 128, 193, 173, 148, 130, 182, 250, 30, 47, 54, 61, 144, 13, 74, 126, 158, 114, 161, 132, 252, 253, 103, 236, 44, 168, 232, 117, 234])  
+    ];
+    const depth: Uint8Array = new Uint8Array([1,1,1,1,0]);
+    const bitmap: Uint8Array = new Uint8Array([96]);
+
+    expect(await Verifier.verify(leaves, nodes, depth, bitmap)).toBe(true);
   });
 })
