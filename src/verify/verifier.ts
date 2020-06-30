@@ -4,7 +4,7 @@ import Web3Service from "../comms/web3.service";
 
 class Verifier {
 
-    public static async verify(leaves: Uint8Array[], nodes: Uint8Array[], depth: Uint8Array, bitmap: Uint8Array): Promise<boolean> {
+    public static verify(leaves: Uint8Array[], nodes: Uint8Array[], depth: Uint8Array, bitmap: Uint8Array): boolean {
         let proof: Uint8Array[] = [];
         let it_leaves = 0;
         let it_nodes = 0;

@@ -1,5 +1,4 @@
-// export const API_URL = "https://api.enchainte.com";
-export const API_URL = "http://localhost:3000";
+export const API_URL = "https://api.test.enchainte.com";
 export const WEB3_PROVIDER = "wss://rinkeby.infura.io/ws/v3/6d7880a8f4b347ca8953d2715e164241";
 export const ETHERSCAN_URL= "https://rinkeby.etherscan.io/tx/";
 export const CONTRACT_ADDRESS = "52B31871eFF4479ea7a71A12ea087DEbd33B2b01";
