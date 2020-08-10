@@ -1,119 +1,273 @@
-import { EnchainteClient } from "../src"
-import Hash from "../src/utils/hash";
-import Writer from "../src/write/writer";
+import { EnchainteClient } from '../src';
+import Hash from '../src/entity/hash';
+import Writer from '../src/writer';
 
 jest.mock('axios');
 import axios from 'axios';
+import Proof from '../src/entity/proof';
+import ApiService from '../src/comms/api.service';
+import Verifier from '../src/verifier';
+import Message from '../src/entity/message';
 
-const mockAPIKey = "MockedAPIKeyOf64CharactersLong--MockedAPIKeyOf64CharactersLong";
+const mockAPIKey = 'MockedAPIKeyOf64CharactersLong--MockedAPIKeyOf64CharactersLong';
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const subscription = Writer.getInstance();
 subscription.push = jest.fn();
 
-/**
- * Dummy test
- */
-describe("Enchainte SDK Tests", () => {
-  beforeEach(() => {
-    mockedAxios.get.mockClear();
-  })
+describe('Enchainte SDK Tests', () => {
+    beforeEach(() => {
+        mockedAxios.get.mockClear();
+        (subscription.push as jest.Mock).mockClear();
+    });
 
-  it('initializes', () => {
-    expect(new EnchainteClient(mockAPIKey)).toBeInstanceOf(EnchainteClient)
-  })
+    it('initializes', () => {
+        expect(new EnchainteClient(mockAPIKey)).toBeInstanceOf(EnchainteClient);
+    });
 
-  it("Write function success", done => {
-    let client = new EnchainteClient(mockAPIKey);
+    describe('Write function Tests', () => {
+        it('is successful', done => {
+            const client = new EnchainteClient(mockAPIKey);
 
-    (subscription.push as jest.Mock<any>).mockResolvedValueOnce(true);
+            (subscription.push as jest.Mock).mockResolvedValueOnce(true);
 
-    client.write(Hash.fromString('enchainte')).then(response => {
-      expect(response).toBe(true);
-      done();
-    })
-  })
+            client.write(Hash.fromString('enchainte')).then(response => {
+                expect((subscription.push as jest.Mock).mock.calls.length).toBe(1);
+                expect(response).toBe(true);
+                done();
+            });
+        });
 
-  it("Write function error", done => {
-    let client = new EnchainteClient(mockAPIKey);
-    
-    (subscription.push as jest.Mock<any>).mockResolvedValueOnce(false);
+        it('handle error', done => {
+            const client = new EnchainteClient(mockAPIKey);
 
-    client.write(Hash.fromString('enchainte')).then(response => {
-      expect(response).toBe(false);
-      done();
-    })
-  })
+            (subscription.push as jest.Mock).mockResolvedValueOnce(false);
 
-  it("Verify function success - true", async () => {
-    let client = new EnchainteClient(mockAPIKey);
-    
-    let proof = [
-      "785c6e630cfd60b6e998aac429ada1d24943f0397aa0109f480a4f7c11f1e553",
-      "0000000000000000000000000000000000000000000000000000000000000000",
-      "0000000000000000000000000000000000000000000000000000000000000000",
-      "60fb452d588482f5b6d7a25a22d2fcf44707493b3125f8ebafdfa408ba2b4d3d",
-      "0101010101010101010101010101010101010101010101010101010101010101"
-    ];
+            client.write(Hash.fromString('enchainte')).then(response => {
+                expect((subscription.push as jest.Mock).mock.calls.length).toBe(1);
+                expect(response).toBe(false);
+                done();
+            });
+        });
 
-    let valid = await client.verify(proof)
-    expect(valid).toBe(true);
-  })
+        it('handle null input', done => {
+            const client = new EnchainteClient(mockAPIKey);
 
-  it("Verify function success - false", async () => {
-    let client = new EnchainteClient(mockAPIKey);
-    
-    let proof = [
-        "dc48d20062ef377852b9385c676758069169af67ec5b9b0eff538dfbfb1972c8",
-        "7f5f92ca6d84f8ec81a3226c6a21beab47959692a90cc2471f9339c2a6cd0c88",
-        "0101010101010101010101010101010101010101010101010101010101010101",
-        "68dc8616facefebc3c41c31043d42a3906db53809b1f13c43718ba796214b55f",
-        "0000000000000000000000000000000000000000000000000000000000000000",
-        "0000000000000000000000000000000000000000000000000000000000000000",
-        "5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434",
-        "5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1"
-      ];
+            client.write(null).catch(error => {
+                expect((subscription.push as jest.Mock).mock.calls.length).toBe(0);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
 
-    let valid = await client.verify(proof)
-    
-    expect(valid).toBe(false);
-  })
+        it('handle invalid hash', done => {
+            const client = new EnchainteClient(mockAPIKey);
 
-  it("Get proof success", done => {
-    let client = new EnchainteClient(mockAPIKey);
-    
-    mockedAxios.post.mockResolvedValue({ data: {
-      proof: [
-        "dc48d20062ef377852b9385c676758069169af67ec5b9b0eff538dfbfb1972c8",
-        "7f5f92ca6d84f8ec81a3226c6a21beab47959692a90cc2471f9339c2a6cd0c88",
-        "0101010101010101010101010101010101010101010101010101010101010101",
-        "68dc8616facefebc3c41c31043d42a3906db53809b1f13c43718ba796214b55f",
-        "0000000000000000000000000000000000000000000000000000000000000000",
-        "0000000000000000000000000000000000000000000000000000000000000000",
-        "5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434",
-        "5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1"
-      ]
-    }} as any);
+            (subscription.push as jest.Mock).mockResolvedValueOnce(false);
 
-    client.getProof(Hash.fromString('ycgmjvu5llj8o1xuq38qx9'))
-      .then(res => {
-        done();
-      })
+            client.write(Hash.fromHash('enchainte')).catch(error => {
+                expect((subscription.push as jest.Mock).mock.calls.length).toBe(0);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
+    });
 
-    expect(mockedAxios.post).toHaveBeenCalled();
-  })
+    describe('Get proof Tests', () => {
+        it('is successful', done => {
+            const client = new EnchainteClient(mockAPIKey);
 
-  it("Get proof error", done => {
-    let client = new EnchainteClient(mockAPIKey);
-    
-    mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+            const mockLeaves = [
+                Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1'),
+                Hash.fromHash('5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434'),
+            ];
 
-    client.getProof(Hash.fromString('ycgmjvu5llj8o1xuq38qx9'))
-      .catch(error => {
-        done();
-      })
+            const mockRawProof = {
+                nodes: [
+                    '95be11f4984e0b6e15f100e4eb4476d54a716f47bfdbd606f85367f3867e9836',
+                    '9b6c0696bc6c51d6f99b8fdc949c06eaaa0b6af7bee2564d04708e5dc2e262d8',
+                    '5ac607f2a9ee295d8401e913478b8e04a729ddcca14a3a84c76fc2ae9105e6cf',
+                    '9abd6230520456bea19a81777fb2ccf222bf12666c67babca72bf7cfd20a3500',
+                    '6ce6c3c28598e82123a070613d086119efc753bc439e88047c35fc156d645b7a',
+                ],
+                depth: '02080c0d1012141413110f0e0b0a0907060504030100',
+                bitmap: '020000',
+            };
 
-    expect(mockedAxios.post).toHaveBeenCalled();
-  })
-})
+            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getProof = jest.fn();
+            (apiServiceMock.getProof as jest.Mock).mockResolvedValueOnce(mockProof);
+
+            client.getProof(mockLeaves).then(res => {
+                expect(res.leaves).toBeDefined();
+                expect(res.nodes).toBeDefined();
+                expect(res.depth).toBeDefined();
+                expect(res.bitmap).toBeDefined();
+                done();
+            });
+        });
+
+        it('handle error', done => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getProof = jest.fn();
+            (apiServiceMock.getProof as jest.Mock).mockRejectedValueOnce(false);
+
+            const mockLeaves = [
+                Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1'),
+                Hash.fromHash('5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434'),
+            ];
+
+            client.getProof(mockLeaves).catch(error => {
+                expect((apiServiceMock.getProof as jest.Mock).mock.calls.length).toBe(1);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
+
+        it('handle null input', done => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getProof = jest.fn();
+
+            client.getProof(null).catch(error => {
+                expect((apiServiceMock.getProof as jest.Mock).mock.calls.length).toBe(0);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
+    });
+
+    describe('Verify proof Tests', () => {
+        it('Verify function success - true', async () => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const mockLeaves = [
+                Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1'),
+                Hash.fromHash('5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434'),
+            ];
+
+            const mockRawProof = {
+                nodes: [
+                    '95be11f4984e0b6e15f100e4eb4476d54a716f47bfdbd606f85367f3867e9836',
+                    '9b6c0696bc6c51d6f99b8fdc949c06eaaa0b6af7bee2564d04708e5dc2e262d8',
+                    '5ac607f2a9ee295d8401e913478b8e04a729ddcca14a3a84c76fc2ae9105e6cf',
+                ],
+                depth: '02080c0d1012141413110f0e0b0a0907060504030100',
+                bitmap: '020000',
+            };
+
+            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+
+            const verifierMock = Verifier;
+            verifierMock.verify = jest.fn();
+            (verifierMock.verify as jest.Mock).mockReturnValueOnce(true);
+
+            const valid = await client.verify(mockProof);
+            expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(1);
+            expect(valid).toBe(true);
+        });
+
+        it('Verify function success - false', async () => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const mockLeaves = [
+                Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1'),
+                Hash.fromHash('5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434'),
+            ];
+
+            const mockRawProof = {
+                nodes: [
+                    '95be11f4984e0b6e15f100e4eb4476d54a716f47bfdbd606f85367f3867e9836',
+                    '9b6c0696bc6c51d6f99b8fdc949c06eaaa0b6af7bee2564d04708e5dc2e262d8',
+                    '5ac607f2a9ee295d8401e913478b8e04a729ddcca14a3a84c76fc2ae9105e6cf',
+                ],
+                depth: '02080c0d1012141413110f0e0b0a0907060504030100',
+                bitmap: '020000',
+            };
+
+            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+
+            const verifierMock = Verifier;
+            verifierMock.verify = jest.fn();
+            (verifierMock.verify as jest.Mock).mockReturnValueOnce(false);
+
+            const valid = client.verify(mockProof);
+            expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(1);
+            expect(valid).toBe(false);
+        });
+
+        it('Verify function error', async () => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const verifierMock = Verifier;
+            verifierMock.verify = jest.fn();
+
+            const valid = client.verify(null);
+            expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(0);
+            expect(valid).toBe(false);
+        });
+    });
+
+    describe('Get message status Tests', () => {
+        it('is successful', done => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const mockLeaves = [Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')];
+
+            const mockMessage = [
+                new Message({
+                    root: '0f5c62817a529e0610d1fbf5c999bd53188f7f6958e4fb3aadd4a451e34bdc64',
+                    message: '5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1',
+                    tx_hash: '0xa46a26ba75af77fb778e88e202fca34875d6b1b0fc717bb00082b913ac08037b',
+                    status: 'success',
+                    error: 0,
+                }),
+            ];
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getMessages = jest.fn();
+            (apiServiceMock.getMessages as jest.Mock).mockResolvedValueOnce(mockMessage);
+
+            client.getMessages(mockLeaves).then(res => {
+                expect((apiServiceMock.getMessages as jest.Mock).mock.calls.length).toBe(1);
+                expect(Array.isArray(res)).toBeTruthy();
+                done();
+            });
+        });
+
+        it('handle error', done => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const mockLeaves = [Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')];
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getMessages = jest.fn();
+            (apiServiceMock.getMessages as jest.Mock).mockRejectedValueOnce(false);
+
+            client.getMessages(mockLeaves).catch(error => {
+                expect((apiServiceMock.getMessages as jest.Mock).mock.calls.length).toBe(1);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
+
+        it('handle null input', done => {
+            const client = new EnchainteClient(mockAPIKey);
+
+            const apiServiceMock = ApiService;
+            apiServiceMock.getMessages = jest.fn();
+
+            client.getMessages(null).catch(error => {
+                expect((apiServiceMock.getMessages as jest.Mock).mock.calls.length).toBe(0);
+                expect(error).toBeDefined();
+                done();
+            });
+        });
+    });
+});

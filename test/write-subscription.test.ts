@@ -1,6 +1,5 @@
-import Hash from "../src/utils/hash";
-import Writer from "../src/write/writer";
-import { API_URL } from '../src/utils/constants';
+import Hash from '../src/entity/hash';
+import Writer from '../src/writer';
 import axios from 'axios';
 
 jest.mock('axios');
@@ -9,129 +8,122 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.useFakeTimers();
 
-/**
- * Dummy test
- */
-describe("Write Subscription Tests", () => {
-
-  beforeAll(() => {
-    jest.useFakeTimers();
-  })
-
-  beforeEach(() => {
-    mockedAxios.post.mockClear();
-  })
-
-  it('Initializes', () => {
-    let writerInstance = Writer.getInstance();
-
-    expect(writerInstance).toBeInstanceOf(Writer);
-  });
-
-  it('should be singleton', () => {
-    let writerInstance = Writer.getInstance();
-    let secondWriterInstance = Writer.getInstance();
-
-    expect(writerInstance).toBe(secondWriterInstance);
-  });
-
-  it('should callback when sended successfuly', done => {
-    let writerInstance = Writer.getInstance();
-    
-    let promise = writerInstance.push(Hash.fromString("enchainte"));
-
-    promise.then(res => {
-      expect(res).toBe(true);
-      done();
+describe('Write Subscription Tests', () => {
+    beforeAll(() => {
+        jest.useFakeTimers();
     });
 
-    mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
-
-    jest.runOnlyPendingTimers();
-  });
-
-  it('should callback when sended and failed', done => {
-    let writerInstance = Writer.getInstance();
-    
-    let promise = writerInstance.push(Hash.fromString("enchainte"));
-
-    promise.catch(err => {
-      expect(err).toBe(false);
-      done();
+    beforeEach(() => {
+        mockedAxios.post.mockClear();
     });
 
-    mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+    it('Initializes', () => {
+        const writerInstance = Writer.getInstance();
 
-    jest.runOnlyPendingTimers();
-  });
+        expect(writerInstance).toBeInstanceOf(Writer);
+    });
 
-  it('each pusher should recieve the callback if success', async () => {
-    let writerInstance = Writer.getInstance();
-    
-    let promiseOne = writerInstance.push(Hash.fromString("enchainte1"));
-    let promiseTwo = writerInstance.push(Hash.fromString("enchainte2"));
+    it('should be singleton', () => {
+        const writerInstance = Writer.getInstance();
+        const secondWriterInstance = Writer.getInstance();
 
-    mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
+        expect(writerInstance).toBe(secondWriterInstance);
+    });
 
-    jest.runOnlyPendingTimers();
+    it('should callback when sended successfuly', done => {
+        const writerInstance = Writer.getInstance();
 
-    let promiseOneResult = await promiseOne;
-    let promiseTwoResult = await promiseTwo;
+        const promise = writerInstance.push(Hash.fromString('enchainte'));
 
-    expect(promiseOneResult).toBe(true);
-    expect(promiseTwoResult).toBe(true);
-    
-  });
+        promise.then(res => {
+            expect(res).toBe(true);
+            done();
+        });
 
-  it('each pusher should recieve the callback if fails', async () => {
-    expect.assertions(2);
+        mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 
-    let writerInstance = Writer.getInstance();
-    
-    let promiseOne = writerInstance.push(Hash.fromString("enchainte1"));
-    let promiseTwo = writerInstance.push(Hash.fromString("enchainte2"));
+        jest.runOnlyPendingTimers();
+    });
 
-    mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+    it('should callback when sended and failed', done => {
+        const writerInstance = Writer.getInstance();
 
-    jest.runOnlyPendingTimers();
+        const promise = writerInstance.push(Hash.fromString('enchainte'));
 
-    try {
-      await promiseOne;
-    } catch (err) {
-      expect(err).toBe(false);
-    }
+        promise.catch(err => {
+            expect(err).toBe(false);
+            done();
+        });
 
-    try {
-      await promiseTwo;
-    } catch (err) {
-      expect(err).toBe(false);
-    }
-  });
+        mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
 
-  it('should call API once every second', async () => {
-    let writerInstance = Writer.getInstance();
+        jest.runOnlyPendingTimers();
+    });
 
-    const hash1 = Hash.fromString("enchainte1");
-    const hash2 = Hash.fromString("enchainte2");
-    
-    writerInstance.push(hash1);
-    writerInstance.push(hash2);
+    it('each pusher should recieve the callback if success', async () => {
+        const writerInstance = Writer.getInstance();
 
-    mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
+        const promiseOne = writerInstance.push(Hash.fromString('enchainte1'));
+        const promiseTwo = writerInstance.push(Hash.fromString('enchainte2'));
 
-    jest.runOnlyPendingTimers();
+        mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 
-    expect(mockedAxios.post).toBeCalledTimes(1);
-    
-  });
+        jest.runOnlyPendingTimers();
 
-  it('should not trigger if no pushes', async () => {
-    let writerInstance = Writer.getInstance();
+        const promiseOneResult = await promiseOne;
+        const promiseTwoResult = await promiseTwo;
 
-    mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
+        expect(promiseOneResult).toBe(true);
+        expect(promiseTwoResult).toBe(true);
+    });
 
-    jest.runOnlyPendingTimers();
+    it('each pusher should recieve the callback if fails', async () => {
+        expect.assertions(2);
 
-    expect(mockedAxios.post).toBeCalledTimes(0);   
-  });
-})
+        const writerInstance = Writer.getInstance();
+        const promiseOne = writerInstance.push(Hash.fromString('enchainte1'));
+        const promiseTwo = writerInstance.push(Hash.fromString('enchainte2'));
+
+        mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
+
+        jest.runOnlyPendingTimers();
+
+        try {
+            await promiseOne;
+        } catch (err) {
+            expect(err).toBe(false);
+        }
+
+        try {
+            await promiseTwo;
+        } catch (err) {
+            expect(err).toBe(false);
+        }
+    });
+
+    it('should call API once every second', async () => {
+        const writerInstance = Writer.getInstance();
+
+        const hash1 = Hash.fromString('enchainte1');
+        const hash2 = Hash.fromString('enchainte2');
+
+        writerInstance.push(hash1);
+        writerInstance.push(hash2);
+
+        mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
+
+        jest.runOnlyPendingTimers();
+
+        expect(mockedAxios.post).toBeCalledTimes(1);
+    });
+
+    it('should not trigger if no pushes', async () => {
+        const writerInstance = Writer.getInstance();
+
+        mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
+
+        jest.runOnlyPendingTimers();
+
+        expect(mockedAxios.post).toBeCalledTimes(0);
+    });
+});

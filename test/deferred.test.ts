@@ -1,34 +1,31 @@
-import Deferred from "../src/utils/deferred";
+import Deferred from '../src/utils/deferred';
 
-/**
- * Dummy test
- */
-describe("Deferred Tests", () => {
-  it('Initializes', () => {
-    let deferred = new Deferred();
+describe('Deferred Tests', () => {
+    it('Initializes', () => {
+        const deferred = new Deferred();
 
-    expect(deferred).toBeInstanceOf(Deferred);
-  });
-
-  it('Triggers promise resolve', done => {
-    let deferred = new Deferred();
-
-    deferred.getPromise().then(res => {
-      expect(res).toBe(true);
-      done();
+        expect(deferred).toBeInstanceOf(Deferred);
     });
 
-    deferred.resolve(true);
-  });
+    it('Triggers promise resolve', done => {
+        const deferred = new Deferred();
 
-  it('Triggers promise reject', done => {
-    let deferred = new Deferred();
+        deferred.getPromise().then(res => {
+            expect(res).toBe(true);
+            done();
+        });
 
-    deferred.getPromise().catch(res => {
-      expect(res).toBe(false);
-      done();
+        deferred.resolve(true);
     });
 
-    deferred.reject(false);
-  });
-})
+    it('Triggers promise reject', done => {
+        const deferred = new Deferred();
+
+        deferred.getPromise().catch(res => {
+            expect(res).toBe(false);
+            done();
+        });
+
+        deferred.reject(false);
+    });
+});

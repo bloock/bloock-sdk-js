@@ -1,21 +1,19 @@
-import Hash from '../utils/hash';
-import Deferred from '../utils/deferred';
-import { API_URL } from '../utils/constants';
-import axios from 'axios';
-import ApiService from '../comms/api.service';
+import Hash from './entity/hash';
+import Deferred from './utils/deferred';
+import ApiService from './comms/api.service';
 
-class Writer {
+export default class Writer {
     private static instance: Writer;
 
     private tasks: Map<Hash, Deferred> = new Map();
 
     private constructor() {
         setInterval(async () => {
-            await this.send()
+            await this.send();
         }, 1000);
     }
 
-    public push(hash: Hash): Promise<any> {
+    public push(hash: Hash): Promise<boolean> {
         const deferred = new Deferred();
 
         this.tasks.set(hash, deferred);
@@ -32,22 +30,22 @@ class Writer {
 
         this.tasks.clear();
 
-        let dataToSend: string[] = [];
+        const dataToSend: string[] = [];
 
-        currentTasks.forEach((deferred: Deferred, hash: Hash) => {
+        currentTasks.forEach((_deferred: Deferred, hash: Hash) => {
             dataToSend.push(hash.getHash());
         });
 
         try {
-            await ApiService.write(dataToSend)
-    
+            await ApiService.write(dataToSend);
+
             currentTasks.forEach((deferred: Deferred) => {
                 deferred.resolve(true);
-            })
+            });
         } catch (error) {
             currentTasks.forEach((deferred: Deferred) => {
-                deferred.reject(false);
-            })
+                deferred.reject(error);
+            });
         }
     }
 
@@ -59,5 +57,3 @@ class Writer {
         return Writer.instance;
     }
 }
-
-export default Writer;

@@ -1,7 +1,7 @@
-import { Buffer } from "buffer";
+import { Buffer } from 'buffer';
+import Hash from '../entity/hash';
 
 export default class Utils {
-
     public static stringToBytes(string: string): Uint8Array {
         return Uint8Array.from(Buffer.from(string));
     }
@@ -11,9 +11,9 @@ export default class Utils {
     }
 
     public static bytesToString(array: Uint8Array): string {
-        let string = ''
-        for (var i=0; i<array.byteLength; i++) {
-            string += String.fromCharCode(array[i])
+        let string = '';
+        for (let i = 0; i < array.byteLength; i++) {
+            string += String.fromCharCode(array[i]);
         }
         return string;
     }
@@ -22,4 +22,8 @@ export default class Utils {
         return Buffer.from(array).toString('hex');
     }
 
+    public static isHex(h: string): boolean {
+        const regexp = /^[0-9a-fA-F]+$/;
+        return regexp.test(h);
+    }
 }
