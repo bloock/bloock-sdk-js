@@ -5,6 +5,7 @@ import ApiService from './comms/api.service';
 import Utils from './utils/utils';
 import Proof from './entity/proof';
 import Message from './entity/message';
+import { Web3Service } from '.';
 
 export default class EnchainteClient {
     constructor(apiKey: string) {
@@ -28,9 +29,9 @@ export default class EnchainteClient {
         return ApiService.getProof(_hashes);
     }
 
-    public verify(proof: Proof | unknown): boolean {
+    public verify(proof: Proof | unknown): Promise<boolean> {
         if (!Proof.isValid(proof)) {
-            return false;
+            return Promise.resolve(false);
         }
 
         const _proof = proof as Proof;
@@ -38,7 +39,12 @@ export default class EnchainteClient {
         const parsedNodes = _proof.nodes.map(node => Utils.hexToBytes(node));
         const parsedDepth = Utils.hexToBytes(_proof.depth);
         const parsedBitmap = Utils.hexToBytes(_proof.bitmap);
-        return Verifier.verify(parsedLeaves, parsedNodes, parsedDepth, parsedBitmap);
+
+        const valid = Verifier.verify(parsedLeaves, parsedNodes, parsedDepth, parsedBitmap);
+        if (!valid) {
+            return Promise.resolve(false);
+        }
+        return Web3Service.validateRoot(_proof.root);
     }
 
     public async getMessages(hashes: Hash[] | unknown): Promise<Message[]> {

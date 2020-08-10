@@ -46,7 +46,7 @@ export default class ApiService {
 
             const data = res.data;
 
-            return new Proof(leaves, data.nodes, data.depth, data.bitmap);
+            return new Proof(leaves, data.nodes, data.depth, data.bitmap, data.root);
         } catch (error) {
             throw new Error('Proof could not be generated: ' + error);
         }

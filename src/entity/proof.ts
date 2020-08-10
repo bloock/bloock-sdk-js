@@ -5,12 +5,14 @@ export default class Proof {
     public nodes: string[];
     public depth: string;
     public bitmap: string;
+    public root: string;
 
-    constructor(leaves: Hash[], nodes: string[], depth: string, bitmap: string) {
+    constructor(leaves: Hash[], nodes: string[], depth: string, bitmap: string, root: string) {
         this.leaves = leaves;
         this.nodes = nodes;
         this.depth = depth;
         this.bitmap = bitmap;
+        this.root = root;
     }
 
     public static isValid(proof: unknown): boolean {
