@@ -1,4 +1,4 @@
-import Hash from '../src/entity/hash';
+import Hash from '../../src/entity/hash';
 
 /**
  * Dummy test

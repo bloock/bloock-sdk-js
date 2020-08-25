@@ -1,4 +1,4 @@
-import Deferred from '../src/utils/deferred';
+import Deferred from '../../src/utils/deferred';
 
 describe('Deferred Tests', () => {
     it('Initializes', () => {

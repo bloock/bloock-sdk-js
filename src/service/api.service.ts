@@ -1,8 +1,8 @@
 import axios from 'axios';
 import Hash from '../entity/hash';
-import { API_URL } from '../utils/constants';
 import Proof from '../entity/proof';
 import Message from '../entity/message';
+import ConfigService from './config.service';
 
 export default class ApiService {
     public static apiKey: string;
@@ -19,7 +19,11 @@ export default class ApiService {
         };
 
         try {
-            const res = await axios.post(`${API_URL}/write`, postmsg, options);
+            const res = await axios.post(
+                `${ConfigService.getConfig().HOST}${ConfigService.getConfig().WRITE_ENDPOINT}`,
+                postmsg,
+                options,
+            );
 
             const data = res.data;
 
@@ -42,7 +46,11 @@ export default class ApiService {
         };
 
         try {
-            const res = await axios.post(`${API_URL}/proof`, postmsg, options);
+            const res = await axios.post(
+                `${ConfigService.getConfig().HOST}${ConfigService.getConfig().PROOF_ENDPOINT}`,
+                postmsg,
+                options,
+            );
 
             const data = res.data;
 
@@ -64,7 +72,11 @@ export default class ApiService {
         };
 
         try {
-            const res = await axios.post(`${API_URL}/message/fetch`, body, options);
+            const res = await axios.post(
+                `${ConfigService.getConfig().HOST}${ConfigService.getConfig().FETCH_ENDPOINT}`,
+                body,
+                options,
+            );
             if (res && res.data) {
                 return res.data.map((item: any) => new Message(item));
             }

@@ -1,42 +1,41 @@
 import Hash from './entity/hash';
+import Proof from './entity/proof';
+import Utils from './utils/utils';
 
 export default class Verifier {
-    public static verify(leaves: Uint8Array[], nodes: Uint8Array[], depth: Uint8Array, bitmap: Uint8Array): boolean {
+    public static verify(proof: Proof): boolean {
+        const leaves = proof.leaves.map(leaf => leaf.getUint8ArrayHash());
+        const hashes = proof.nodes.map(node => Utils.hexToBytes(node));
+        const depth = Utils.hexToBytes(proof.depth);
+        const bitmap = Utils.hexToBytes(proof.bitmap);
+        const root = Utils.hexToBytes(proof.root);
+
         let it_leaves = 0;
-        let it_nodes = 0;
-        let it_bitmap = 0;
-        let curr_bit = 0;
+        let it_hashes = 0;
         const stack: [Uint8Array, number][] = [];
 
-        while (it_nodes < nodes.length - 1 || it_leaves < leaves.length) {
-            const is_leaf = (bitmap[it_bitmap] & (1 << (7 - (curr_bit % 8)))) > 0;
+        while (it_hashes < hashes.length || it_leaves < leaves.length) {
+            let act_depth = depth[it_hashes + it_leaves];
             let act_hash: Uint8Array;
-            if (is_leaf) {
-                act_hash = leaves[it_leaves];
-            } else {
-                act_hash = nodes[it_nodes];
-            }
-            let act_depth = depth[it_nodes + it_leaves];
 
+            if ((bitmap[Math.floor((it_hashes + it_leaves) / 8)] & (1 << (7 - ((it_hashes + it_leaves) % 8)))) > 0) {
+                act_hash = hashes[it_hashes];
+                it_hashes += 1;
+            } else {
+                act_hash = leaves[it_leaves];
+                it_leaves += 1;
+            }
             while (stack.length > 0 && stack[stack.length - 1][1] == act_depth) {
-                const last_hash = stack[stack.length - 1][0];
-                stack.pop();
-                act_hash = Verifier.merge(last_hash, act_hash);
+                const last_hash = stack.pop();
+                if (!last_hash) {
+                    return false;
+                }
+                act_hash = Verifier.merge(last_hash[0], act_hash);
                 act_depth -= 1;
             }
             stack.push([act_hash, act_depth]);
-
-            if (is_leaf) {
-                it_leaves += 1;
-            } else {
-                it_nodes += 1;
-            }
-            curr_bit = (curr_bit + 1) % 8;
-            if (curr_bit == 0) {
-                it_bitmap += 1;
-            }
         }
-        return Verifier.compare_keys(stack[0][0], nodes[it_nodes]);
+        return Verifier.compare_keys(stack[0][0], root);
     }
 
     private static merge(left: Uint8Array, right: Uint8Array): Uint8Array {

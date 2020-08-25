@@ -1,12 +1,18 @@
-import Hash from '../src/entity/hash';
-import Writer from '../src/writer';
+import Hash from '../../src/entity/hash';
+import Writer from '../../src/writer';
 import axios from 'axios';
+import ConfigService from '../../src/service/config.service';
+import configMock from '../mocks/config.mock';
 
 jest.mock('axios');
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.useFakeTimers();
+
+const mockConfigService = ConfigService;
+mockConfigService.getConfig = jest.fn();
+(mockConfigService.getConfig as jest.Mock).mockReturnValue(configMock);
 
 describe('Write Subscription Tests', () => {
     beforeAll(() => {
@@ -51,7 +57,7 @@ describe('Write Subscription Tests', () => {
         const promise = writerInstance.push(Hash.fromString('enchainte'));
 
         promise.catch(err => {
-            expect(err).toBe(false);
+            expect(err).toBeDefined();
             done();
         });
 
@@ -91,13 +97,13 @@ describe('Write Subscription Tests', () => {
         try {
             await promiseOne;
         } catch (err) {
-            expect(err).toBe(false);
+            expect(err).toBeDefined();
         }
 
         try {
             await promiseTwo;
         } catch (err) {
-            expect(err).toBe(false);
+            expect(err).toBeDefined();
         }
     });
 

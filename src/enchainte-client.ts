@@ -1,15 +1,29 @@
 import Hash from './entity/hash';
 import Writer from './writer';
 import Verifier from './verifier';
-import ApiService from './comms/api.service';
-import Utils from './utils/utils';
+import ApiService from './service/api.service';
 import Proof from './entity/proof';
 import Message from './entity/message';
 import { Web3Service } from '.';
+import ConfigService from './service/config.service';
 
 export default class EnchainteClient {
+    private configService: ConfigService;
+    private ready: Promise<any>;
+
     constructor(apiKey: string) {
         ApiService.apiKey = apiKey;
+        this.configService = new ConfigService();
+
+        this.ready = this.configService.onReady();
+    }
+
+    public onReady(): Promise<any> {
+        return this.ready;
+    }
+
+    public setTestEnvironment(isTest: boolean): void {
+        this.configService.setTestEnvironment(isTest);
     }
 
     public write(hash: Hash | unknown): Promise<boolean> {
@@ -34,17 +48,17 @@ export default class EnchainteClient {
             return Promise.resolve(false);
         }
 
-        const _proof = proof as Proof;
-        const parsedLeaves = _proof.leaves.map(leaf => leaf.getUint8ArrayHash());
-        const parsedNodes = _proof.nodes.map(node => Utils.hexToBytes(node));
-        const parsedDepth = Utils.hexToBytes(_proof.depth);
-        const parsedBitmap = Utils.hexToBytes(_proof.bitmap);
-
-        const valid = Verifier.verify(parsedLeaves, parsedNodes, parsedDepth, parsedBitmap);
-        if (!valid) {
+        try {
+            const _proof = proof as Proof;
+            const valid = Verifier.verify(_proof);
+            if (!valid) {
+                return Promise.resolve(false);
+            }
+            return Web3Service.validateRoot(_proof.root);
+        } catch (err) {
+            console.error(err);
             return Promise.resolve(false);
         }
-        return Web3Service.validateRoot(_proof.root);
     }
 
     public async getMessages(hashes: Hash[] | unknown): Promise<Message[]> {

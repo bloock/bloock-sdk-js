@@ -1,17 +1,23 @@
-import { EnchainteClient } from '../src';
-import Hash from '../src/entity/hash';
-import Writer from '../src/writer';
+import { EnchainteClient, Web3Service } from '../../src';
+import Hash from '../../src/entity/hash';
+import Writer from '../../src/writer';
 
 jest.mock('axios');
 import axios from 'axios';
-import Proof from '../src/entity/proof';
-import ApiService from '../src/comms/api.service';
-import Verifier from '../src/verifier';
-import Message from '../src/entity/message';
+import Proof from '../../src/entity/proof';
+import ApiService from '../../src/service/api.service';
+import Verifier from '../../src/verifier';
+import Message from '../../src/entity/message';
+import ConfigService from '../../src/service/config.service';
+import configMock from '../mocks/config.mock';
 
 const mockAPIKey = 'MockedAPIKeyOf64CharactersLong--MockedAPIKeyOf64CharactersLong';
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockConfigService = ConfigService;
+mockConfigService.getConfig = jest.fn();
+(mockConfigService.getConfig as jest.Mock).mockReturnValue(configMock);
 
 const subscription = Writer.getInstance();
 subscription.push = jest.fn();
@@ -93,9 +99,16 @@ describe('Enchainte SDK Tests', () => {
                 ],
                 depth: '02080c0d1012141413110f0e0b0a0907060504030100',
                 bitmap: '020000',
+                root: '5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434',
             };
 
-            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+            const mockProof = new Proof(
+                mockLeaves,
+                mockRawProof.nodes,
+                mockRawProof.depth,
+                mockRawProof.bitmap,
+                mockRawProof.root,
+            );
 
             const apiServiceMock = ApiService;
             apiServiceMock.getProof = jest.fn();
@@ -106,6 +119,7 @@ describe('Enchainte SDK Tests', () => {
                 expect(res.nodes).toBeDefined();
                 expect(res.depth).toBeDefined();
                 expect(res.bitmap).toBeDefined();
+                expect(res.root).toBeDefined();
                 done();
             });
         });
@@ -160,13 +174,24 @@ describe('Enchainte SDK Tests', () => {
                 ],
                 depth: '02080c0d1012141413110f0e0b0a0907060504030100',
                 bitmap: '020000',
+                root: '5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434',
             };
 
-            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+            const mockProof = new Proof(
+                mockLeaves,
+                mockRawProof.nodes,
+                mockRawProof.depth,
+                mockRawProof.bitmap,
+                mockRawProof.root,
+            );
 
             const verifierMock = Verifier;
             verifierMock.verify = jest.fn();
             (verifierMock.verify as jest.Mock).mockReturnValueOnce(true);
+
+            const web3ServiceMock = Web3Service;
+            web3ServiceMock.validateRoot = jest.fn();
+            (web3ServiceMock.validateRoot as jest.Mock).mockReturnValueOnce(true);
 
             const valid = await client.verify(mockProof);
             expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(1);
@@ -189,15 +214,26 @@ describe('Enchainte SDK Tests', () => {
                 ],
                 depth: '02080c0d1012141413110f0e0b0a0907060504030100',
                 bitmap: '020000',
+                root: '5cd53f8367e1892c4f25dc9b5ddf28c7a1a27f489336a9537a43555819e4f434',
             };
 
-            const mockProof = new Proof(mockLeaves, mockRawProof.nodes, mockRawProof.depth, mockRawProof.bitmap);
+            const mockProof = new Proof(
+                mockLeaves,
+                mockRawProof.nodes,
+                mockRawProof.depth,
+                mockRawProof.bitmap,
+                mockRawProof.root,
+            );
 
             const verifierMock = Verifier;
             verifierMock.verify = jest.fn();
             (verifierMock.verify as jest.Mock).mockReturnValueOnce(false);
 
-            const valid = client.verify(mockProof);
+            const web3ServiceMock = Web3Service;
+            web3ServiceMock.validateRoot = jest.fn();
+            (web3ServiceMock.validateRoot as jest.Mock).mockReturnValueOnce(true);
+
+            const valid = await client.verify(mockProof);
             expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(1);
             expect(valid).toBe(false);
         });
@@ -208,7 +244,7 @@ describe('Enchainte SDK Tests', () => {
             const verifierMock = Verifier;
             verifierMock.verify = jest.fn();
 
-            const valid = client.verify(null);
+            const valid = await client.verify(null);
             expect((verifierMock.verify as jest.Mock).mock.calls.length).toBe(0);
             expect(valid).toBe(false);
         });

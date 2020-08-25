@@ -1,4 +1,4 @@
-import Utils from '../src/utils/utils';
+import Utils from '../../src/utils/utils';
 
 describe('Utils Tests', () => {
     it('is hex - success', () => {

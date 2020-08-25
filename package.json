@@ -30,6 +30,7 @@
     "test:prod": "npm run lint && npm run test -- --no-cache"
   },
   "devDependencies": {
+    "@types/crypto-js": "^3.1.47",
     "@types/jest": "^23.3.14",
     "@types/node": "^10.11.0",
     "@typescript-eslint/eslint-plugin": "^3.6.1",
@@ -77,6 +78,7 @@
     "blake2b-wasm": "^2.1.0",
     "blakejs": "^1.1.0",
     "buffer": "^5.5.0",
+    "crypto-js": "^4.0.0",
     "web3": "^1.2.6"
   },
   "jest": {

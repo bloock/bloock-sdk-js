@@ -1,16 +1,23 @@
 import Hash from './entity/hash';
 import Deferred from './utils/deferred';
-import ApiService from './comms/api.service';
+import ApiService from './service/api.service';
+import Config from './entity/config';
+import ConfigService from './service/config.service';
 
 export default class Writer {
     private static instance: Writer;
+    public static config: Config;
 
     private tasks: Map<Hash, Deferred> = new Map();
 
     private constructor() {
+        this.setUp();
+    }
+
+    private setUp() {
         setInterval(async () => {
             await this.send();
-        }, 1000);
+        }, parseInt(ConfigService.getConfig().WRITE_INTERVAL));
     }
 
     public push(hash: Hash): Promise<boolean> {
