@@ -57,6 +57,7 @@ const { EnchainteClient, Hash } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
+await client.onReady();
 
 client.write(Hash.fromString('Example Data'))
     .then(success => {
@@ -78,6 +79,7 @@ const { EnchainteClient, Hash } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
+await client.onReady();
 
 const messages = [
     Hash.fromString('Example Data 1'),
@@ -105,6 +107,7 @@ const { EnchainteClient, Hash } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
+await client.onReady();
 
 const messages = [
     Hash.fromString('Example Data 1'),
@@ -112,11 +115,84 @@ const messages = [
     Hash.fromString('Example Data 3')
 ];
 
-client.getMessageStatus(messages)
+client.getMessages(messages)
     .then(status => {
         console.log(status);
     })
     .catch(error => {
         console.error(error);
     });
+```
+
+### Full example
+
+This snippet shows a complete data cycle including: write, message status polling and proof retrieval and validation.
+
+```javascript
+const { EnchainteClient, Hash } = require('@enchainte/sdk');
+
+// Helper function to wait some time
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Helper function to get a random hex string
+function randHex(len) {
+    const maxlen = 8;
+    const min = Math.pow(16, Math.min(len, maxlen) - 1);
+    const max = Math.pow(16, Math.min(len, maxlen)) - 1;
+    const n = Math.floor(Math.random() * (max - min + 1)) + min;
+    let r = n.toString(16);
+    while (r.length < len) {
+        r = r + randHex(len - maxlen);
+    }
+    return r;
+}
+
+async function main() {
+    const apiKey = process.env.API_KEY;
+
+    const client = new EnchainteClient(apiKey);
+    await client.onReady();
+
+    const hash = Hash.fromString(randHex(64));
+
+    // Writing message
+    const result = await client.write(hash);
+    console.log('Write message - Successful!');
+
+    if (!result) {
+        return;
+    }
+
+    let found = false;
+    while (!found) {
+        // Polling message status
+        const messages = await client.getMessages([hash]);
+        for (let i = 0; i < messages.length; ++i) {
+            if (messages[i].status === 'success') {
+                found = true;
+            }
+        }
+
+        await sleep(500);
+    }
+    console.log('Message reached Blockchain!');
+
+    // Retrieving message proof
+    const proof = await client.getProof([hash]);
+
+    let valid = false;
+    // Este 'while' es necesario a día de hoy ya que tiene que esperar a que la transacción se haya confirmado en Blockchain. En breve no será necesario.
+    while (!valid) {
+        // Validating message proof
+        valid = await client.verify(proof);
+        console.log(`Message validation - ${valid}`);
+        await sleep(500);
+    }
+}
+
+main()
+    .then(() => console.log('Finished!'))
+    .catch(console.error);
 ```

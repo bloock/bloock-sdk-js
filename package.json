@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "0.5.0",
+  "version": "0.5.3",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -11,10 +11,7 @@
   "author": "Marc Baqué <mbaque@enchainte.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/enchainte/enchainte-sdk-js"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "url": "https://github.com/enchainte/enchainte-sdk-js"
   },
   "license": "MIT",
   "engines": {
