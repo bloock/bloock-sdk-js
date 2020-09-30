@@ -1,4 +1,4 @@
-import Hash from '../../src/entity/hash';
+import Message from '../../src/entity/message';
 import Writer from '../../src/writer';
 import axios from 'axios';
 import ConfigService from '../../src/service/config.service';
@@ -39,7 +39,7 @@ describe('Write Subscription Tests', () => {
     it('should callback when sended successfuly', done => {
         const writerInstance = Writer.getInstance();
 
-        const promise = writerInstance.push(Hash.fromString('enchainte'));
+        const promise = writerInstance.push(Message.fromString('enchainte'));
 
         promise.then(res => {
             expect(res).toBe(true);
@@ -54,7 +54,7 @@ describe('Write Subscription Tests', () => {
     it('should callback when sended and failed', done => {
         const writerInstance = Writer.getInstance();
 
-        const promise = writerInstance.push(Hash.fromString('enchainte'));
+        const promise = writerInstance.push(Message.fromString('enchainte'));
 
         promise.catch(err => {
             expect(err).toBeDefined();
@@ -69,8 +69,8 @@ describe('Write Subscription Tests', () => {
     it('each pusher should recieve the callback if success', async () => {
         const writerInstance = Writer.getInstance();
 
-        const promiseOne = writerInstance.push(Hash.fromString('enchainte1'));
-        const promiseTwo = writerInstance.push(Hash.fromString('enchainte2'));
+        const promiseOne = writerInstance.push(Message.fromString('enchainte1'));
+        const promiseTwo = writerInstance.push(Message.fromString('enchainte2'));
 
         mockedAxios.post.mockResolvedValue({ data: { hash: 'hash' } } as any);
 
@@ -87,8 +87,8 @@ describe('Write Subscription Tests', () => {
         expect.assertions(2);
 
         const writerInstance = Writer.getInstance();
-        const promiseOne = writerInstance.push(Hash.fromString('enchainte1'));
-        const promiseTwo = writerInstance.push(Hash.fromString('enchainte2'));
+        const promiseOne = writerInstance.push(Message.fromString('enchainte1'));
+        const promiseTwo = writerInstance.push(Message.fromString('enchainte2'));
 
         mockedAxios.post.mockRejectedValueOnce({ data: { hash: 'hash' }, status: 400 } as any);
 
@@ -110,8 +110,8 @@ describe('Write Subscription Tests', () => {
     it('should call API once every second', async () => {
         const writerInstance = Writer.getInstance();
 
-        const hash1 = Hash.fromString('enchainte1');
-        const hash2 = Hash.fromString('enchainte2');
+        const hash1 = Message.fromString('enchainte1');
+        const hash2 = Message.fromString('enchainte2');
 
         writerInstance.push(hash1);
         writerInstance.push(hash2);

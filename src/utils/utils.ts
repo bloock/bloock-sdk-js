@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import Hash from '../entity/hash';
 
 export default class Utils {
     public static stringToBytes(string: string): Uint8Array {
@@ -25,5 +24,9 @@ export default class Utils {
     public static isHex(h: string): boolean {
         const regexp = /^[0-9a-fA-F]+$/;
         return regexp.test(h);
+    }
+
+    public static sleep(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }

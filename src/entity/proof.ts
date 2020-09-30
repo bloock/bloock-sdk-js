@@ -1,13 +1,13 @@
-import Hash from './hash';
+import Message from './message';
 
 export default class Proof {
-    public leaves: Hash[];
+    public leaves: Message[];
     public nodes: string[];
     public depth: string;
     public bitmap: string;
     public root: string;
 
-    constructor(leaves: Hash[], nodes: string[], depth: string, bitmap: string, root: string) {
+    constructor(leaves: Message[], nodes: string[], depth: string, bitmap: string, root: string) {
         this.leaves = leaves;
         this.nodes = nodes;
         this.depth = depth;

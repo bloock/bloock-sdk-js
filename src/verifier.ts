@@ -1,4 +1,4 @@
-import Hash from './entity/hash';
+import Message from './entity/message';
 import Proof from './entity/proof';
 import Utils from './utils/utils';
 
@@ -43,7 +43,7 @@ export default class Verifier {
         concat.set(left);
         concat.set(right, left.length);
 
-        return Hash.fromUint8Array(concat).getUint8ArrayHash();
+        return Message.fromUint8Array(concat).getUint8ArrayHash();
     }
 
     private static compare_keys(left: Uint8Array, right: Uint8Array): boolean {

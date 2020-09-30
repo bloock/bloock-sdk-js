@@ -1,15 +1,16 @@
-import Hash from './entity/hash';
+import Message from './entity/message';
 import Writer from './writer';
 import Verifier from './verifier';
 import ApiService from './service/api.service';
 import Proof from './entity/proof';
-import Message from './entity/message';
+import MessageReceipt from './entity/message-receipt';
 import { Web3Service } from '.';
 import ConfigService from './service/config.service';
+import Utils from './utils/utils';
 
 export default class EnchainteClient {
     private configService: ConfigService;
-    private ready: Promise<any>;
+    private ready: Promise<void>;
 
     constructor(apiKey: string) {
         ApiService.apiKey = apiKey;
@@ -18,7 +19,7 @@ export default class EnchainteClient {
         this.ready = this.configService.onReady();
     }
 
-    public onReady(): Promise<any> {
+    public onReady(): Promise<void> {
         return this.ready;
     }
 
@@ -26,24 +27,56 @@ export default class EnchainteClient {
         this.configService.setTestEnvironment(isTest);
     }
 
-    public write(hash: Hash | unknown): Promise<boolean> {
-        if (!Hash.isValid(hash)) {
-            return Promise.reject('Invalid hash');
+    public sendMessage(message: Message | unknown): Promise<boolean> {
+        if (!Message.isValid(message)) {
+            return Promise.reject('Invalid message');
         }
         const subscription = Writer.getInstance();
-        return subscription.push(hash as Hash);
+        return subscription.push(message as Message);
     }
 
-    public async getProof(hashes: Hash[] | unknown): Promise<Proof> {
-        if (!hashes || !Array.isArray(hashes) || !hashes.every(hash => hash instanceof Hash)) {
-            return Promise.reject('Invalid hash');
+    public async getMessages(messages: Message[] | unknown): Promise<MessageReceipt[]> {
+        if (!messages || !Array.isArray(messages) || !messages.every(message => message instanceof Message)) {
+            return Promise.reject('Invalid message');
+        }
+        return ApiService.getMessages(messages as Message[]);
+    }
+
+    public async waitMessageReceipts(messages: Message[] | unknown): Promise<MessageReceipt[]> {
+        if (!messages || !Array.isArray(messages) || !messages.every(message => message instanceof Message)) {
+            return Promise.reject('Invalid message');
         }
 
-        const _hashes = Hash.sort(hashes as Hash[]);
-        return ApiService.getProof(_hashes);
+        let completed = false;
+        let attempts = 0;
+        let messageReceipts: MessageReceipt[];
+
+        do {
+            messageReceipts = await this.getMessages(messages);
+            completed = messageReceipts.every(receipt => receipt.status === 'success' || receipt.status === 'error');
+
+            if (completed) break;
+
+            await Utils.sleep(
+                ConfigService.getConfig().WAIT_MESSAGE_INTERVAL_DEFAULT +
+                    attempts * ConfigService.getConfig().WAIT_MESSAGE_INTERVAL_FACTOR,
+            );
+            attempts += 1;
+        } while (!completed);
+
+        return Promise.resolve(messageReceipts);
     }
 
-    public verify(proof: Proof | unknown): Promise<boolean> {
+    public async getProof(messages: Message[] | unknown): Promise<Proof> {
+        if (!messages || !Array.isArray(messages) || !messages.every(message => message instanceof Message)) {
+            return Promise.reject('Invalid message');
+        }
+
+        const _messages = Message.sort(messages as Message[]);
+        return ApiService.getProof(_messages);
+    }
+
+    public async verifyProof(proof: Proof | unknown): Promise<boolean> {
         if (!Proof.isValid(proof)) {
             return Promise.resolve(false);
         }
@@ -54,17 +87,15 @@ export default class EnchainteClient {
             if (!valid) {
                 return Promise.resolve(false);
             }
-            return Web3Service.validateRoot(_proof.root);
+            return await Web3Service.validateRoot(_proof.root);
         } catch (err) {
             console.error(err);
             return Promise.resolve(false);
         }
     }
 
-    public async getMessages(hashes: Hash[] | unknown): Promise<Message[]> {
-        if (!hashes || !Array.isArray(hashes) || !hashes.every(hash => hash instanceof Hash)) {
-            return Promise.reject('Invalid hash');
-        }
-        return ApiService.getMessages(hashes as Hash[]);
+    public async verifyMessages(messages: Message[] | unknown): Promise<boolean> {
+        const proof = await this.getProof(messages);
+        return await this.verifyProof(proof);
     }
 }

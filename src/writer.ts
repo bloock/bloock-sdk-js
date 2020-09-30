@@ -1,4 +1,4 @@
-import Hash from './entity/hash';
+import Message from './entity/message';
 import Deferred from './utils/deferred';
 import ApiService from './service/api.service';
 import Config from './entity/config';
@@ -8,7 +8,7 @@ export default class Writer {
     private static instance: Writer;
     public static config: Config;
 
-    private tasks: Map<Hash, Deferred> = new Map();
+    private tasks: Map<Message, Deferred> = new Map();
 
     private constructor() {
         this.setUp();
@@ -17,13 +17,13 @@ export default class Writer {
     private setUp() {
         setInterval(async () => {
             await this.send();
-        }, parseInt(ConfigService.getConfig().WRITE_INTERVAL));
+        }, ConfigService.getConfig().WRITE_INTERVAL);
     }
 
-    public push(hash: Hash): Promise<boolean> {
+    public push(message: Message): Promise<boolean> {
         const deferred = new Deferred();
 
-        this.tasks.set(hash, deferred);
+        this.tasks.set(message, deferred);
 
         return deferred.getPromise();
     }
@@ -33,18 +33,12 @@ export default class Writer {
             return;
         }
 
-        const currentTasks = new Map<Hash, Deferred>(this.tasks);
+        const currentTasks = new Map<Message, Deferred>(this.tasks);
 
         this.tasks.clear();
 
-        const dataToSend: string[] = [];
-
-        currentTasks.forEach((_deferred: Deferred, hash: Hash) => {
-            dataToSend.push(hash.getHash());
-        });
-
         try {
-            await ApiService.write(dataToSend);
+            await ApiService.write(Array.from(currentTasks.keys()));
 
             currentTasks.forEach((deferred: Deferred) => {
                 deferred.resolve(true);

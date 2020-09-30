@@ -6,8 +6,10 @@ export default class Config {
     public CONTRACT_ADDRESS = '';
     public CONTRACT_ABI = '';
     public PROVIDER = '';
-    public WRITE_INTERVAL = '1000';
-    public CONFIG_INTERVAL = '10000';
+    public WRITE_INTERVAL = 1000;
+    public CONFIG_INTERVAL = 10000;
+    public WAIT_MESSAGE_INTERVAL_FACTOR = 2;
+    public WAIT_MESSAGE_INTERVAL_DEFAULT = 1000;
 
     public constructor(config?: {
         HOST: string;
@@ -19,6 +21,8 @@ export default class Config {
         PROVIDER: string;
         WRITE_INTERVAL: string;
         CONFIG_INTERVAL: string;
+        WAIT_MESSAGE_INTERVAL_FACTOR: string;
+        WAIT_MESSAGE_INTERVAL_DEFAULT: string;
     }) {
         if (config) {
             this.HOST = config.HOST;
@@ -28,8 +32,10 @@ export default class Config {
             this.CONTRACT_ADDRESS = config.CONTRACT_ADDRESS;
             this.CONTRACT_ABI = config.CONTRACT_ABI;
             this.PROVIDER = config.PROVIDER;
-            this.WRITE_INTERVAL = config.WRITE_INTERVAL;
-            this.CONFIG_INTERVAL = config.CONFIG_INTERVAL;
+            this.WRITE_INTERVAL = parseInt(config.WRITE_INTERVAL);
+            this.CONFIG_INTERVAL = parseInt(config.CONFIG_INTERVAL);
+            this.WAIT_MESSAGE_INTERVAL_FACTOR = parseInt(config.WAIT_MESSAGE_INTERVAL_FACTOR);
+            this.WAIT_MESSAGE_INTERVAL_DEFAULT = parseInt(config.WAIT_MESSAGE_INTERVAL_DEFAULT);
         }
     }
 }

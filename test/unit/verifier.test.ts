@@ -1,11 +1,11 @@
 /* eslint-disable array-element-newline */
 import Verifier from '../../src/verifier';
 import Proof from '../../src/entity/proof';
-import Hash from '../../src/entity/hash';
+import Message from '../../src/entity/message';
 
 describe('Verifier Tests', () => {
     it('verifies proof 1', async () => {
-        const leaves = [Hash.fromHash('72aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9')];
+        const leaves = [Message.fromHash('72aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9')];
         const nodes = [
             '359b5206452a4ca5058129727fb48f0860a36c0afee0ec62baa874927e9d4b99',
             '707cb86e449cd3990c85fb3ae9ec967ee12b82f21eae9e6ea35180e6c331c3e8',
@@ -22,8 +22,8 @@ describe('Verifier Tests', () => {
 
     it('verifies proof 2', async () => {
         const leaves = [
-            Hash.fromHash('82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
-            Hash.fromHash('92aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
+            Message.fromHash('82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
+            Message.fromHash('92aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
         ];
         const nodes = [
             '285f570a90100fb94d5608b25d9e2b74bb58f068d495190f469aac5ef7ecf3c5',
@@ -38,8 +38,8 @@ describe('Verifier Tests', () => {
 
     it('verifies proof 3', async () => {
         const leaves = [
-            Hash.fromHash('82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
-            Hash.fromHash('92aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
+            Message.fromHash('82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
+            Message.fromHash('92aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'),
         ];
         const nodes = [
             '285f570a90110fb94d5608b25d9e2b74bb58f068d495190f469aac5ef7ecf3c5',
@@ -53,7 +53,7 @@ describe('Verifier Tests', () => {
     });
 
     it('verifies proof 4', async () => {
-        const leaves = [Hash.fromHash('72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9')];
+        const leaves = [Message.fromHash('72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9')];
         const nodes: string[] = [];
         const depth = '00';
         const bitmap = '00';

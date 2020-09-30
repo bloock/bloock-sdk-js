@@ -27,39 +27,39 @@ In order to interact with the SDK, the data should be processed through the Hash
 There are several ways to generate a Hash:
 
 ```javascript
-const { Hash } = require('@enchainte/sdk');
+const { Message } = require('@enchainte/sdk');
 
 // From an object
-Hash.from({
+Message.from({
     data: 'Example Data'
 })
 
 // From a hash string (hex encoded 64-chars long string)
-Hash.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
+Message.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
 
 // From a hex encoded string
-Hash.fromHex('123456789abcdef')
+Message.fromHex('123456789abcdef')
 
 // From a string
-Hash.fromString('Example Data')
+Message.fromString('Example Data')
 
 // From a Uint8Array with a lenght of 32
-Hash.fromUint8Array(new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
+Message.fromUint8Array(new Uint8Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]))
 ```
 
-### Write messages
+### Send messages
 
 This example shows how to send data to Enchainté
 
 ```javascript
-const { EnchainteClient, Hash } = require('@enchainte/sdk');
+const { EnchainteClient, Message } = require('@enchainte/sdk');
 
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
 await client.onReady();
 
-client.write(Hash.fromString('Example Data'))
+client.sendMessage(Message.fromString('Example Data'))
     .then(success => {
         console.log(success);
     })
@@ -68,13 +68,12 @@ client.write(Hash.fromString('Example Data'))
     });
 ```
 
+### Get messages status
 
-### Get and validate messages proof
-
-This example shows how to get a proof for an array of messages and validate it:
+This example shows how to get all the details and status of messages:
 
 ```javascript
-const { EnchainteClient, Hash } = require('@enchainte/sdk');
+const { EnchainteClient, Message } = require('@enchainte/sdk');
 
 const apiKey = process.env.API_KEY;
 
@@ -82,9 +81,56 @@ const client = new EnchainteClient(apiKey);
 await client.onReady();
 
 const messages = [
-    Hash.fromString('Example Data 1'),
-    Hash.fromString('Example Data 2'),
-    Hash.fromString('Example Data 3')
+    Message.fromString('Example Data 1'),
+    Message.fromString('Example Data 2'),
+    Message.fromString('Example Data 3')
+];
+
+client.getMessages(messages)
+    .then(status => {
+        console.log(status);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+```
+
+### Wait for message receipts
+
+This example shows how to wait for a message to be processed by Enchainté after sending it.
+
+```javascript
+const { EnchainteClient, Message } = require('@enchainte/sdk');
+
+const apiKey = process.env.API_KEY;
+
+const client = new EnchainteClient(apiKey);
+await client.onReady();
+
+const message = Message.fromString('Example Data 1');
+
+await client.sendMessage(message)
+
+await client.waitMessageReceipts(message)
+```
+
+
+### Get and validate messages proof
+
+This example shows how to get a proof for an array of messages and validate it:
+
+```javascript
+const { EnchainteClient, Message } = require('@enchainte/sdk');
+
+const apiKey = process.env.API_KEY;
+
+const client = new EnchainteClient(apiKey);
+await client.onReady();
+
+const messages = [
+    Message.fromString('Example Data 1'),
+    Message.fromString('Example Data 2'),
+    Message.fromString('Example Data 3')
 ];
 
 client.getProof(messages)
@@ -97,39 +143,12 @@ client.getProof(messages)
     });
 ```
 
-### Get messages status
-
-This example shows how to get all the details and status of messages:
-
-```javascript
-const { EnchainteClient, Hash } = require('@enchainte/sdk');
-
-const apiKey = process.env.API_KEY;
-
-const client = new EnchainteClient(apiKey);
-await client.onReady();
-
-const messages = [
-    Hash.fromString('Example Data 1'),
-    Hash.fromString('Example Data 2'),
-    Hash.fromString('Example Data 3')
-];
-
-client.getMessages(messages)
-    .then(status => {
-        console.log(status);
-    })
-    .catch(error => {
-        console.error(error);
-    });
-```
-
 ### Full example
 
 This snippet shows a complete data cycle including: write, message status polling and proof retrieval and validation.
 
 ```javascript
-const { EnchainteClient, Hash } = require('@enchainte/sdk');
+const { EnchainteClient, Message } = require('@enchainte/sdk');
 
 // Helper function to wait some time
 function sleep(ms) {
@@ -155,28 +174,17 @@ async function main() {
     const client = new EnchainteClient(apiKey);
     await client.onReady();
 
-    const hash = Hash.fromString(randHex(64));
+    const hash = Message.fromString(randHex(64));
 
     // Writing message
-    const result = await client.write(hash);
+    const result = await client.sendMessage(hash);
     console.log('Write message - Successful!');
 
     if (!result) {
         return;
     }
 
-    let found = false;
-    while (!found) {
-        // Polling message status
-        const messages = await client.getMessages([hash]);
-        for (let i = 0; i < messages.length; ++i) {
-            if (messages[i].status === 'success') {
-                found = true;
-            }
-        }
-
-        await sleep(500);
-    }
+    await sdk.waitMessageReceipts([message]);
     console.log('Message reached Blockchain!');
 
     // Retrieving message proof

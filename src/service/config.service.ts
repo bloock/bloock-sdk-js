@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import Config from '../entity/config';
 
 export default class ConfigService {
-    private ready: Promise<string>;
+    private ready: Promise<void>;
 
     private static config: Config;
     private ENVIRONMENT: 'PROD' | 'TEST' = 'PROD';
@@ -27,7 +27,7 @@ export default class ConfigService {
         });
     }
 
-    public onReady(): Promise<string> {
+    public onReady(): Promise<void> {
         return this.ready;
     }
 
@@ -60,11 +60,13 @@ export default class ConfigService {
                     PROVIDER: this.getConfigKey(response, 'SDK_PROVIDER'),
                     WRITE_INTERVAL: this.getConfigKey(response, 'SDK_WRITE_INTERVAL'),
                     CONFIG_INTERVAL: this.getConfigKey(response, 'SDK_CONFIG_INTERVAL'),
+                    WAIT_MESSAGE_INTERVAL_FACTOR: this.getConfigKey(response, 'SDK_WAIT_MESSAGE_INTERVAL_FACTOR'),
+                    WAIT_MESSAGE_INTERVAL_DEFAULT: this.getConfigKey(response, 'SDK_WAIT_MESSAGE_INTERVAL_DEFAULT'),
                 });
 
                 setTimeout(() => {
                     this.fetchConfig();
-                }, parseInt(ConfigService.config.CONFIG_INTERVAL));
+                }, ConfigService.config.CONFIG_INTERVAL);
             } else {
                 throw 'Bad config response';
             }
