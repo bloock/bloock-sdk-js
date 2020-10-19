@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import Config from '../entity/config';
 
 export default class ConfigService {
-    private ready: Promise<void>;
+    private ready!: Promise<void>;
 
     private static config: Config;
     private ENVIRONMENT: 'PROD' | 'TEST' = 'PROD';
@@ -13,6 +13,25 @@ export default class ConfigService {
     private SECRET = '1UA2dijC0SIVyrPKUKG0gT0oXxkVaMrUfJuXkLr+i0c=';
 
     public constructor() {
+        this.startFetch();
+    }
+
+    public onReady(): Promise<void> {
+        return this.ready;
+    }
+
+    public setTestEnvironment(isTest: boolean): void {
+        if (isTest) this.ENVIRONMENT = 'TEST';
+        else this.ENVIRONMENT = 'PROD';
+
+        this.startFetch();
+    }
+
+    public static getConfig(): Config {
+        return ConfigService.config;
+    }
+
+    private startFetch() {
         this.ready = new Promise(async (resolve, reject) => {
             try {
                 await this.fetchConfig();
@@ -25,19 +44,6 @@ export default class ConfigService {
                 reject('Could not fetch configuration');
             }
         });
-    }
-
-    public onReady(): Promise<void> {
-        return this.ready;
-    }
-
-    public setTestEnvironment(isTest: boolean): void {
-        if (isTest) this.ENVIRONMENT = 'TEST';
-        else this.ENVIRONMENT = 'PROD';
-    }
-
-    public static getConfig(): Config {
-        return ConfigService.config;
     }
 
     private async fetchConfig() {
@@ -58,6 +64,7 @@ export default class ConfigService {
                     CONTRACT_ADDRESS: this.getConfigKey(response, 'SDK_CONTRACT_ADDRESS'),
                     CONTRACT_ABI: this.getConfigKey(response, 'SDK_CONTRACT_ABI'),
                     PROVIDER: this.getConfigKey(response, 'SDK_PROVIDER'),
+                    HTTP_PROVIDER: this.getConfigKey(response, 'SDK_HTTP_PROVIDER'),
                     WRITE_INTERVAL: this.getConfigKey(response, 'SDK_WRITE_INTERVAL'),
                     CONFIG_INTERVAL: this.getConfigKey(response, 'SDK_CONFIG_INTERVAL'),
                     WAIT_MESSAGE_INTERVAL_FACTOR: this.getConfigKey(response, 'SDK_WAIT_MESSAGE_INTERVAL_FACTOR'),
