@@ -17,7 +17,7 @@ describe('Verifier Tests', () => {
         const bitmap = 'f4';
         const root = '6608fd2c5d9c28124b41d6e441d552ad811a51fc6fdae0f33aa64bf3f43ca699';
 
-        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root))).toBe(true);
+        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root)).getHash()).toBe(root);
     });
 
     it('verifies proof 2', async () => {
@@ -33,7 +33,7 @@ describe('Verifier Tests', () => {
         const bitmap = 'a0';
         const root = '264248bf767509da977f61d42d5723511b7af2781613b9119edcebb25a226976';
 
-        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root))).toBe(true);
+        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root)).getHash()).toBe(root);
     });
 
     it('verifies proof 3', async () => {
@@ -49,7 +49,7 @@ describe('Verifier Tests', () => {
         const bitmap = 'f0';
         const root = '264248bf767509da977f61d42d5723511b7af2781613b9119edcebb25a226976';
 
-        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root))).toBe(false);
+        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root)).getHash()).not.toBe(root);
     });
 
     it('verifies proof 4', async () => {
@@ -59,6 +59,6 @@ describe('Verifier Tests', () => {
         const bitmap = '00';
         const root = '72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9';
 
-        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root))).toBe(true);
+        expect(Verifier.verify(new Proof(leaves, nodes, depth, bitmap, root)).getHash()).toBe(root);
     });
 });

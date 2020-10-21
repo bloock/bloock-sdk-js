@@ -3,12 +3,11 @@ import Proof from './entity/proof';
 import Utils from './utils/utils';
 
 export default class Verifier {
-    public static verify(proof: Proof): boolean {
+    public static verify(proof: Proof): Message {
         const leaves = proof.leaves.map(leaf => leaf.getUint8ArrayHash());
         const hashes = proof.nodes.map(node => Utils.hexToBytes(node));
         const depth = Utils.hexToBytes(proof.depth);
         const bitmap = Utils.hexToBytes(proof.bitmap);
-        const root = Utils.hexToBytes(proof.root);
 
         let it_leaves = 0;
         let it_hashes = 0;
@@ -28,14 +27,14 @@ export default class Verifier {
             while (stack.length > 0 && stack[stack.length - 1][1] == act_depth) {
                 const last_hash = stack.pop();
                 if (!last_hash) {
-                    return false;
+                    throw new Error("Verify: Stack got empty before capturing its value.");
                 }
                 act_hash = Verifier.merge(last_hash[0], act_hash);
                 act_depth -= 1;
             }
             stack.push([act_hash, act_depth]);
         }
-        return Verifier.compare_keys(stack[0][0], root);
+        return Message.fromHash(Utils.bytesToHex(stack[0][0]));
     }
 
     private static merge(left: Uint8Array, right: Uint8Array): Uint8Array {

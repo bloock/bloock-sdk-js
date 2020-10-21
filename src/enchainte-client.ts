@@ -83,11 +83,8 @@ export default class EnchainteClient {
 
         try {
             const _proof = proof as Proof;
-            const valid = Verifier.verify(_proof);
-            if (!valid) {
-                return Promise.resolve(false);
-            }
-            return await Web3Service.validateRoot(_proof.root);
+            const root = Verifier.verify(_proof);
+            return await Web3Service.validateRoot(root.getHash());
         } catch (err) {
             console.error(err);
             return Promise.resolve(false);
