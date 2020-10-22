@@ -27,7 +27,7 @@ export default class Verifier {
             while (stack.length > 0 && stack[stack.length - 1][1] == act_depth) {
                 const last_hash = stack.pop();
                 if (!last_hash) {
-                    throw new Error("Verify: Stack got empty before capturing its value.");
+                    throw new Error('Verify: Stack got empty before capturing its value.');
                 }
                 act_hash = Verifier.merge(last_hash[0], act_hash);
                 act_depth -= 1;
@@ -43,15 +43,5 @@ export default class Verifier {
         concat.set(right, left.length);
 
         return Message.fromUint8Array(concat).getUint8ArrayHash();
-    }
-
-    private static compare_keys(left: Uint8Array, right: Uint8Array): boolean {
-        let result = true;
-        left.forEach((value: number, index: number) => {
-            if (value !== right[index]) {
-                result = false;
-            }
-        });
-        return result;
     }
 }
