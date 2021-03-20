@@ -1,5 +1,7 @@
-import EnchainteClient from './enchainte-client';
-import Message from './entity/message';
-import Web3Service from './service/web3.service';
+import "reflect-metadata";
 
-export { EnchainteClient, Message, Web3Service };
+import { EnchainteClient } from './enchainte-client';
+import { MessageReceipt } from "./message/entity/message-receipt.entity";
+import { Message } from "./message/entity/message.entity";
+
+export { EnchainteClient, Message, MessageReceipt }
