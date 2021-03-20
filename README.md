@@ -57,11 +57,13 @@ const { EnchainteClient, Message } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
-await client.onReady();
 
-client.sendMessage(Message.fromString('Example Data'))
-    .then(success => {
-        console.log(success);
+const messages = [
+    Message.fromString('Example Data 1')
+];
+client.sendMessages(messages)
+    .then(receipt => {
+        console.log(receipt);
     })
     .catch(error => {
         console.error(error);
@@ -78,24 +80,22 @@ const { EnchainteClient, Message } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
-await client.onReady();
 
 const messages = [
     Message.fromString('Example Data 1'),
     Message.fromString('Example Data 2'),
     Message.fromString('Example Data 3')
 ];
-
 client.getMessages(messages)
-    .then(status => {
-        console.log(status);
+    .then(receipts => {
+        console.log(receipts);
     })
     .catch(error => {
         console.error(error);
     });
 ```
 
-### Wait for message receipts
+### Wait for messages to process
 
 This example shows how to wait for a message to be processed by Enchainté after sending it.
 
@@ -105,13 +105,14 @@ const { EnchainteClient, Message } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
-await client.onReady();
 
-const message = Message.fromString('Example Data 1');
+const messages = [
+    Message.fromString('Example Data 1')
+];
 
-await client.sendMessage(message)
+const receipts = await client.sendMessages(messages)
 
-await client.waitMessageReceipts(message)
+await client.waitAnchor(receipts[0].anchor)
 ```
 
 
@@ -125,7 +126,6 @@ const { EnchainteClient, Message } = require('@enchainte/sdk');
 const apiKey = process.env.API_KEY;
 
 const client = new EnchainteClient(apiKey);
-await client.onReady();
 
 const messages = [
     Message.fromString('Example Data 1'),
@@ -135,7 +135,7 @@ const messages = [
 
 client.getProof(messages)
     .then(proof => {
-        let valid = client.verify(proof);
+        let valid = client.verifyProof(proof);
         console.log(valid);
     })
     .catch(error => {
@@ -170,34 +170,25 @@ function randHex(len) {
 
 async function main() {
     const apiKey = process.env.API_KEY;
+    const sdk = new EnchainteClient(apiKey);
 
-    const client = new EnchainteClient(apiKey);
-    await client.onReady();
+    const messages = [Message.fromString(randHex(64))];
 
-    const hash = Message.fromString(randHex(64));
-
-    // Writing message
-    const result = await client.sendMessage(hash);
+    const sendReceipt = await sdk.sendMessages(messages);
     console.log('Write message - Successful!');
 
-    if (!result) {
+    if (!sendReceipt) {
+        expect(false)
         return;
     }
 
-    await sdk.waitMessageReceipts([message]);
+    await sdk.waitAnchor(sendReceipt[0].anchor);
     console.log('Message reached Blockchain!');
 
     // Retrieving message proof
-    const proof = await client.getProof([hash]);
-
-    let valid = false;
-    // Este 'while' es necesario a día de hoy ya que tiene que esperar a que la transacción se haya confirmado en Blockchain. En breve no será necesario.
-    while (!valid) {
-        // Validating message proof
-        valid = await client.verify(proof);
-        console.log(`Message validation - ${valid}`);
-        await sleep(500);
-    }
+    const proof = await sdk.getProof(messages);
+    const valid = await sdk.verifyProof(proof);
+    console.log(`Message validation - ${valid}`);
 }
 
 main()

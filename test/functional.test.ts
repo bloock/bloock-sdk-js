@@ -11,7 +11,7 @@ describe('Functional Tests', () => {
             Message.fromString("Example Data")
         ];
 
-        const sendReceipt = await sdk.sendMessage(messages);
+        const sendReceipt = await sdk.sendMessages(messages);
 
         if (!sendReceipt) {
             expect(false)
@@ -33,7 +33,7 @@ describe('Functional Tests', () => {
             Message.fromString("Example Data 3")
         ];
 
-        const sendReceipt = await sdk.sendMessage(messages);
+        const sendReceipt = await sdk.sendMessages(messages);
 
         if (!sendReceipt) {
             expect(false)
@@ -56,7 +56,7 @@ describe('Functional Tests', () => {
             Message.fromString("Example Data 3")
         ];
 
-        const sendReceipt = await sdk.sendMessage(messages);
+        const sendReceipt = await sdk.sendMessages(messages);
 
         if (!sendReceipt) {
             expect(false)

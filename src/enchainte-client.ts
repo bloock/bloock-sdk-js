@@ -34,7 +34,7 @@ export class EnchainteClient {
         this.configService.setupEnvironment(environment);
     }
 
-    public async sendMessage(messages: Message[]): Promise<MessageReceipt[]> {
+    public async sendMessages(messages: Message[]): Promise<MessageReceipt[]> {
         return this.messageService.sendMessages(messages);
     }
 

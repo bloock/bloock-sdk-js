@@ -23,7 +23,7 @@ describe('End to End Tests', () => {
             Message.fromString(randHex(64))
         ];
 
-        const sendReceipt = await sdk.sendMessage(messages);
+        const sendReceipt = await sdk.sendMessages(messages);
 
         if (!sendReceipt) {
             expect(false)
