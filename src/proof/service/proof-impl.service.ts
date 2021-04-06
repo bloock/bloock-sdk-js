@@ -18,25 +18,25 @@ export class ProofServiceImpl implements ProofService {
         return this.proofRepository.retrieveProof(sorted);
     }
 
-    async verifyMessages(messages: Message[]): Promise<boolean> {
+    async verifyMessages(messages: Message[]): Promise<number> {
         let proof = await this.retrieveProof(messages);
         if (proof == null) {
-            return false;
+            return Promise.reject("Couldn't get proof for specified messages");
         }
 
         return this.verifyProof(proof);
     }
 
-    async verifyProof(proof: Proof): Promise<boolean> {
+    async verifyProof(proof: Proof): Promise<number> {
         try {
             let root = this.proofRepository.verifyProof(proof);
             if (root == null) {
-                return false;
+                return Promise.reject("The provided proof is invalid");
             }
 
             return this.proofRepository.validateRoot(root);
         } catch (error) {
-            return false;
+            return Promise.reject(error);
         }
     }
 }

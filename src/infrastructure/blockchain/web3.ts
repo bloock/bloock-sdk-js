@@ -15,7 +15,7 @@ export class Web3Client implements BlockchainClient {
         this.configService = configService;
     }
 
-    validateRoot(root: string): Promise<boolean> {
+    validateRoot(root: string): Promise<number> {
         const web3 = new Web3(new Web3.providers.HttpProvider(this.configService.getConfiguration().HTTP_PROVIDER));
         const contract = new web3.eth.Contract(
             JSON.parse(this.configService.getConfiguration().CONTRACT_ABI),

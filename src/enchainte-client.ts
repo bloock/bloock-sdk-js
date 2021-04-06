@@ -54,11 +54,11 @@ export class EnchainteClient {
         return this.proofService.retrieveProof(messages);
     }
 
-    public async verifyProof(proof: Proof): Promise<boolean> {
+    public async verifyProof(proof: Proof): Promise<number> {
         return this.proofService.verifyProof(proof)
     }
 
-    public async verifyMessages(messages: Message[]): Promise<boolean> {
+    public async verifyMessages(messages: Message[]): Promise<number> {
         return this.proofService.verifyMessages(messages);
     }
 }
