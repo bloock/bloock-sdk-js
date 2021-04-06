@@ -22,6 +22,6 @@ export class Web3Client implements BlockchainClient {
             this.configService.getConfiguration().CONTRACT_ADDRESS,
         );
 
-        return contract.methods.getCheckpoint(`0x${root}`).call();
+        return contract.methods.getState(`0x${root}`).call();
     }
 }
