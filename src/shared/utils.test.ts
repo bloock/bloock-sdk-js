@@ -12,4 +12,18 @@ describe('Utils Tests', () => {
 
         expect(Utils.isHex(hex)).toBe(false);
     });
+
+    it('Check JSON normalized', () => {
+        const data = {
+            id: 1,
+            name: "Test"
+        }
+
+        const invertedData = {
+            name: "Test",
+            id: 1
+        }
+
+        expect(Utils.stringify(data)).toEqual(Utils.stringify(invertedData));
+    });
 });

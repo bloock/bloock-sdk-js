@@ -1,7 +1,12 @@
 import { Buffer } from 'buffer';
+import stringify from 'json-stable-stringify';
 import { Message } from '../message/entity/message.entity';
 
 export class Utils {
+    public static stringify(data: any): string {
+        return stringify(data);
+    }
+
     public static stringToBytes(string: string): Uint8Array {
         return Uint8Array.from(Buffer.from(string));
     }

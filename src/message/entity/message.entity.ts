@@ -12,7 +12,7 @@ export class Message {
     }
 
     static from(data: unknown): Message {
-        return Message.fromString(JSON.stringify(data));
+        return Message.fromString(Utils.stringify(data));
     }
 
     static fromHash(hash: string): Message {
