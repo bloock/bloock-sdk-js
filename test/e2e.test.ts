@@ -33,6 +33,6 @@ describe('End to End Tests', () => {
         await sdk.waitAnchor(sendReceipt[0].anchor);
 
         const proof = await sdk.getProof(messages);
-        expect(await sdk.verifyProof(proof)).toBe(true)
+        expect(await sdk.verifyProof(proof)).toBeGreaterThan(0)
     });
 });

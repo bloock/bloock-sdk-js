@@ -1,3 +1,3 @@
 export interface BlockchainClient {
-    validateRoot(root: string): Promise<boolean>;
+    validateRoot(root: string): Promise<number>;
 }

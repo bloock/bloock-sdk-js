@@ -58,7 +58,7 @@ export class ProofRepositoryImpl implements ProofRepository {
         return Message.fromHash(Utils.bytesToHex(stack[0][0]));
     }
 
-    validateRoot(root: Message): Promise<boolean> {
+    validateRoot(root: Message): Promise<number> {
         return this.blockchainClient.validateRoot(root.getHash());
     }
 }
