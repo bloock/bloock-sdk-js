@@ -19,12 +19,9 @@ describe('End to End Tests', () => {
         const apiKey = process.env["API_KEY"] || "";
         const sdk = new EnchainteClient(apiKey);
 
-        const messages = [
-            Message.fromString(randHex(64))
-        ];
+        const messages = [Message.fromString(randHex(64))];
 
         const sendReceipt = await sdk.sendMessages(messages);
-
         if (!sendReceipt) {
             expect(false)
             return;
@@ -32,7 +29,9 @@ describe('End to End Tests', () => {
 
         await sdk.waitAnchor(sendReceipt[0].anchor);
 
+        // Retrieving message proof
         const proof = await sdk.getProof(messages);
-        expect(await sdk.verifyProof(proof)).toBeGreaterThan(0)
+        const timestamp = await sdk.verifyProof(proof);
+        expect(timestamp).toBeGreaterThan(0)
     });
 });

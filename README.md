@@ -135,8 +135,8 @@ const messages = [
 
 client.getProof(messages)
     .then(proof => {
-        let valid = client.verifyProof(proof);
-        console.log(valid);
+        let timestamp = client.verifyProof(proof);
+        console.log(timestamp);
     })
     .catch(error => {
         console.error(error);
@@ -145,7 +145,7 @@ client.getProof(messages)
 
 ### Full example
 
-This snippet shows a complete data cycle including: write, message status polling and proof retrieval and validation.
+This snippet shows a complete data cycle including: write, wait for message confirmation and proof retrieval and validation.
 
 ```javascript
 const { EnchainteClient, Message } = require('@enchainte/sdk');
@@ -187,8 +187,12 @@ async function main() {
 
     // Retrieving message proof
     const proof = await sdk.getProof(messages);
-    const valid = await sdk.verifyProof(proof);
-    console.log(`Message validation - ${valid}`);
+    const timestamp = await sdk.verifyProof(proof);
+    if (timestamp) {
+        console.log(`Message is valid - Timestamp: ${timestamp}`)
+    } else {
+        console.log(`Message is invalid`)
+    }
 }
 
 main()
