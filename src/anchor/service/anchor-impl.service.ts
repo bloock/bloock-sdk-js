@@ -23,8 +23,8 @@ export class AnchorServiceImpl implements AnchorService {
         }
 
         return new Anchor(
-            anchor.id,
-            anchor.blockRoots,
+            anchor.anchor_id,
+            anchor.block_roots,
             anchor.networks,
             anchor.root,
             anchor.status
@@ -39,8 +39,8 @@ export class AnchorServiceImpl implements AnchorService {
                 let response = await this.anchorRepository.getAnchor(anchorId);
                 if (response != null) {
                     let tempAnchor = new Anchor(
-                        response.id,
-                        response.blockRoots,
+                        response.anchor_id,
+                        response.block_roots,
                         response.networks,
                         response.root,
                         response.status

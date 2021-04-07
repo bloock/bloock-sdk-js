@@ -42,6 +42,11 @@ describe('Functional Tests', () => {
 
         let receipt = await sdk.waitAnchor(sendReceipt[0].anchor);
         expect(receipt).toBeDefined()
+        expect(receipt.id).toBeGreaterThan(0)
+        expect(receipt.blockRoots.length).toBeGreaterThan(0)
+        expect(receipt.networks.length).toBeGreaterThan(0)
+        expect(receipt.root).toBeDefined()
+        expect(receipt.status).toBeDefined()
     });
 
     test('testFetchMessages', async () => {
