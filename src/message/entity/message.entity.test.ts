@@ -5,21 +5,21 @@ describe('Message entity tests', () => {
         const message = Message.fromHex('123456789abcde');
 
         expect(message).toBeInstanceOf(Message);
-        expect(message.getHash()).toBe('c4635b1a2898593fce2716446b429bd62396cba1e0189dbc9c34b5608deacc63');
+        expect(message.getHash()).toBe('309736c47755d298bbf457c9ba1cdc8062b978b3a485feedac3cf5a9a4cd3c71');
     });
 
     it('Initialize from string', () => {
         const message = Message.fromString('enchainte');
 
         expect(message).toBeInstanceOf(Message);
-        expect(message.getHash()).toBe('ab8e3ff984fce36be6e6cf01ec215df86556089bdebc20a663b4305f2fb67dc9');
+        expect(message.getHash()).toBe('be539a778a3752e2f32774bbeb773a53ac399103edf9623ea1960c9dc919f3c1');
     });
 
     it('Initialize from Uint8Array', () => {
         const message = Message.fromUint8Array(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
 
         expect(message).toBeInstanceOf(Message);
-        expect(message.getHash()).toBe('e283ce217acedb1b0f71fc5ebff647a1a17a2492a6d2f34fb76b994a23ca8931');
+        expect(message.getHash()).toBe('9da417b185bdb924824f0b07be0ef0de377b27eea9e48a66082d40a6038f305c');
     });
 
     it('Initialize from message', () => {

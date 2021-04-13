@@ -3,8 +3,8 @@ import { mock } from 'jest-mock-extended';
 
 import { Proof } from '../entity/proof.entity';
 import { ProofRepository } from './proof.repository';
-import { ConfigService } from '../../config/service/config.service';
-import { HttpClient} from '../../infrastructure/http.client';
+import { ConfigService } from '../../config/service/config.service';
+import { HttpClient } from '../../infrastructure/http.client';
 import { ProofRepositoryImpl } from './proof-impl.repository';
 import { BlockchainClient } from '../../infrastructure/blockchain.client';
 
@@ -20,17 +20,14 @@ describe('Verifier Tests', () => {
     });
 
     it('verifies proof 1', async () => {
-        const leaves = ['72aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'];
+        const leaves = ['5e1712aca5f3925fc0ce628e7da2e1e407e2cc7b358e83a7152b1958f7982dab'];
         const nodes = [
-            '359b5206452a4ca5058129727fb48f0860a36c0afee0ec62baa874927e9d4b99',
-            '707cb86e449cd3990c85fb3ae9ec967ee12b82f21eae9e6ea35180e6c331c3e8',
-            '23950edeb3ca719e814d8b04d63d90d39327b49b7df5baf2f72305c1f2b260b7',
-            '72aae7e86eb50f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9',
-            '517e320992fb35553575750153992d6360268d04a1e4d9e2cae7e5c3736ac627',
+            '54944fcea707a57048c17ca7453fa5078a031143b44629776750e7f0ff7940f0',
+            'd6f9bcd042be70b39b65dc2a8168858606b0a2fcf6d02c0a1812b1804efc0c37',
         ];
-        const depth = '020304050501';
-        const bitmap = 'f4';
-        const root = '6608fd2c5d9c28124b41d6e441d552ad811a51fc6fdae0f33aa64bf3f43ca699';
+        const depth = '000200020001';
+        const bitmap = 'a000';
+        const root = '63af2403d10a669b28dc2f0fb7822c144b7e1385ca2ec4142e389028de430d10';
 
         let proofRepository = container.resolve<ProofRepository>("ProofRepository");
         expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
@@ -38,16 +35,19 @@ describe('Verifier Tests', () => {
 
     it('verifies proof 2', async () => {
         const leaves = [
-            '82aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9',
-            '92aae7e86eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9',
+            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5",
+            "5e1712aca5f3925fc0ce628e7da2e1e407e2cc7b358e83a7152b1958f7982dab"
         ];
         const nodes = [
-            '285f570a90100fb94d5608b25d9e2b74bb58f068d495190f469aac5ef7ecf3c5',
-            '8f0194b0986e0ea2d6e24df52f1fb3d44e421bce224383f7805f38dc772b3489',
+            "1ca0e9d9a206f08d38a4e2cf485351674ffc9b0f3175e0cb6dbd8e0e19829b97",
+            "1ca0e9d9a206f08d38a4e2cf485351674ffc9b0f3175e0cb6dbd8e0e19829b97",
+            "54944fcea707a57048c17ca7453fa5078a031143b44629776750e7f0ff7940f0",
+            "d6f9bcd042be70b39b65dc2a8168858606b0a2fcf6d02c0a1812b1804efc0c37",
+            "e663ec001b81b96eceabd1b766d49ec5d99adedc3e5f03d245b0d90f603f66d3"
         ];
-        const depth = '01030302';
-        const bitmap = 'a0';
-        const root = '264248bf767509da977f61d42d5723511b7af2781613b9119edcebb25a226976';
+        const depth = '0004000400030004000400030001';
+        const bitmap = '7600';
+        const root = 'a1fd8b878cee593a7debf12b5bcbf081a972bbec40e103c6d82197db2751ced7';
 
         let proofRepository = container.resolve<ProofRepository>("ProofRepository");
         expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
@@ -55,63 +55,27 @@ describe('Verifier Tests', () => {
 
     it('verifies proof 3', async () => {
         const leaves = [
-            '3b7a824a1572e5c64bc280d97cc658bebbd7f85032bda98d478012335637e34c'
+            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5",
+            "02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5",
+            "5e1712aca5f3925fc0ce628e7da2e1e407e2cc7b358e83a7152b1958f7982dab"
         ];
         const nodes = [
-            '9bb9c0392509dbbb6cf8fecdff94c1c2175ceb2bbf1e4b8b527ff6ee8ec07908',
-            '69a6183ca72fc154d589527a5eae58038497818c4e48c8496ee0093448a227d8',
-            '4a11b9a8bcb62a6fa4104b0a01b5333e6636741c9683c0550365f06049f8f4ee',
-            '3809cc631ac9ae3184784edf104c195716d1e0e2738c8390fdd0f290b3ea6487',
-            'f22d28a9ae7db36bfe632939c0a6428edd4b109f1b616afb9c1ea31c8fd80a03',
-            '6932c94926edabb0f95e0f26fec8b75863b6fd8d882e44629d6d3f449b3b1a83',
-            '8af97658047a196a345f14aaedce43a7025b09481607511e31118ee718e2354a'
+            "1ca0e9d9a206f08d38a4e2cf485351674ffc9b0f3175e0cb6dbd8e0e19829b97",
+            "1ca0e9d9a206f08d38a4e2cf485351674ffc9b0f3175e0cb6dbd8e0e19829b97",
+            "1509877db1aa81c699a144d1a240c5d463c9ff08b2df489b40a35802844baeb6",
+            "54944fcea707a57048c17ca7453fa5078a031143b44629776750e7f0ff7940f0",
+            "d6f9bcd042be70b39b65dc2a8168858606b0a2fcf6d02c0a1812b1804efc0c37",
+            "e663ec001b81b96eceabd1b766d49ec5d99adedc3e5f03d245b0d90f603f66d3"
         ];
-        const depth = '0102030406070705';
-        const bitmap = 'fb00';
-        const root = '482353335a663158a869de9b3d46987caedec00d7581c3a0eb75054ba4eb04b3';
+        const depth = '000500050004000400040004000400030001';
+        const bitmap = '6d80';
+        const root = '7e1f3c7e6d3515389b6117cc8c1ef5512d51c59743dc097c70de405a91861d2b';
 
         let proofRepository = container.resolve<ProofRepository>("ProofRepository");
         expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
     });
 
     it('verifies proof 4', async () => {
-        const leaves = ['72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9'];
-        const nodes: string[] = [];
-        const depth = '00';
-        const bitmap = '00';
-        const root = '72aae3286eb51f61a620831320475d9d61cbd52749dbf18fa942b1b97f50aee9';
-
-        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
-        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
-    });
-
-    it('verifies proof 5', async () => {
-        const leaves = ['0000000000000000000000000000000000000000000000000000000000000000'];
-        const nodes = ['0101010101010101010101010101010101010101010101010101010101010101'];
-        const depth = '0000';
-        const bitmap = '40';
-        const root = 'd5f4f7e1d989848480236fb0a5f808d5877abf778364ae50845234dd6c1e80fc';
-
-        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
-        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
-    });
-
-    it('verifies proof 6', async () => {
-        const leaves = ['45ecfb327021427ec0be042296d032a8c8d8bbafdd4259851631a9fe991e4f2b'];
-        const nodes = [
-            '105b61acde68592538a6335793f9d2c6a5e534d3efefe0d78977ba7720feb207',
-            '73a9ae382dc63c875abe2b27a6d6ced6f9f1b85ec37a5079076be7ddb452a3fb',
-            'b0c4205547236dc9e98be6aa6646edb6a4719459389fb82a8321c02cd0487077'
-        ];
-        const depth = '0002010100030100';
-        const bitmap = 'b000';
-        const root = '890ff5249d795b928e65baff4da015558b0c69c6daf31f23a8f73837bfc91f69';
-
-        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
-        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
-    });
-
-    it('verifies proof 7', async () => {
         const leaves = [
             '0000000000000000000000000000000000000000000000000000000000000000'
         ];

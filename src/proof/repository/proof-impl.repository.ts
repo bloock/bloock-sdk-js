@@ -12,11 +12,11 @@ import { ProofRepository } from "./proof.repository";
 @injectable()
 export class ProofRepositoryImpl implements ProofRepository {
 
-    constructor (
+    constructor(
         @inject("HttpClient") private httpClient: HttpClient,
         @inject("BlockchainClient") private blockchainClient: BlockchainClient,
         @inject("ConfigService") private configService: ConfigService
-    ) {}
+    ) { }
 
     retrieveProof(messages: Message[]): Promise<Proof> {
         let url = `${this.configService.getApiBaseUrl()}/messages/proof`;
@@ -27,7 +27,7 @@ export class ProofRepositoryImpl implements ProofRepository {
     verifyProof(proof: Proof): Message {
         const leaves = proof.leaves.map(leaf => Message.fromHash(leaf).getUint8ArrayHash());
         const hashes = proof.nodes.map(node => Utils.hexToBytes(node));
-        const depth = Utils.hexToBytes(proof.depth);
+        const depth = Utils.hexToUint16(proof.depth);
         const bitmap = Utils.hexToBytes(proof.bitmap);
 
         let it_leaves = 0;
