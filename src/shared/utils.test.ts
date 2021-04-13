@@ -20,5 +20,19 @@ describe('Utils Tests', () => {
         var arr2 = Utils.hexToBytes(hex);
         expect(arr2).toStrictEqual(new Uint8Array([1, 0]));
         expect(Utils.uint16ToHex(arr)).toStrictEqual(Utils.bytesToHex(new Uint8Array([1, 0])));
+      });
+
+      it('Check JSON normalized', () => {
+        const data = {
+            id: 1,
+            name: "Test"
+        }
+
+        const invertedData = {
+            name: "Test",
+            id: 1
+        }
+
+        expect(Utils.stringify(data)).toEqual(Utils.stringify(invertedData));
     });
 });
