@@ -1,9 +1,9 @@
 import { HashingClient } from '../../infrastructure/hashing.client';
-import { Blake2b } from '../../infrastructure/hashing/blake2b';
+import { Keccak } from '../../infrastructure/hashing/keccak';
 import { Utils } from '../../shared/utils';
 
 export class Message {
-    private static hashAlgorithm: HashingClient = new Blake2b();
+    private static hashAlgorithm: HashingClient = new Keccak();
 
     private hash: string;
 

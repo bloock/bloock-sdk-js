@@ -84,4 +84,45 @@ describe('Verifier Tests', () => {
         let proofRepository = container.resolve<ProofRepository>("ProofRepository");
         expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
     });
+
+    it('verifies proof 5', async () => {
+        const leaves = ['0000000000000000000000000000000000000000000000000000000000000000'];
+        const nodes = ['0101010101010101010101010101010101010101010101010101010101010101'];
+        const depth = '0000';
+        const bitmap = '40';
+        const root = 'd5f4f7e1d989848480236fb0a5f808d5877abf778364ae50845234dd6c1e80fc';
+
+        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
+        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
+    });
+
+    it('verifies proof 6', async () => {
+        const leaves = ['45ecfb327021427ec0be042296d032a8c8d8bbafdd4259851631a9fe991e4f2b'];
+        const nodes = [
+            '105b61acde68592538a6335793f9d2c6a5e534d3efefe0d78977ba7720feb207',
+            '73a9ae382dc63c875abe2b27a6d6ced6f9f1b85ec37a5079076be7ddb452a3fb',
+            'b0c4205547236dc9e98be6aa6646edb6a4719459389fb82a8321c02cd0487077'
+        ];
+        const depth = '0002010100030100';
+        const bitmap = 'b000';
+        const root = '890ff5249d795b928e65baff4da015558b0c69c6daf31f23a8f73837bfc91f69';
+
+        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
+        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
+    });
+
+    it('verifies proof 7', async () => {
+        const leaves = [
+            '0000000000000000000000000000000000000000000000000000000000000000'
+        ];
+        const nodes = [
+            'f49d70da1c2c8989766908e06b8d2277a6954ec8533696b9a404b631b0b7735a'
+        ];
+        const depth = '00010001';
+        const bitmap = '4000';
+        const root = '5c67902dc31624d9278c286ef4ce469451d8f1d04c1edb29a5941ca0e03ddc8d';
+
+        let proofRepository = container.resolve<ProofRepository>("ProofRepository");
+        expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(root);
+    });
 });

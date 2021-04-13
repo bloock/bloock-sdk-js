@@ -5,7 +5,7 @@ import { ConfigData } from "../config/repository/config-data";
 import { ConfigRepositoryImpl } from "../config/repository/config-impl.repository";
 import { ConfigServiceImpl } from "../config/service/config-impl.service";
 import { Web3Client } from "../infrastructure/blockchain/web3";
-import { Blake2b } from "../infrastructure/hashing/blake2b";
+import { Keccak } from "../infrastructure/hashing/keccak";
 import { HttpData } from "../infrastructure/http/http-data";
 import { HttpClientImpl } from "../infrastructure/http/http-impl";
 import { MessageRepositoryImpl } from "../message/repository/message-impl.repository";
@@ -25,7 +25,7 @@ export class DependencyInjection {
             useClass: HttpClientImpl
         });
         container.register("HashingClient", {
-            useClass: Blake2b
+            useClass: Keccak
         });
 
         // Anchor module

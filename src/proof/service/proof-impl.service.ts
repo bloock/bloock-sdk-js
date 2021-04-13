@@ -29,7 +29,9 @@ export class ProofServiceImpl implements ProofService {
 
     async verifyProof(proof: Proof): Promise<number> {
         try {
+            console.log(proof)
             let root = this.proofRepository.verifyProof(proof);
+            console.log(root)
             if (root == null) {
                 return Promise.reject("The provided proof is invalid");
             }
