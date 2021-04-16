@@ -1,91 +1,113 @@
-import { container } from 'tsyringe';
-import { MockProxy, mock } from 'jest-mock-extended';
-
-import { ConfigService } from '../../config/service/config.service';
-import { HttpClient} from '../../infrastructure/http.client';
-import { AnchorRepository } from '../repository/anchor.repository';
-import { AnchorServiceImpl } from './anchor-impl.service';
-import { AnchorRetrieveResponse } from '../entity/dto/anchor-retrieve-response.entity';
-import { AnchorService } from './anchor.service';
-import { Anchor } from '../entity/anchor.entity';
-import { ConfigRepository } from '../../config/repository/config.repository';
-import { Configuration } from '../../config/entity/configuration.entity';
+import { mock, MockProxy } from 'jest-mock-extended'
+import { container } from 'tsyringe'
+import { Configuration } from '../../config/entity/configuration.entity'
+import { ConfigService } from '../../config/service/config.service'
+import { HttpRequestException } from '../../infrastructure/http/exception/http.exception'
+import { Anchor } from '../entity/anchor.entity'
+import { WaitAnchorTimeoutException } from '../entity/exception/timeout.exception'
+import { AnchorRepository } from '../repository/anchor.repository'
+import { AnchorServiceImpl } from './anchor-impl.service'
+import { AnchorService } from './anchor.service'
 
 describe('Anchor Service Tests', () => {
+  let configServiceMock: MockProxy<ConfigService>
+  let anchorRepositoryMock: MockProxy<AnchorRepository>
 
-    let configRepositoryMock: MockProxy<ConfigRepository>;
-    let httpClientMock: MockProxy<HttpClient>;
-    let anchorRepositoryMock: MockProxy<AnchorRepository>;
+  let counter = 0
+  let maxCount = 0
+  let getAnchorSideEffect = (id: number) => {
+    if (counter < maxCount) {
+      counter += 1
+      throw new HttpRequestException('anchor not ready yet')
+    }
 
-    beforeEach(() => {
-        configRepositoryMock = mock<ConfigRepository>();
-        httpClientMock = mock<HttpClient>();
-        anchorRepositoryMock = mock<AnchorRepository>();
+    return Promise.resolve(new Anchor(1, ['block_root'], [], 'root', 'Success'))
+  }
 
-        container.registerInstance("ConfigRepository", configRepositoryMock);
-        container.registerInstance("HttpClient", httpClientMock);
-        container.registerInstance("AnchorRepository", anchorRepositoryMock);
-        container.register("AnchorService", {
-            useClass: AnchorServiceImpl
-        });
-    });
+  beforeEach(() => {
+    configServiceMock = mock<ConfigService>()
+    anchorRepositoryMock = mock<AnchorRepository>()
 
-    it('should get anchor', async () => {
-        let anchor = 1;
-        let apiResponse = new AnchorRetrieveResponse({
-            anchor_id: anchor,
-            block_roots: [],
-            networks: [],
-            root: "root",
-            status: "Pending"
-        });
-        let expectedResult = new Anchor(anchor, [], [], "root", "Pending");
+    container.registerInstance('ConfigService', configServiceMock)
+    container.registerInstance('AnchorRepository', anchorRepositoryMock)
+    container.register('AnchorService', {
+      useClass: AnchorServiceImpl
+    })
+  })
 
-        anchorRepositoryMock.getAnchor
-            .calledWith(anchor).mockResolvedValue(apiResponse);
-            
-        let anchorService = container.resolve<AnchorService>("AnchorService");
-        let result = await anchorService.getAnchor(anchor);
+  it('test_get_anchor_okay', async () => {
+    anchorRepositoryMock.getAnchor.mockResolvedValueOnce(
+      new Anchor(1, ['block_root'], [], 'root', 'Success')
+    )
+    let anchorService = container.resolve<AnchorService>('AnchorService')
+    let anchor = await anchorService.getAnchor(1)
 
-        expect(result).toMatchObject(expectedResult)
-    });
+    expect(anchor).toBeInstanceOf(Anchor)
+    expect(anchor.id).toBe(1)
+    expect(anchor.blockRoots).toStrictEqual(['block_root'])
+    expect(anchor.networks).toStrictEqual([])
+    expect(anchor.root).toBe('root')
+    expect(anchor.status).toBe('Success')
+  })
 
-    it('should wait anchor', async () => {
-        let anchor = 1;
-        let apiResponse = [
-            new AnchorRetrieveResponse({
-                anchor_id: anchor,
-                block_roots: [],
-                networks: [],
-                root: "root",
-                status: "Pending"
-            }),
-            new AnchorRetrieveResponse({
-                anchor_id: anchor,
-                block_roots: [],
-                networks: [],
-                root: "root",
-                status: "Success"
-            })
-        ];
-        let expectedResult = new Anchor(anchor, [], [], "root", "Success");
+  it('test_wait_anchor_okay_first_try', async () => {
+    counter = 0
+    maxCount = 0
 
-        let config = new Configuration();
-        config.WAIT_MESSAGE_INTERVAL_DEFAULT = 1;
-        config.WAIT_MESSAGE_INTERVAL_FACTOR = 1;
+    let configuration = new Configuration()
+    configuration.WAIT_MESSAGE_INTERVAL_DEFAULT = 1
+    configuration.WAIT_MESSAGE_INTERVAL_FACTOR = 0
+    configServiceMock.getConfiguration.mockReturnValue(configuration)
 
-        configRepositoryMock.getConfiguration
-            .calledWith()
-            .mockReturnValue(config);
+    anchorRepositoryMock.getAnchor.mockImplementation(getAnchorSideEffect)
 
-        anchorRepositoryMock.getAnchor
-            .calledWith(anchor)
-            .mockResolvedValueOnce(apiResponse[0])
-            .mockResolvedValueOnce(apiResponse[1]);
-            
-        let anchorService = container.resolve<AnchorService>("AnchorService");
-        let result = await anchorService.waitAnchor(anchor);
+    let anchorService = container.resolve<AnchorService>('AnchorService')
+    let anchor = await anchorService.waitAnchor(1, 5000)
 
-        expect(result).toMatchObject(expectedResult)
-    });
-});
+    expect(anchor).toBeInstanceOf(Anchor)
+    expect(anchorRepositoryMock.getAnchor).toHaveBeenCalledTimes(maxCount + 1)
+    expect(anchor.id).toBe(1)
+    expect(anchor.blockRoots).toStrictEqual(['block_root'])
+    expect(anchor.networks).toStrictEqual([])
+    expect(anchor.root).toBe('root')
+    expect(anchor.status).toBe('Success')
+  })
+
+  it('test_wait_anchor_okay_after_3_retries', async () => {
+    counter = 0
+    maxCount = 3
+
+    let configuration = new Configuration()
+    configuration.WAIT_MESSAGE_INTERVAL_DEFAULT = 1
+    configuration.WAIT_MESSAGE_INTERVAL_FACTOR = 0
+    configServiceMock.getConfiguration.mockReturnValue(configuration)
+
+    anchorRepositoryMock.getAnchor.mockImplementation(getAnchorSideEffect)
+
+    let anchorService = container.resolve<AnchorService>('AnchorService')
+    let anchor = await anchorService.waitAnchor(1, 5000)
+
+    expect(anchor).toBeInstanceOf(Anchor)
+    expect(anchorRepositoryMock.getAnchor).toHaveBeenCalledTimes(maxCount + 1)
+    expect(anchor.id).toBe(1)
+    expect(anchor.blockRoots).toStrictEqual(['block_root'])
+    expect(anchor.networks).toStrictEqual([])
+    expect(anchor.root).toBe('root')
+    expect(anchor.status).toBe('Success')
+  })
+
+  it('test_wait_anchor_error_timeout', async () => {
+    counter = 0
+    maxCount = 3
+
+    let configuration = new Configuration()
+    configuration.WAIT_MESSAGE_INTERVAL_DEFAULT = 10
+    configuration.WAIT_MESSAGE_INTERVAL_FACTOR = 0
+    configServiceMock.getConfiguration.mockReturnValue(configuration)
+
+    anchorRepositoryMock.getAnchor.mockImplementation(getAnchorSideEffect)
+
+    let anchorService = container.resolve<AnchorService>('AnchorService')
+    await expect(anchorService.waitAnchor(1, 1)).rejects.toEqual(new WaitAnchorTimeoutException())
+  })
+})

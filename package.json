@@ -15,7 +15,6 @@
   },
   "license": "MIT",
   "scripts": {
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs",
     "start": "tsc --module commonjs && node dist/lib/index.js",
@@ -36,12 +35,17 @@
     "@types/jest": "^26.0.21",
     "@types/json-stable-stringify": "^1.0.32",
     "@types/node": "^10.17.35",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "jest": "^26.6.3",
     "jest-mock-extended": "^1.0.13",
+    "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
-    "tslint": "^5.11.0",
     "typescript": "^4.2.3"
   }
 }

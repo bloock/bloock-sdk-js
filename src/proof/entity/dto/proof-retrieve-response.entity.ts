@@ -1,15 +1,21 @@
 export class ProofRetrieveResponse {
-    public nodes: string[];
-    public depth: string;
-    public bitmap: string;
+  public leaves: string[]
+  public nodes: string[]
+  public depth: string
+  public bitmap: string
+  public root: string
 
-    constructor(data: {
-        nodes: string[],
-        depth: string,
-        bitmap: string
-    }) {
-        this.nodes = data.nodes;
-        this.depth = data.depth;
-        this.bitmap = data.bitmap;
-    }
+  constructor(data: {
+    leaves: string[]
+    nodes: string[]
+    depth: string
+    bitmap: string
+    root: string
+  }) {
+    this.leaves = data.leaves
+    this.nodes = data.nodes
+    this.depth = data.depth
+    this.bitmap = data.bitmap
+    this.root = data.root
+  }
 }

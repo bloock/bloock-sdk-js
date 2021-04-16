@@ -1,6 +1,6 @@
-import { Anchor } from "../entity/anchor.entity";
+import { Anchor } from '../entity/anchor.entity'
 
 export interface AnchorService {
-    getAnchor(anchorId: number): Promise<Anchor>
-    waitAnchor(anchorId: number): Promise<Anchor>
+  getAnchor(anchorId: number): Promise<Anchor>
+  waitAnchor(anchorId: number, timeout?: number): Promise<Anchor>
 }

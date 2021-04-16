@@ -1,67 +1,62 @@
-import { injectable, inject } from "tsyringe";
-
-import { ConfigRepository } from "../../config/repository/config.repository";
-import { Utils } from "../../shared/utils";
-import { Anchor } from "../entity/anchor.entity";
-import { AnchorNotFoundException } from "../entity/exception/anchor-not-found.exception";
-import { AnchorRepository } from "../repository/anchor.repository";
-import { AnchorService } from "./anchor.service";
+import { inject, injectable } from 'tsyringe'
+import { ConfigService } from '../../config/service/config.service'
+import { Utils } from '../../shared/utils'
+import { Anchor } from '../entity/anchor.entity'
+import { AnchorNotFoundException } from '../entity/exception/anchor-not-found.exception'
+import { WaitAnchorTimeoutException } from '../entity/exception/timeout.exception'
+import { AnchorRepository } from '../repository/anchor.repository'
+import { AnchorService } from './anchor.service'
 
 @injectable()
 export class AnchorServiceImpl implements AnchorService {
+  constructor(
+    @inject('AnchorRepository') private anchorRepository: AnchorRepository,
+    @inject('ConfigService') private configService: ConfigService
+  ) {}
 
-    constructor(
-        @inject("AnchorRepository") private anchorRepository: AnchorRepository,
-        @inject("ConfigRepository") private configRepository: ConfigRepository
-    ) {}
+  async getAnchor(anchorId: number): Promise<Anchor> {
+    let anchor = await this.anchorRepository.getAnchor(anchorId)
 
-    async getAnchor(anchorId: number): Promise<Anchor> {
-        let anchor = await this.anchorRepository.getAnchor(anchorId);
-
-        if (anchor == null) {
-            throw new AnchorNotFoundException()
-        }
-
-        return new Anchor(
-            anchor.anchor_id,
-            anchor.block_roots,
-            anchor.networks,
-            anchor.root,
-            anchor.status
-        )
+    if (anchor == null) {
+      throw new AnchorNotFoundException()
     }
-    async waitAnchor(anchorId: number): Promise<Anchor> {
-        let attempts = 0;
-        let anchor = null;
 
-        while (anchor == null) {
-            try {
-                let response = await this.anchorRepository.getAnchor(anchorId);
-                if (response != null) {
-                    let tempAnchor = new Anchor(
-                        response.anchor_id,
-                        response.block_roots,
-                        response.networks,
-                        response.root,
-                        response.status
-                    );
-
-                    if (tempAnchor.status === "Success") {
-                        anchor = tempAnchor;
-                        break;
-                    }
-                }
-            } catch (error) { }
-
-            Utils.sleep(
-                this.configRepository.getConfiguration().WAIT_MESSAGE_INTERVAL_DEFAULT +
-                attempts * this.configRepository.getConfiguration().WAIT_MESSAGE_INTERVAL_FACTOR
-            )
-
-            attempts += 1
+    return anchor
+  }
+  async waitAnchor(anchorId: number, timeout: number = 120000): Promise<Anchor> {
+    let attempts = 0
+    let anchor = null
+    let start = new Date().getTime()
+    let nextTry = start + this.configService.getConfiguration().WAIT_MESSAGE_INTERVAL_DEFAULT
+    let timeoutTime = start + timeout
+    while (true) {
+      try {
+        anchor = await this.anchorRepository.getAnchor(anchorId)
+        if (anchor.status == 'Success') {
+          return anchor
         }
+        let currentTime = new Date().getTime()
 
-        return anchor;
+        if (currentTime > timeoutTime) {
+          throw new WaitAnchorTimeoutException()
+        }
+        await Utils.sleep(1000)
+      } catch (e) {
+        let currentTime = new Date().getTime()
+        while (currentTime < nextTry && currentTime < timeoutTime) {
+          await Utils.sleep(200)
+          currentTime = new Date().getTime()
+        }
+        nextTry +=
+          attempts * this.configService.getConfiguration().WAIT_MESSAGE_INTERVAL_FACTOR +
+          this.configService.getConfiguration().WAIT_MESSAGE_INTERVAL_DEFAULT
 
+        attempts += 1
+
+        if (currentTime >= timeoutTime) {
+          throw new WaitAnchorTimeoutException()
+        }
+      }
     }
+  }
 }
