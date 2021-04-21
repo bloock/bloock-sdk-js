@@ -1,6 +1,6 @@
 {
   "name": "@enchainte/sdk",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -19,7 +19,7 @@
     "build": "tsc --module commonjs",
     "start": "tsc --module commonjs && node dist/lib/index.js",
     "test": "jest ./src",
-    "e2e": "jest ./test"
+    "e2e": "jest ./test --testTimeout=60000"
   },
   "dependencies": {
     "axios": "^0.21.1",

@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe'
 import { ConfigService } from '../../config/service/config.service'
+import { InvalidArgumentException } from '../../shared/entity/exception/invalid-argument.exception'
 import { Utils } from '../../shared/utils'
 import { Anchor } from '../entity/anchor.entity'
 import { AnchorNotFoundException } from '../entity/exception/anchor-not-found.exception'
@@ -15,6 +16,10 @@ export class AnchorServiceImpl implements AnchorService {
   ) {}
 
   async getAnchor(anchorId: number): Promise<Anchor> {
+    if (!Number.isInteger(anchorId)) {
+      throw new InvalidArgumentException()
+    }
+
     let anchor = await this.anchorRepository.getAnchor(anchorId)
 
     if (anchor == null) {
@@ -24,6 +29,10 @@ export class AnchorServiceImpl implements AnchorService {
     return anchor
   }
   async waitAnchor(anchorId: number, timeout: number = 120000): Promise<Anchor> {
+    if (!Number.isInteger(anchorId) || !Number.isInteger(timeout)) {
+      throw new InvalidArgumentException()
+    }
+
     let attempts = 0
     let anchor = null
     let start = new Date().getTime()

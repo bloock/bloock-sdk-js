@@ -3,7 +3,7 @@ export class ApiResponse<T> {
   public data?: T
   public error?: ApiError
 
-  constructor(data: { success: boolean; data: T; error: any }) {
+  constructor(data: ApiResponse<T>) {
     this.success = data.success
 
     if (data.data) {

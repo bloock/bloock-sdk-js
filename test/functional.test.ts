@@ -1,94 +1,91 @@
-import { EnchainteClient, Message } from "../src";
+import { EnchainteClient, Message, MessageReceipt } from '../src'
+import { Anchor } from '../src/anchor/entity/anchor.entity'
 
 describe('Functional Tests', () => {
-    test('testSendMessage', async () => {
-        jest.setTimeout(120000)
+  test('testSendMessage', async () => {
+    jest.setTimeout(120000)
 
-        const apiKey = process.env["API_KEY"] || "";
-        const sdk = new EnchainteClient(apiKey);
+    const apiKey = process.env['API_KEY'] || ''
+    const sdk = new EnchainteClient(apiKey)
 
-        const messages = [
-            Message.fromString("Example Data")
-        ];
+    const messages = [Message.fromString('Example Data')]
 
-        const sendReceipt = await sdk.sendMessages(messages);
+    const sendReceipt = await sdk.sendMessages(messages)
+    expect(Array.isArray(sendReceipt)).toBeTruthy()
+    expect(sendReceipt[0]).toBeInstanceOf(MessageReceipt)
+    expect(sendReceipt[0].anchor).toBeGreaterThan(0)
+    expect(sendReceipt[0].client.length).toBeGreaterThan(0)
+    expect(sendReceipt[0].message).toEqual(messages[0].getHash())
+    expect(sendReceipt[0].status).toEqual('Pending')
+  })
 
-        if (!sendReceipt) {
-            expect(false)
-            return;
-        }
+  test('testWaitAnchor', async () => {
+    jest.setTimeout(120000)
 
-        await sdk.waitAnchor(sendReceipt[0].anchor);
-    });
+    const apiKey = process.env['API_KEY'] || ''
+    const sdk = new EnchainteClient(apiKey)
 
-    test('testWaitAnchor', async () => {
-        jest.setTimeout(120000)
+    const messages = [
+      Message.fromString('Example Data 1'),
+      Message.fromString('Example Data 2'),
+      Message.fromString('Example Data 3')
+    ]
 
-        const apiKey = process.env["API_KEY"] || "";
-        const sdk = new EnchainteClient(apiKey);
+    const sendReceipt = await sdk.sendMessages(messages)
+    expect(sendReceipt).toBeDefined()
+    expect(Array.isArray(sendReceipt)).toBeTruthy()
+    expect(sendReceipt[0]).toBeInstanceOf(MessageReceipt)
 
-        const messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
-        ];
+    let receipt = await sdk.waitAnchor(sendReceipt[0].anchor)
+    expect(receipt).toBeDefined()
+    expect(receipt).toBeInstanceOf(Anchor)
+    expect(receipt.id).toBeGreaterThan(0)
+    expect(receipt.blockRoots.length).toBeGreaterThan(0)
+    expect(receipt.networks.length).toBeGreaterThan(0)
+    expect(receipt.root.length).toBeGreaterThan(0)
+    expect(receipt.status.length).toBeGreaterThan(0)
+  })
 
-        const sendReceipt = await sdk.sendMessages(messages);
+  test('testFetchMessages', async () => {
+    jest.setTimeout(120000)
 
-        if (!sendReceipt) {
-            expect(false)
-            return;
-        }
+    const apiKey = process.env['API_KEY'] || ''
+    const sdk = new EnchainteClient(apiKey)
 
-        let receipt = await sdk.waitAnchor(sendReceipt[0].anchor);
-        expect(receipt).toBeDefined()
-        expect(receipt.id).toBeGreaterThan(0)
-        expect(receipt.blockRoots.length).toBeGreaterThan(0)
-        expect(receipt.networks.length).toBeGreaterThan(0)
-        expect(receipt.root).toBeDefined()
-        expect(receipt.status).toBeDefined()
-    });
+    const messages = [
+      Message.fromString('Example Data 1'),
+      Message.fromString('Example Data 2'),
+      Message.fromString('Example Data 3')
+    ]
 
-    test('testFetchMessages', async () => {
-        jest.setTimeout(120000)
+    const sendReceipt = await sdk.sendMessages(messages)
 
-        const apiKey = process.env["API_KEY"] || "";
-        const sdk = new EnchainteClient(apiKey);
+    if (!sendReceipt) {
+      expect(false)
+      return
+    }
 
-        const messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
-        ];
+    await sdk.waitAnchor(sendReceipt[0].anchor)
 
-        const sendReceipt = await sdk.sendMessages(messages);
+    let messageReceipts = await sdk.getMessages(messages)
+    for (let messageReceipt of messageReceipts) {
+      expect(messageReceipt.status).toBe('Success')
+    }
+  })
 
-        if (!sendReceipt) {
-            expect(false)
-            return;
-        }
+  test('testGetProof', async () => {
+    jest.setTimeout(120000)
 
-        await sdk.waitAnchor(sendReceipt[0].anchor);
+    const apiKey = process.env['API_KEY'] || ''
+    const sdk = new EnchainteClient(apiKey)
 
-        let messageReceipts = await sdk.getMessages(messages);
-        for (let messageReceipt of messageReceipts) {
-            expect(messageReceipt.status).toBe("Success")
-        }
-    });
+    const messages = [
+      Message.fromString('Example Data 1'),
+      Message.fromString('Example Data 2'),
+      Message.fromString('Example Data 3')
+    ]
 
-    test('testGetProof', async () => {
-        jest.setTimeout(120000)
-
-        const apiKey = process.env["API_KEY"] || "";
-        const sdk = new EnchainteClient(apiKey);
-
-        const messages = [
-            Message.fromString("Example Data 1"),
-            Message.fromString("Example Data 2"),
-            Message.fromString("Example Data 3")
-        ];
-
-        let proof = await sdk.getProof(messages);
-        expect(proof).toBeDefined();
-    });
-});
+    let proof = await sdk.getProof(messages)
+    expect(proof).toBeDefined()
+  })
+})

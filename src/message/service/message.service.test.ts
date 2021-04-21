@@ -38,6 +38,7 @@ describe('Message Service Tests', () => {
       Message.fromHash('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')
     ])
 
+    expect(Array.isArray(result)).toBeTruthy()
     expect(result[0]).toBeInstanceOf(MessageReceipt)
     expect(result[0].anchor).toEqual(80)
     expect(result[0].client).toEqual('ce10c769-022b-405e-8e7c-3b52eeb2a4ea')

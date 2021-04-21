@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { inject, injectable } from 'tsyringe'
 import { HttpClient } from '../http.client'
 import { ApiResponse } from './dto/api-response.entity'
@@ -24,15 +24,30 @@ export class HttpClientImpl implements HttpClient {
         ...(headers ? Object.fromEntries(headers) : {})
       }
     }
-    let response = await axios.get<ApiResponse<T>>(url, config)
 
-    let success = response.data?.isSuccess()
-    let data = response.data?.getData()
-    if (success && data) {
-      return data
+    let data: ApiResponse<T>
+    try {
+      let response = await axios.get<ApiResponse<T>>(url, config)
+      data = response.data
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        let error = err as AxiosError
+        data = error.response?.data
+      } else {
+        throw new HttpRequestException()
+      }
     }
 
-    throw new HttpRequestException(response.data.getError()?.message)
+    if (!(data instanceof ApiResponse)) {
+      data = new ApiResponse<T>(data)
+    }
+
+    let success = data?.isSuccess()
+    let result = data?.getData()
+    if (success && result) {
+      return result
+    }
+    throw new HttpRequestException(data.getError()?.message)
   }
 
   async post<T>(url: string, body: any, headers?: Map<string, string>): Promise<T> {
@@ -42,14 +57,29 @@ export class HttpClientImpl implements HttpClient {
         ...(headers ? Object.fromEntries(headers) : {})
       }
     }
-    let response = await axios.post<ApiResponse<T>>(url, body, config)
 
-    let success = response.data?.isSuccess()
-    let data = response.data?.getData()
-    if (success && data) {
-      return data
+    let data: ApiResponse<T>
+    try {
+      let response = await axios.post<ApiResponse<T>>(url, body, config)
+      data = response.data
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        let error = err as AxiosError
+        data = error.response?.data
+      } else {
+        throw new HttpRequestException()
+      }
     }
 
-    throw new HttpRequestException(response.data.getError()?.message)
+    if (!(data instanceof ApiResponse)) {
+      data = new ApiResponse<T>(data)
+    }
+
+    let success = data?.isSuccess()
+    let result = data?.getData()
+    if (success && result) {
+      return result
+    }
+    throw new HttpRequestException(data.getError()?.message)
   }
 }
