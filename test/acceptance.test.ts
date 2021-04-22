@@ -1,4 +1,5 @@
 import { WaitAnchorTimeoutException } from '../src/anchor/entity/exception/timeout.exception'
+import { ConfigEnv } from '../src/config/entity/config-env.entity'
 import { EnchainteClient, Message } from '../src/index'
 import { HttpRequestException } from '../src/infrastructure/http/exception/http.exception'
 import { InvalidMessageException } from '../src/message/entity/exception/invalid-message.exception'
@@ -18,13 +19,12 @@ function randHex(len: number): string {
 
 function getSdk(): EnchainteClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new EnchainteClient(apiKey)
+  return new EnchainteClient(apiKey, ConfigEnv.TEST)
 }
 
 describe('Acceptance Tests', () => {
   test('test_basic_e2e', async () => {
-    const apiKey = process.env['API_KEY'] || ''
-    const sdk = new EnchainteClient(apiKey)
+    const sdk = getSdk()
 
     const messages = [Message.fromString(randHex(64))]
 

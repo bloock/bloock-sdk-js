@@ -19,7 +19,7 @@ export class EnchainteClient {
 
   private httpClient: HttpClient
 
-  constructor(apiKey: string, environment: ConfigEnv = ConfigEnv.TEST) {
+  constructor(apiKey: string, environment: ConfigEnv = ConfigEnv.PROD) {
     DependencyInjection.setUp()
 
     this.anchorService = container.resolve<AnchorService>('AnchorService')

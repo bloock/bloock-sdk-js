@@ -1,12 +1,17 @@
 import { EnchainteClient, Message, MessageReceipt } from '../src'
 import { Anchor } from '../src/anchor/entity/anchor.entity'
+import { ConfigEnv } from '../src/config/entity/config-env.entity'
+
+function getSdk(): EnchainteClient {
+  const apiKey = process.env['API_KEY'] || ''
+  return new EnchainteClient(apiKey, ConfigEnv.TEST)
+}
 
 describe('Functional Tests', () => {
   test('testSendMessage', async () => {
     jest.setTimeout(120000)
 
-    const apiKey = process.env['API_KEY'] || ''
-    const sdk = new EnchainteClient(apiKey)
+    const sdk = getSdk()
 
     const messages = [Message.fromString('Example Data')]
 
@@ -22,8 +27,7 @@ describe('Functional Tests', () => {
   test('testWaitAnchor', async () => {
     jest.setTimeout(120000)
 
-    const apiKey = process.env['API_KEY'] || ''
-    const sdk = new EnchainteClient(apiKey)
+    const sdk = getSdk()
 
     const messages = [
       Message.fromString('Example Data 1'),
@@ -49,8 +53,7 @@ describe('Functional Tests', () => {
   test('testFetchMessages', async () => {
     jest.setTimeout(120000)
 
-    const apiKey = process.env['API_KEY'] || ''
-    const sdk = new EnchainteClient(apiKey)
+    const sdk = getSdk()
 
     const messages = [
       Message.fromString('Example Data 1'),
@@ -76,8 +79,7 @@ describe('Functional Tests', () => {
   test('testGetProof', async () => {
     jest.setTimeout(120000)
 
-    const apiKey = process.env['API_KEY'] || ''
-    const sdk = new EnchainteClient(apiKey)
+    const sdk = getSdk()
 
     const messages = [
       Message.fromString('Example Data 1'),
