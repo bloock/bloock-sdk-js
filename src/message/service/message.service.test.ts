@@ -31,8 +31,6 @@ describe('Message Service Tests', () => {
       })
     )
 
-    Message.isValid = () => true
-
     let messageService = container.resolve<MessageService>('MessageService')
     let result = await messageService.sendMessages([
       Message.fromHash('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')
@@ -62,11 +60,9 @@ describe('Message Service Tests', () => {
       })
     )
 
-    Message.isValid = () => false
-
     let messageService = container.resolve<MessageService>('MessageService')
 
-    await expect(messageService.sendMessages([Message.fromString('message')])).rejects.toEqual(
+    await expect(messageService.sendMessages([Message.fromHash('message')])).rejects.toEqual(
       new InvalidMessageException()
     )
   })
