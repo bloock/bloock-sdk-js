@@ -44,18 +44,18 @@ describe('Message entity tests', () => {
   it('test_is_valid_missing_char', () => {
     const message = '010101010101010101010101010101010101010101010101010101010101010'
 
-    expect(Message.isValid(message)).toBe(false)
+    expect(Message.isValid(message as any)).toBe(false)
   })
 
   it('test_is_valid_wrong_char', () => {
     const message = 'G010101010101010101010101010101010101010101010101010101010101010'
 
-    expect(Message.isValid(message)).toBe(false)
+    expect(Message.isValid(message as any)).toBe(false)
   })
 
   it('test_is_valid_not_message_instance', () => {
     const message = '123456789abcdef123456789abcdef123456789abcdef123456789abcdef123g'
 
-    expect(Message.isValid('test Message')).toBe(false)
+    expect(Message.isValid('test Message' as any)).toBe(false)
   })
 })
