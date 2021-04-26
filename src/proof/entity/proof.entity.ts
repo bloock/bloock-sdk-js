@@ -1,21 +1,59 @@
+import { Utils } from '../../shared/utils'
+
+/**
+ * Proof is the object in charge of storing all data necessary to compute
+ * a data integrity check.
+ */
 export class Proof {
-    public leaves: string[];
-    public nodes: string[];
-    public depth: string;
-    public bitmap: string;
+  public leaves: string[]
+  public nodes: string[]
+  public depth: string
+  public bitmap: string
 
-    constructor(leaves: string[], nodes: string[], depth: string, bitmap: string) {
-        this.leaves = leaves;
-        this.nodes = nodes;
-        this.depth = depth;
-        this.bitmap = bitmap;
-    }
-
-    public static isValid(proof: unknown): boolean {
-        if (proof instanceof Proof) {
-            return true;
+  constructor(leaves: string[], nodes: string[], depth: string, bitmap: string) {
+    this.leaves = leaves
+    this.nodes = nodes
+    this.depth = depth
+    this.bitmap = bitmap
+  }
+  /**
+   * Checks whether the Proof was build with valid parameters or not.
+   * @param  {Proof} proof Proof to validate.
+   * @returns {boolean} A Boolean that returns True if the proof is valid, False if not.
+   */
+  public static isValid(proof: Proof): boolean {
+    if (proof instanceof Proof) {
+      try {
+        if (proof.leaves.some((l) => !Utils.isHex(l) || l.length != 64)) {
+          return false
         }
 
-        return false;
+        if (proof.nodes.some((n) => !Utils.isHex(n) || n.length != 64)) {
+          return false
+        }
+
+        if (
+          proof.depth.length != (proof.leaves.length + proof.nodes.length) * 4 &&
+          Utils.isHex(proof.depth)
+        ) {
+          return false
+        }
+
+        let nElements = proof.leaves.length + proof.nodes.length
+        if (proof.depth.length != nElements * 4) {
+          return false
+        }
+        if (
+          Math.floor(proof.bitmap.length / 2) < Math.floor((nElements + 8 - (nElements % 8)) / 8)
+        ) {
+          return false
+        }
+        return true
+      } catch (e) {
+        return false
+      }
     }
+
+    return false
+  }
 }

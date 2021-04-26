@@ -11,6 +11,14 @@ import { Proof } from './proof/entity/proof.entity'
 import { ProofService } from './proof/service/proof.service'
 import { DependencyInjection } from './shared/dependency-injection'
 
+/**
+ * Entry-point to the Enchainté SDK:
+ *    This SDK offers all the features available in the Enchainté Toolset:
+ *      * Write messages
+ *      * Get messages proof
+ *      * Validate proof
+ *      * Get messages details
+ */
 export class EnchainteClient {
   private anchorService: AnchorService
   private configService: ConfigService
@@ -19,6 +27,11 @@ export class EnchainteClient {
 
   private httpClient: HttpClient
 
+  /**
+   * Constructor with API Key that enables accessing to Enchainté's functionalities.
+   * @param  {string} apiKey Client API Key.
+   * @param  {ConfigEnv} [environment=ConfigEnv.PROD] Defines the Enchainté's environment to use. By default: production.
+   */
   constructor(apiKey: string, environment: ConfigEnv = ConfigEnv.PROD) {
     DependencyInjection.setUp()
 
@@ -32,31 +45,77 @@ export class EnchainteClient {
     this.httpClient.setApiKey(apiKey)
     this.configService.setupEnvironment(environment)
   }
-
+  /**
+   * Sends a list of Message to Enchainté.
+   * @param  {Message[]} messages List of Message to send.
+   * @returns {Promise<MessageReceipt[]>} List of MessageReceipt of each Message sent.
+   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   */
   public async sendMessages(messages: Message[]): Promise<MessageReceipt[]> {
     return this.messageService.sendMessages(messages)
   }
-
+  /**
+   * Retrieves all MessageReceipt for the specified Anchor.
+   * @param  {Message[]} messages List of Message to fetch.
+   * @returns {Promise<MessageReceipt[]>} List with the MessageReceipt of each message requested.
+   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   */
   public async getMessages(messages: Message[]): Promise<MessageReceipt[]> {
     return this.messageService.getMessages(messages)
   }
-
+  /**
+   * Gets an specific anchor id details.
+   * @param  {number} anchor Id of the Anchor to look for.
+   * @returns {Promise<Anchor>} Anchor object matching the id.
+   * @throws {InvalidArgumentException} Informs that the input is not a number.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   */
   public async getAnchor(anchor: number): Promise<Anchor> {
     return this.anchorService.getAnchor(anchor)
   }
-
+  /**
+   * Waits until the anchor specified is confirmed in Enchainté.
+   * @param  {number} anchor Id of the Anchor to wait for.
+   * @param  {number} [timeout=120000] Timeout time in miliseconds. After exceeding this time returns an exception.
+   * @returns {Promise<Anchor>} Anchor object matching the id.
+   * @throws {InvalidArgumentException} Informs that the input is not a number.
+   * @throws {AnchorNotFoundException} The anchor provided could not be found.
+   * @throws {WaitAnchorTimeoutException} Returned when the function has exceeded the timeout.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   */
   public async waitAnchor(anchor: number, timeout?: number): Promise<Anchor> {
     return this.anchorService.waitAnchor(anchor, timeout)
   }
-
+  /**
+   * Retrieves an integrity Proof for the specified list of Message.
+   * @param  {Message[]} messages List of messages to validate.
+   * @returns {Promise<Proof>} The Proof object containing the elements necessary to verify
+   *          the integrity of the messages in the input list. If no message was requested, then returns None.
+   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   */
   public async getProof(messages: Message[]): Promise<Proof> {
     return this.proofService.retrieveProof(messages)
   }
-
+  /**
+   * Verifies if the specified integrity Proof is valid and checks if it's currently included in the blockchain.
+   * @param  {Proof} proof Proof to validate.
+   * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
+   * @throws {Web3Exception} Error connecting to blockchain.
+   */
   public async verifyProof(proof: Proof): Promise<number> {
     return this.proofService.verifyProof(proof)
   }
-
+  /**
+   * It retrieves a proof for the specified list of Anchor using getProof and verifies it using verifyProof.
+   * @param  {Message[]} messages list of messages to validate
+   * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
+   * @throws {InvalidArgumentException} Informs that the input is not a number.
+   * @throws {HttpRequestException} Error return by Enchainté's API.
+   * @throws {Web3Exception} Error connecting to blockchain.
+   */
   public async verifyMessages(messages: Message[]): Promise<number> {
     return this.proofService.verifyMessages(messages)
   }
