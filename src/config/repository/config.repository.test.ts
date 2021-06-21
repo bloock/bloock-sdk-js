@@ -37,11 +37,10 @@ describe('Config Repository Tests', () => {
 
     let config = new Configuration()
     config.HOST = 'test'
-    config.API_VERSION = 'ing'
 
     configRepositoryMock.getConfiguration.mockReturnValue(config)
 
     configService.getConfiguration()
-    expect(configService.getApiBaseUrl()).toEqual('testing')
+    expect(configService.getApiBaseUrl()).toEqual('test')
   })
 })

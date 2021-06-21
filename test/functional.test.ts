@@ -90,4 +90,22 @@ describe('Functional Tests', () => {
     let proof = await sdk.getProof(messages)
     expect(proof).toBeDefined()
   })
+
+  test('testVerifyProof', async () => {
+    jest.setTimeout(120000)
+
+    const sdk = getSdk()
+
+    const messages = [
+      Message.fromString('Example Data 1'),
+      Message.fromString('Example Data 2'),
+      Message.fromString('Example Data 3')
+    ]
+
+    let proof = await sdk.getProof(messages)
+    expect(proof).toBeDefined()
+
+    let timestamp = await sdk.verifyProof(proof)
+    expect(timestamp).toBeGreaterThan(0)
+  })
 })

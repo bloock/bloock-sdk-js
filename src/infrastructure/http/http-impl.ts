@@ -1,7 +1,6 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig, Method } from 'axios'
 import { inject, injectable } from 'tsyringe'
 import { HttpClient } from '../http.client'
-import { ApiResponse } from './dto/api-response.entity'
 import { HttpRequestException } from './exception/http.exception'
 import { HttpData } from './http-data'
 
@@ -18,68 +17,36 @@ export class HttpClientImpl implements HttpClient {
   }
 
   async get<T>(url: string, headers?: Map<string, string>): Promise<T> {
-    let config: AxiosRequestConfig = {
-      headers: {
-        Authorization: this.httpData.apiKey,
-        ...(headers ? Object.fromEntries(headers) : {})
-      }
-    }
-
-    let data: ApiResponse<T>
-    try {
-      let response = await axios.get<ApiResponse<T>>(url, config)
-      data = response.data
-    } catch (err: any) {
-      if (axios.isAxiosError(err)) {
-        let error = err as AxiosError
-        data = error.response?.data
-      } else {
-        throw new HttpRequestException()
-      }
-    }
-
-    if (!(data instanceof ApiResponse)) {
-      data = new ApiResponse<T>(data)
-    }
-
-    let success = data?.isSuccess()
-    let result = data?.getData()
-    if (success && result) {
-      return result
-    }
-    throw new HttpRequestException(data.getError()?.message)
+    return await this.request('GET', url, null, headers)
   }
 
   async post<T>(url: string, body: any, headers?: Map<string, string>): Promise<T> {
+    return await this.request('POST', url, body, headers)
+  }
+
+  private async request<T>(method: Method, url: string, body?: any, headers?: Map<string, string>) {
     let config: AxiosRequestConfig = {
+      method,
+      url,
+      data: body ? body : null,
       headers: {
-        Authorization: this.httpData.apiKey,
-        ...(headers ? Object.fromEntries(headers) : {})
+        ...(headers ? headers : {}),
+        'X-Api-Key': this.httpData.apiKey
       }
     }
 
-    let data: ApiResponse<T>
     try {
-      let response = await axios.post<ApiResponse<T>>(url, body, config)
-      data = response.data
+      let response = await axios.request<T>(config)
+      return response.data
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         let error = err as AxiosError
-        data = error.response?.data
+
+        let responseError = error.response?.data
+        throw new HttpRequestException(responseError?.message)
       } else {
         throw new HttpRequestException()
       }
     }
-
-    if (!(data instanceof ApiResponse)) {
-      data = new ApiResponse<T>(data)
-    }
-
-    let success = data?.isSuccess()
-    let result = data?.getData()
-    if (success && result) {
-      return result
-    }
-    throw new HttpRequestException(data.getError()?.message)
   }
 }

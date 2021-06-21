@@ -13,7 +13,7 @@ export class AnchorRepositoryImpl implements AnchorRepository {
   ) {}
 
   async getAnchor(anchor: number): Promise<Anchor> {
-    let url = `${this.configService.getApiBaseUrl()}/anchors/${anchor}`
+    let url = `${this.configService.getApiBaseUrl()}/core/anchor/${anchor}`
     let response = await this.httpClient.get<AnchorRetrieveResponse>(url)
     return new Anchor(
       response.anchor_id,

@@ -5,7 +5,7 @@ export class HttpRequestException implements Error {
 
   constructor(message?: string) {
     if (this.message) {
-      this.message = `HttpClient response was not successful: ${message}`
+      this.message = `HttpClient response was not successful: ${message}.`
     }
   }
 }
