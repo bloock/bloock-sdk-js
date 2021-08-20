@@ -4,7 +4,7 @@ import { Utils } from '../../shared/utils'
 
 /**
  * Message is the class in charge of computing and storing the
- * value of the data sent to Enchainté.
+ * value of the data sent to Bloock.
  * This class is intended to be used by calling "from" static
  * methods to create instances of Message.
  */
@@ -67,7 +67,7 @@ export class Message {
     })
   }
   /**
-   * Given a Message returns True if its contents are valid to be sent to Enchainté's API or False otherwise.
+   * Given a Message returns True if its contents are valid to be sent to Bloock's API or False otherwise.
    * @param  {Message} message Message object.
    * @returns {boolean} Boolean indicating if the Message is susceptible to be sent (True) or not (False).
    */

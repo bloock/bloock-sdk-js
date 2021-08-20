@@ -1,10 +1,10 @@
-import { EnchainteClient, Message, MessageReceipt } from '../src'
+import { BloockClient, Message, MessageReceipt } from '../src'
 import { Anchor } from '../src/anchor/entity/anchor.entity'
 import { ConfigEnv } from '../src/config/entity/config-env.entity'
 
-function getSdk(): EnchainteClient {
+function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new EnchainteClient(apiKey, ConfigEnv.TEST)
+  return new BloockClient(apiKey, ConfigEnv.TEST)
 }
 
 describe('Functional Tests', () => {

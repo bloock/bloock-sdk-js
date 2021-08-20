@@ -1,6 +1,6 @@
 {
-  "name": "@enchainte/sdk",
-  "version": "1.2.0",
+  "name": "@bloock/sdk",
+  "version": "1.2.1",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -8,10 +8,10 @@
   "files": [
     "dist"
   ],
-  "author": "Marc Baqué <mbaque@enchainte.com>",
+  "author": "Marc Baqué <mbaque@bloock.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/enchainte/enchainte-sdk-js"
+    "url": "https://github.com/bloock/bloock-sdk-js"
   },
   "license": "MIT",
   "scripts": {

@@ -1,6 +1,6 @@
 import { WaitAnchorTimeoutException } from '../src/anchor/entity/exception/timeout.exception'
 import { ConfigEnv } from '../src/config/entity/config-env.entity'
-import { EnchainteClient, Message } from '../src/index'
+import { BloockClient, Message } from '../src/index'
 import { HttpRequestException } from '../src/infrastructure/http/exception/http.exception'
 import { InvalidMessageException } from '../src/message/entity/exception/invalid-message.exception'
 import { InvalidArgumentException } from '../src/shared/entity/exception/invalid-argument.exception'
@@ -17,9 +17,9 @@ function randHex(len: number): string {
   return r
 }
 
-function getSdk(): EnchainteClient {
+function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new EnchainteClient(apiKey, ConfigEnv.TEST)
+  return new BloockClient(apiKey, ConfigEnv.TEST)
 }
 
 describe('Acceptance Tests', () => {
