@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe'
-import { InvalidMessageException } from '../../message/entity/exception/invalid-message.exception'
-import { Message } from '../../message/entity/message.entity'
+import { InvalidRecordException } from '../../record/entity/exception/invalid-record.exception'
+import { Record } from '../../record/entity/record.entity'
 import { InvalidArgumentException } from '../../shared/entity/exception/invalid-argument.exception'
 import { Proof } from '../entity/proof.entity'
 import { ProofRepository } from '../repository/proof.repository'
@@ -10,32 +10,32 @@ import { ProofService } from './proof.service'
 export class ProofServiceImpl implements ProofService {
   constructor(@inject('ProofRepository') private proofRepository: ProofRepository) {}
 
-  async retrieveProof(messages: Message[]): Promise<Proof> {
-    if (!Array.isArray(messages) || messages.length === 0) {
+  async retrieveProof(records: Record[]): Promise<Proof> {
+    if (!Array.isArray(records) || records.length === 0) {
       throw new InvalidArgumentException()
     }
 
-    if (!messages.every((message) => Message.isValid(message))) {
-      throw new InvalidMessageException()
+    if (!records.every((record) => Record.isValid(record))) {
+      throw new InvalidRecordException()
     }
 
-    let sorted = Message.sort(messages)
+    let sorted = Record.sort(records)
 
     return this.proofRepository.retrieveProof(sorted)
   }
 
-  async verifyMessages(messages: Message[]): Promise<number> {
-    if (!Array.isArray(messages)) {
+  async verifyRecords(records: Record[]): Promise<number> {
+    if (!Array.isArray(records)) {
       throw new InvalidArgumentException()
     }
 
-    if (!messages.every((message) => Message.isValid(message))) {
-      throw new InvalidMessageException()
+    if (!records.every((record) => Record.isValid(record))) {
+      throw new InvalidRecordException()
     }
 
-    let proof = await this.retrieveProof(messages)
+    let proof = await this.retrieveProof(records)
     if (proof == null) {
-      return Promise.reject("Couldn't get proof for specified messages")
+      return Promise.reject("Couldn't get proof for specified records")
     }
 
     return this.verifyProof(proof)

@@ -1,8 +1,8 @@
-import { Message } from "../../message/entity/message.entity";
-import { Proof } from "../entity/proof.entity";
+import { Record } from '../../record/entity/record.entity'
+import { Proof } from '../entity/proof.entity'
 
 export interface ProofRepository {
-    retrieveProof(messages: Message[]): Promise<Proof>;
-    verifyProof(proof: Proof): Message;
-    validateRoot(root: Message): Promise<number>;
+  retrieveProof(records: Record[]): Promise<Proof>
+  verifyProof(proof: Proof): Record
+  validateRoot(root: Record): Promise<number>
 }

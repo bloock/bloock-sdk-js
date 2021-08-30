@@ -1,7 +1,6 @@
-import { ConfigEnv } from "../entity/config-env.entity";
-import { Configuration } from "../entity/configuration.entity";
+import { Configuration } from '../entity/configuration.entity'
 
 export interface ConfigRepository {
-    fetchConfiguration(environment: ConfigEnv): Configuration
-    getConfiguration(): Configuration
+  getConfiguration(): Configuration
+  setHost(host: string): void
 }

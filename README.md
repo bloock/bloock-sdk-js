@@ -2,10 +2,10 @@
 
 This SDK offers all the features available in the Bloock Toolset:
 
-- Write messages
-- Get messages proof
+- Write records
+- Get records proof
 - Validate proof
-- Get messages details
+- Get records details
 
 ## Installation
 
@@ -26,24 +26,24 @@ In order to interact with the SDK, the data should be processed through the Hash
 There are several ways to generate a Hash:
 
 ```javascript
-const { Message } = require('@bloock/sdk')
+const { Record } = require('@bloock/sdk')
 
 // From an object
-Message.from({
+Record.from({
   data: 'Example Data'
 })
 
 // From a hash string (hex encoded 64-chars long string)
-Message.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
+Record.fromHash('5ac706bdef87529b22c08646b74cb98baf310a46bd21ee420814b04c71fa42b1')
 
 // From a hex encoded string
-Message.fromHex('123456789abcdef')
+Record.fromHex('123456789abcdef')
 
 // From a string
-Message.fromString('Example Data')
+Record.fromString('Example Data')
 
 // From a Uint8Array with a lenght of 32
-Message.fromUint8Array(
+Record.fromUint8Array(
   new Uint8Array([
     1,
     1,
@@ -81,20 +81,20 @@ Message.fromUint8Array(
 )
 ```
 
-### Send messages
+### Send records
 
 This example shows how to send data to Bloock
 
 ```javascript
-const { BloockClient, Message } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 const apiKey = process.env.API_KEY
 
 const client = new BloockClient(apiKey)
 
-const messages = [Message.fromString('Example Data 1')]
+const records = [Record.fromString('Example Data 1')]
 client
-  .sendMessages(messages)
+  .sendRecords(records)
   .then((receipt) => {
     console.log(receipt)
   })
@@ -103,24 +103,24 @@ client
   })
 ```
 
-### Get messages status
+### Get records status
 
-This example shows how to get all the details and status of messages:
+This example shows how to get all the details and status of records:
 
 ```javascript
-const { BloockClient, Message } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 const apiKey = process.env.API_KEY
 
 const client = new BloockClient(apiKey)
 
-const messages = [
-  Message.fromString('Example Data 1'),
-  Message.fromString('Example Data 2'),
-  Message.fromString('Example Data 3')
+const records = [
+  Record.fromString('Example Data 1'),
+  Record.fromString('Example Data 2'),
+  Record.fromString('Example Data 3')
 ]
 client
-  .getMessages(messages)
+  .getRecords(records)
   .then((receipts) => {
     console.log(receipts)
   })
@@ -129,43 +129,43 @@ client
   })
 ```
 
-### Wait for messages to process
+### Wait for records to process
 
-This example shows how to wait for a message to be processed by Bloock after sending it.
+This example shows how to wait for a record to be processed by Bloock after sending it.
 
 ```javascript
-const { BloockClient, Message } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 const apiKey = process.env.API_KEY
 
 const client = new BloockClient(apiKey)
 
-const messages = [Message.fromString('Example Data 1')]
+const records = [Record.fromString('Example Data 1')]
 
-const receipts = await client.sendMessages(messages)
+const receipts = await client.sendRecords(records)
 
 await client.waitAnchor(receipts[0].anchor)
 ```
 
-### Get and validate messages proof
+### Get and validate records proof
 
-This example shows how to get a proof for an array of messages and validate it:
+This example shows how to get a proof for an array of records and validate it:
 
 ```javascript
-const { BloockClient, Message } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 const apiKey = process.env.API_KEY
 
 const client = new BloockClient(apiKey)
 
-const messages = [
-  Message.fromString('Example Data 1'),
-  Message.fromString('Example Data 2'),
-  Message.fromString('Example Data 3')
+const records = [
+  Record.fromString('Example Data 1'),
+  Record.fromString('Example Data 2'),
+  Record.fromString('Example Data 3')
 ]
 
 client
-  .getProof(messages)
+  .getProof(records)
   .then((proof) => {
     let timestamp = client.verifyProof(proof)
     console.log(timestamp)
@@ -177,10 +177,10 @@ client
 
 ### Full example
 
-This snippet shows a complete data cycle including: write, wait for message confirmation and proof retrieval and validation.
+This snippet shows a complete data cycle including: write, wait for record confirmation and proof retrieval and validation.
 
 ```javascript
-const { BloockClient, Message } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 // Helper function to wait some time
 function sleep(ms) {
@@ -204,10 +204,10 @@ async function main() {
   const apiKey = process.env.API_KEY
   const sdk = new BloockClient(apiKey)
 
-  const messages = [Message.fromString(randHex(64))]
+  const records = [Record.fromString(randHex(64))]
 
-  const sendReceipt = await sdk.sendMessages(messages)
-  console.log('Write message - Successful!')
+  const sendReceipt = await sdk.sendRecords(records)
+  console.log('Write record - Successful!')
 
   if (!sendReceipt) {
     expect(false)
@@ -215,15 +215,15 @@ async function main() {
   }
 
   await sdk.waitAnchor(sendReceipt[0].anchor)
-  console.log('Message reached Blockchain!')
+  console.log('Record reached Blockchain!')
 
-  // Retrieving message proof
-  const proof = await sdk.getProof(messages)
+  // Retrieving record proof
+  const proof = await sdk.getProof(records)
   const timestamp = await sdk.verifyProof(proof)
   if (timestamp) {
-    console.log(`Message is valid - Timestamp: ${timestamp}`)
+    console.log(`Record is valid - Timestamp: ${timestamp}`)
   } else {
-    console.log(`Message is invalid`)
+    console.log(`Record is invalid`)
   }
 }
 

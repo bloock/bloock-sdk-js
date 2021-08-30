@@ -1,8 +1,7 @@
 import { WaitAnchorTimeoutException } from '../src/anchor/entity/exception/timeout.exception'
-import { ConfigEnv } from '../src/config/entity/config-env.entity'
-import { BloockClient, Message } from '../src/index'
+import { BloockClient, Record } from '../src/index'
 import { HttpRequestException } from '../src/infrastructure/http/exception/http.exception'
-import { InvalidMessageException } from '../src/message/entity/exception/invalid-message.exception'
+import { InvalidRecordException } from '../src/record/entity/exception/invalid-record.exception'
 import { InvalidArgumentException } from '../src/shared/entity/exception/invalid-argument.exception'
 
 function randHex(len: number): string {
@@ -19,16 +18,16 @@ function randHex(len: number): string {
 
 function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new BloockClient(apiKey, ConfigEnv.TEST)
+  return new BloockClient(apiKey)
 }
 
 describe('Acceptance Tests', () => {
   test('test_basic_e2e', async () => {
     const sdk = getSdk()
 
-    const messages = [Message.fromString(randHex(64))]
+    const records = [Record.fromString(randHex(64))]
 
-    const sendReceipt = await sdk.sendMessages(messages)
+    const sendReceipt = await sdk.sendRecords(records)
     if (!sendReceipt) {
       expect(false)
       return
@@ -36,83 +35,83 @@ describe('Acceptance Tests', () => {
 
     await sdk.waitAnchor(sendReceipt[0].anchor)
 
-    // Retrieving message proof
-    const proof = await sdk.getProof(messages)
+    // Retrieving record proof
+    const proof = await sdk.getProof(records)
     const timestamp = await sdk.verifyProof(proof)
     expect(timestamp).toBeGreaterThan(0)
   })
 
-  test('test_send_messages_invalid_message_input_wrong_char', async () => {
+  test('test_send_records_invalid_record_input_wrong_char', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
     ]
 
-    await expect(sdk.sendMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.sendRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_send_messages_invalid_message_input_missing_chars', async () => {
+  test('test_send_records_invalid_record_input_missing_chars', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
     ]
 
-    await expect(sdk.sendMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.sendRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_send_messages_invalid_message_input_wrong_start', async () => {
+  test('test_send_records_invalid_record_input_wrong_start', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.sendMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.sendRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_send_messages_invalid_message_input_string', async () => {
+  test('test_send_records_invalid_record_input_string', async () => {
     const sdk = getSdk()
-    const messages = 'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'
+    const records = 'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'
 
-    await expect(sdk.sendMessages(messages as any)).rejects.toEqual(new InvalidArgumentException())
+    await expect(sdk.sendRecords(records as any)).rejects.toEqual(new InvalidArgumentException())
   })
 
-  test('test_send_messages_empty_message_input', async () => {
+  test('test_send_records_empty_record_input', async () => {
     const sdk = getSdk()
 
-    const result = await sdk.sendMessages([])
+    const result = await sdk.sendRecords([])
 
     expect(result).toEqual([])
   })
 
-  test('test_get_messages_invalid_message_input_wrong_char', async () => {
+  test('test_get_records_invalid_record_input_wrong_char', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
     ]
 
-    await expect(sdk.getMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_messages_invalid_message_input_missing_chars', async () => {
+  test('test_get_records_invalid_record_input_missing_chars', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
     ]
 
-    await expect(sdk.getMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_messages_invalid_message_input_wrong_start', async () => {
+  test('test_get_records_invalid_record_input_wrong_start', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.getMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
   test('test_get_anchor_non_existing_anchor', async () => {
@@ -143,36 +142,36 @@ describe('Acceptance Tests', () => {
     await expect(sdk.waitAnchor('anchor' as any)).rejects.toEqual(new InvalidArgumentException())
   })
 
-  test('test_get_proof_invalid_message_input_wrong_char', async () => {
+  test('test_get_proof_invalid_record_input_wrong_char', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
     ]
 
-    await expect(sdk.getProof(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getProof(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_proof_invalid_message_input_missing_chars', async () => {
+  test('test_get_proof_invalid_record_input_missing_chars', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
     ]
 
-    await expect(sdk.getProof(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getProof(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_proof_invalid_message_input_wrong_start', async () => {
+  test('test_get_proof_invalid_record_input_wrong_start', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.getProof(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.getProof(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_proof_empty_message_input', async () => {
+  test('test_get_proof_empty_record_input', async () => {
     const sdk = getSdk()
 
     await expect(sdk.getProof([])).rejects.toEqual(new InvalidArgumentException())
@@ -180,65 +179,65 @@ describe('Acceptance Tests', () => {
 
   test('test_get_proof_none_existing_leaf', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
+    const records = [
+      Record.fromHash('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
     ]
 
-    await expect(sdk.getProof(messages)).rejects.toEqual(
+    await expect(sdk.getProof(records)).rejects.toEqual(
       new HttpRequestException(
-        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })
 
-  test('test_verify_messages_invalid_message_input_wrong_char', async () => {
+  test('test_verify_records_invalid_record_input_wrong_char', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
     ]
 
-    await expect(sdk.verifyMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_verify_messages_invalid_message_input_missing_chars', async () => {
+  test('test_verify_records_invalid_record_input_missing_chars', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
+    const records = [
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
     ]
 
-    await expect(sdk.verifyMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_verify_messages_invalid_message_input_wrong_start', async () => {
+  test('test_verify_records_invalid_record_input_wrong_start', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.verifyMessages(messages)).rejects.toEqual(new InvalidMessageException())
+    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_verify_messages_empty_message_input', async () => {
+  test('test_verify_records_empty_record_input', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Message.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.verifyMessages([])).rejects.toEqual(new InvalidArgumentException())
+    await expect(sdk.verifyRecords([])).rejects.toEqual(new InvalidArgumentException())
   })
 
-  test('test_verify_messages_none_existing_leaf', async () => {
+  test('test_verify_records_none_existing_leaf', async () => {
     const sdk = getSdk()
-    const messages = [
-      Message.fromHash('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
+    const records = [
+      Record.fromHash('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
     ]
 
-    await expect(sdk.verifyMessages(messages)).rejects.toEqual(
+    await expect(sdk.verifyRecords(records)).rejects.toEqual(
       new HttpRequestException(
-        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })

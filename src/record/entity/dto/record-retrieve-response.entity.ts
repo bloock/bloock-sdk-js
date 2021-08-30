@@ -1,13 +1,13 @@
-export class MessageRetrieveResponse {
+export class RecordRetrieveResponse {
   public anchor: number
   public client: string
-  public message: string
+  public record: string
   public status: string
 
-  constructor(data: { anchor: number; client: string; message: string; status: string }) {
+  constructor(data: { anchor: number; client: string; record: string; status: string }) {
     this.anchor = data.anchor || 0
     this.client = data.client || ''
-    this.message = data.message || ''
+    this.record = data.record || ''
     this.status = data.status || 'Pending'
   }
 }

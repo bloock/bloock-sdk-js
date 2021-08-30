@@ -1,46 +1,25 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 import { container } from 'tsyringe'
-import { ConfigEnv } from '../entity/config-env.entity'
-import { Configuration } from '../entity/configuration.entity'
-import { ConfigServiceImpl } from '../service/config-impl.service'
-import { ConfigService } from '../service/config.service'
+import { ConfigData } from '../repository/config-data'
+import { ConfigRepositoryImpl } from '../repository/config-impl.repository'
 import { ConfigRepository } from './config.repository'
 
-describe('Config Repository Tests', () => {
-  let configRepositoryMock: MockProxy<ConfigRepository>
+describe('Config Service Tests', () => {
+  let configDataMock: MockProxy<ConfigData>
 
   beforeEach(() => {
-    configRepositoryMock = mock<ConfigRepository>()
+    configDataMock = mock<ConfigData>()
 
-    container.registerInstance('ConfigRepository', configRepositoryMock)
-    container.register('ConfigService', {
-      useClass: ConfigServiceImpl
+    container.registerInstance('ConfigData', configDataMock)
+    container.register('ConfigRepository', {
+      useClass: ConfigRepositoryImpl
     })
   })
 
-  it('test_setup_environment', async () => {
-    let configService = container.resolve<ConfigService>('ConfigService')
+  it('test_set_host', async () => {
+    let configRepository = container.resolve<ConfigRepository>('ConfigRepository')
 
-    configService.setupEnvironment(ConfigEnv.TEST)
-    expect(configRepositoryMock.fetchConfiguration).toHaveBeenCalledTimes(1)
-  })
-
-  it('test_get_configuration', async () => {
-    let configService = container.resolve<ConfigService>('ConfigService')
-
-    configService.getConfiguration()
-    expect(configRepositoryMock.getConfiguration).toHaveBeenCalledTimes(1)
-  })
-
-  it('test_get_base_url', async () => {
-    let configService = container.resolve<ConfigService>('ConfigService')
-
-    let config = new Configuration()
-    config.HOST = 'test'
-
-    configRepositoryMock.getConfiguration.mockReturnValue(config)
-
-    configService.getConfiguration()
-    expect(configService.getApiBaseUrl()).toEqual('test')
+    configRepository.setHost('https://modified.bloock.com')
+    expect(configDataMock.config.HOST).toBe('https://modified.bloock.com')
   })
 })

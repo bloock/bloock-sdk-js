@@ -3,7 +3,7 @@ import { container } from 'tsyringe'
 import { ConfigService } from '../../config/service/config.service'
 import { BlockchainClient } from '../../infrastructure/blockchain.client'
 import { HttpClient } from '../../infrastructure/http.client'
-import { Message } from '../../message/entity/message.entity'
+import { Record } from '../../record/entity/record.entity'
 import { ProofRetrieveResponse } from '../entity/dto/proof-retrieve-response.entity'
 import { Proof } from '../entity/proof.entity'
 import { ProofRepositoryImpl } from './proof-impl.repository'
@@ -44,7 +44,7 @@ describe('Proof Repository Tests', () => {
 
     let proofRepository = container.resolve<ProofRepository>('ProofRepository')
     let proof = await proofRepository.retrieveProof([
-      Message.fromHash('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')
+      Record.fromHash('02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5')
     ])
 
     expect(proof).toBeInstanceOf(ProofRetrieveResponse)

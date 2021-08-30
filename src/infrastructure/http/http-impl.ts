@@ -43,7 +43,7 @@ export class HttpClientImpl implements HttpClient {
         let error = err as AxiosError
 
         let responseError = error.response?.data
-        throw new HttpRequestException(responseError?.message)
+        throw new HttpRequestException(responseError?.record)
       } else {
         throw new HttpRequestException()
       }

@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe'
 import { ConfigService } from '../../config/service/config.service'
 import { BlockchainClient } from '../../infrastructure/blockchain.client'
 import { HttpClient } from '../../infrastructure/http.client'
-import { Message } from '../../message/entity/message.entity'
+import { Record } from '../../record/entity/record.entity'
 import { Utils } from '../../shared/utils'
 import { ProofRetrieveRequest } from '../entity/dto/proof-retrieve-request.entity'
 import { Proof } from '../entity/proof.entity'
@@ -16,14 +16,14 @@ export class ProofRepositoryImpl implements ProofRepository {
     @inject('ConfigService') private configService: ConfigService
   ) {}
 
-  retrieveProof(messages: Message[]): Promise<Proof> {
+  retrieveProof(records: Record[]): Promise<Proof> {
     let url = `${this.configService.getApiBaseUrl()}/core/proof`
-    let body = new ProofRetrieveRequest(messages.map((messages) => messages.getHash()))
+    let body = new ProofRetrieveRequest(records.map((records) => records.getHash()))
     return this.httpClient.post(url, body)
   }
 
-  verifyProof(proof: Proof): Message {
-    const leaves = proof.leaves.map((leaf) => Message.fromHash(leaf).getUint8ArrayHash())
+  verifyProof(proof: Proof): Record {
+    const leaves = proof.leaves.map((leaf) => Record.fromHash(leaf).getUint8ArrayHash())
     const hashes = proof.nodes.map((node) => Utils.hexToBytes(node))
     const depth = Utils.hexToUint16(proof.depth)
     const bitmap = Utils.hexToBytes(proof.bitmap)
@@ -57,10 +57,10 @@ export class ProofRepositoryImpl implements ProofRepository {
       }
       stack.push([act_hash, act_depth])
     }
-    return Message.fromHash(Utils.bytesToHex(stack[0][0]))
+    return Record.fromHash(Utils.bytesToHex(stack[0][0]))
   }
 
-  validateRoot(root: Message): Promise<number> {
+  validateRoot(root: Record): Promise<number> {
     return this.blockchainClient.validateRoot(root.getHash())
   }
 }

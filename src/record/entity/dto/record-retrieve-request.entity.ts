@@ -1,4 +1,4 @@
-export class ProofRetrieveRequest {
+export class RecordRetrieveRequest {
   public records: string[]
 
   constructor(records: string[]) {

@@ -1,33 +1,45 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 import { container } from 'tsyringe'
-import { ConfigEnv } from '../entity/config-env.entity'
-import { ConfigData } from '../repository/config-data'
-import { ConfigRepositoryImpl } from '../repository/config-impl.repository'
+import { Configuration } from '../entity/configuration.entity'
 import { ConfigRepository } from '../repository/config.repository'
+import { ConfigServiceImpl } from '../service/config-impl.service'
+import { ConfigService } from '../service/config.service'
 
-describe('Config Service Tests', () => {
-  let configDataMock: MockProxy<ConfigData>
+describe('Config Repository Tests', () => {
+  let configRepositoryMock: MockProxy<ConfigRepository>
 
   beforeEach(() => {
-    configDataMock = mock<ConfigData>()
+    configRepositoryMock = mock<ConfigRepository>()
 
-    container.registerInstance('ConfigData', configDataMock)
-    container.register('ConfigRepository', {
-      useClass: ConfigRepositoryImpl
+    container.registerInstance('ConfigRepository', configRepositoryMock)
+    container.register('ConfigService', {
+      useClass: ConfigServiceImpl
     })
   })
 
-  it('test_fetch_configuration_prod', async () => {
-    let configRepository = container.resolve<ConfigRepository>('ConfigRepository')
+  it('test_get_configuration', async () => {
+    let configService = container.resolve<ConfigService>('ConfigService')
 
-    configRepository.fetchConfiguration(ConfigEnv.PROD)
-    expect(configDataMock.setConfiguration).toHaveBeenCalledTimes(1)
+    configService.getConfiguration()
+    expect(configRepositoryMock.getConfiguration).toHaveBeenCalledTimes(1)
   })
 
-  it('test_fetch_configuration_test', async () => {
-    let configRepository = container.resolve<ConfigRepository>('ConfigRepository')
+  it('test_get_base_url', async () => {
+    let configService = container.resolve<ConfigService>('ConfigService')
 
-    configRepository.fetchConfiguration(ConfigEnv.TEST)
-    expect(configDataMock.setTestConfiguration).toHaveBeenCalledTimes(1)
+    let config = new Configuration()
+    config.HOST = 'test'
+
+    configRepositoryMock.getConfiguration.mockReturnValue(config)
+
+    configService.getConfiguration()
+    expect(configService.getApiBaseUrl()).toEqual('test')
+  })
+
+  it('test_set_host', async () => {
+    let configService = container.resolve<ConfigService>('ConfigService')
+
+    configService.setHost('https://api.bloock.com')
+    expect(configRepositoryMock.setHost).toHaveBeenCalledTimes(1)
   })
 })

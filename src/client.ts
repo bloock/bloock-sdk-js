@@ -4,25 +4,25 @@ import { AnchorService } from './anchor/service/anchor.service'
 import { ConfigEnv } from './config/entity/config-env.entity'
 import { ConfigService } from './config/service/config.service'
 import { HttpClient } from './infrastructure/http.client'
-import { MessageReceipt } from './message/entity/message-receipt.entity'
-import { Message } from './message/entity/message.entity'
-import { MessageService } from './message/service/message.service'
 import { Proof } from './proof/entity/proof.entity'
 import { ProofService } from './proof/service/proof.service'
+import { RecordReceipt } from './record/entity/record-receipt.entity'
+import { Record } from './record/entity/record.entity'
+import { RecordService } from './record/service/record.service'
 import { DependencyInjection } from './shared/dependency-injection'
 
 /**
- * Entry-point to the Bloock SDK:
+ * Entrypoint to the Bloock SDK:
  *    This SDK offers all the features available in the Bloock Toolset:
- *      * Write messages
- *      * Get messages proof
+ *      * Write records
+ *      * Get records proof
  *      * Validate proof
- *      * Get messages details
+ *      * Get records details
  */
 export class BloockClient {
   private anchorService: AnchorService
   private configService: ConfigService
-  private messageService: MessageService
+  private recordService: RecordService
   private proofService: ProofService
 
   private httpClient: HttpClient
@@ -32,38 +32,45 @@ export class BloockClient {
    * @param  {string} apiKey Client API Key.
    * @param  {ConfigEnv} [environment=ConfigEnv.PROD] Defines the Bloock's environment to use. By default: production.
    */
-  constructor(apiKey: string, environment: ConfigEnv = ConfigEnv.PROD) {
+  constructor(apiKey: string) {
     DependencyInjection.setUp()
 
     this.anchorService = container.resolve<AnchorService>('AnchorService')
     this.configService = container.resolve<ConfigService>('ConfigService')
-    this.messageService = container.resolve<MessageService>('MessageService')
+    this.recordService = container.resolve<RecordService>('RecordService')
     this.proofService = container.resolve<ProofService>('ProofService')
 
     this.httpClient = container.resolve<HttpClient>('HttpClient')
 
     this.httpClient.setApiKey(apiKey)
-    this.configService.setupEnvironment(environment)
   }
   /**
-   * Sends a list of Message to Bloock.
-   * @param  {Message[]} messages List of Message to send.
-   * @returns {Promise<MessageReceipt[]>} List of MessageReceipt of each Message sent.
-   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
-   * @throws {HttpRequestException} Error return by Bloock's API.
+   * Overrides the API host.
+   * @param  {string} host The API host to apply
+   * @returns {void}
    */
-  public async sendMessages(messages: Message[]): Promise<MessageReceipt[]> {
-    return this.messageService.sendMessages(messages)
+  public setHost(host: string): void {
+    return this.configService.setHost(host)
   }
   /**
-   * Retrieves all MessageReceipt for the specified Anchor.
-   * @param  {Message[]} messages List of Message to fetch.
-   * @returns {Promise<MessageReceipt[]>} List with the MessageReceipt of each message requested.
-   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
+   * Sends a list of Record to Bloock.
+   * @param  {Record[]} records List of Record to send.
+   * @returns {Promise<RecordReceipt[]>} List of RecordReceipt of each Record sent.
+   * @throws {InvalidRecordException} At least one of the records sent was not well formed.
    * @throws {HttpRequestException} Error return by Bloock's API.
    */
-  public async getMessages(messages: Message[]): Promise<MessageReceipt[]> {
-    return this.messageService.getMessages(messages)
+  public async sendRecords(records: Record[]): Promise<RecordReceipt[]> {
+    return this.recordService.sendRecords(records)
+  }
+  /**
+   * Retrieves all RecordReceipt for the specified Anchor.
+   * @param  {Record[]} records List of Record to fetch.
+   * @returns {Promise<RecordReceipt[]>} List with the RecordReceipt of each record requested.
+   * @throws {InvalidRecordException} At least one of the records sent was not well formed.
+   * @throws {HttpRequestException} Error return by Bloock's API.
+   */
+  public async getRecords(records: Record[]): Promise<RecordReceipt[]> {
+    return this.recordService.getRecords(records)
   }
   /**
    * Gets an specific anchor id details.
@@ -89,15 +96,15 @@ export class BloockClient {
     return this.anchorService.waitAnchor(anchor, timeout)
   }
   /**
-   * Retrieves an integrity Proof for the specified list of Message.
-   * @param  {Message[]} messages List of messages to validate.
+   * Retrieves an integrity Proof for the specified list of Record.
+   * @param  {Record[]} records List of records to validate.
    * @returns {Promise<Proof>} The Proof object containing the elements necessary to verify
-   *          the integrity of the messages in the input list. If no message was requested, then returns None.
-   * @throws {InvalidMessageException} At least one of the messages sent was not well formed.
+   *          the integrity of the records in the input list. If no record was requested, then returns None.
+   * @throws {InvalidRecordException} At least one of the records sent was not well formed.
    * @throws {HttpRequestException} Error return by Bloock's API.
    */
-  public async getProof(messages: Message[]): Promise<Proof> {
-    return this.proofService.retrieveProof(messages)
+  public async getProof(records: Record[]): Promise<Proof> {
+    return this.proofService.retrieveProof(records)
   }
   /**
    * Verifies if the specified integrity Proof is valid and checks if it's currently included in the blockchain.
@@ -110,13 +117,13 @@ export class BloockClient {
   }
   /**
    * It retrieves a proof for the specified list of Anchor using getProof and verifies it using verifyProof.
-   * @param  {Message[]} messages list of messages to validate
+   * @param  {Record[]} records list of records to validate
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {InvalidArgumentException} Informs that the input is not a number.
    * @throws {HttpRequestException} Error return by Bloock's API.
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async verifyMessages(messages: Message[]): Promise<number> {
-    return this.proofService.verifyMessages(messages)
+  public async verifyRecords(records: Record[]): Promise<number> {
+    return this.proofService.verifyRecords(records)
   }
 }
