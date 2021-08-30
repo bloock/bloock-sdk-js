@@ -60,7 +60,7 @@ export class RecordServiceImpl implements RecordService {
         new RecordReceipt(
           record.anchor || 0,
           record.client || '',
-          record.record || '',
+          record.message || '',
           record.status || ''
         )
     )

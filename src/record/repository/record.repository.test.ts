@@ -27,7 +27,7 @@ describe('Record Repository Tests', () => {
       new RecordWriteResponse({
         anchor: 80,
         client: 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
-        records: ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'],
+        messages: ['02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'],
         status: 'Pending'
       })
     )
@@ -40,7 +40,7 @@ describe('Record Repository Tests', () => {
     expect(response).toBeInstanceOf(RecordWriteResponse)
     expect(response.anchor).toEqual(80)
     expect(response.client).toEqual('ce10c769-022b-405e-8e7c-3b52eeb2a4ea')
-    expect(response.records).toEqual([
+    expect(response.messages).toEqual([
       '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'
     ])
     expect(response.status).toEqual('Pending')
@@ -57,7 +57,7 @@ describe('Record Repository Tests', () => {
     expect(response).toBeInstanceOf(RecordWriteResponse)
     expect(response.anchor).toEqual(0)
     expect(response.client).toEqual('')
-    expect(response.records).toEqual([])
+    expect(response.messages).toEqual([])
     expect(response.status).toEqual('Pending')
   })
 
@@ -66,7 +66,7 @@ describe('Record Repository Tests', () => {
       new RecordRetrieveResponse({
         anchor: 80,
         client: 'ce10c769-022b-405e-8e7c-3b52eeb2a4ea',
-        record: '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5',
+        message: '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5',
         status: 'Pending'
       })
     ])
@@ -79,7 +79,7 @@ describe('Record Repository Tests', () => {
     expect(response[0]).toBeInstanceOf(RecordRetrieveResponse)
     expect(response[0].anchor).toEqual(80)
     expect(response[0].client).toEqual('ce10c769-022b-405e-8e7c-3b52eeb2a4ea')
-    expect(response[0].record).toEqual(
+    expect(response[0].message).toEqual(
       '02aae7e86eb50f61a62083a320475d9d60cbd52749dbf08fa942b1b97f50aee5'
     )
     expect(response[0].status).toEqual('Pending')
@@ -96,7 +96,7 @@ describe('Record Repository Tests', () => {
     expect(response[0]).toBeInstanceOf(RecordRetrieveResponse)
     expect(response[0].anchor).toEqual(0)
     expect(response[0].client).toEqual('')
-    expect(response[0].record).toEqual('')
+    expect(response[0].message).toEqual('')
     expect(response[0].status).toEqual('Pending')
   })
 })
