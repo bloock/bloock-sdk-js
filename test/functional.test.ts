@@ -3,7 +3,10 @@ import { Anchor } from '../src/anchor/entity/anchor.entity'
 
 function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new BloockClient(apiKey)
+  const apiHost = process.env['API_HOST'] || ''
+  let client = new BloockClient(apiKey)
+  client.setApiHost(apiHost)
+  return client
 }
 
 describe('Functional Tests', () => {
@@ -12,7 +15,11 @@ describe('Functional Tests', () => {
 
     const sdk = getSdk()
 
-    const records = [Record.fromString('Example Data')]
+    const records = [
+      Record.fromString('Example Data 1'),
+      Record.fromString('Example Data 2'),
+      Record.fromString('Example Data 3')
+    ]
 
     const sendReceipt = await sdk.sendRecords(records)
     expect(Array.isArray(sendReceipt)).toBeTruthy()

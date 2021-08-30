@@ -18,7 +18,10 @@ function randHex(len: number): string {
 
 function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
-  return new BloockClient(apiKey)
+  const apiHost = process.env['API_HOST'] || ''
+  let client = new BloockClient(apiKey)
+  client.setApiHost(apiHost)
+  return client
 }
 
 describe('Acceptance Tests', () => {
@@ -185,7 +188,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.getProof(records)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })
@@ -237,7 +240,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.verifyRecords(records)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })

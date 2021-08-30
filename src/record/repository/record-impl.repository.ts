@@ -16,12 +16,12 @@ export class RecordRepositoryImpl implements RecordRepository {
   ) {}
 
   sendRecords(records: Record[]): Promise<RecordWriteResponse> {
-    let url = `${this.configService.getApiBaseUrl()}/core/records`
+    let url = `${this.configService.getApiBaseUrl()}/core/messages`
     let body = new RecordWriteRequest(records.map((records) => records.getHash()))
     return this.httpClient.post(url, body)
   }
   fetchRecords(records: Record[]): Promise<RecordRetrieveResponse[]> {
-    let url = `${this.configService.getApiBaseUrl()}/core/records/fetch`
+    let url = `${this.configService.getApiBaseUrl()}/core/messages/fetch`
     let body = new RecordRetrieveRequest(records.map((records) => records.getHash()))
     return this.httpClient.post(url, body)
   }

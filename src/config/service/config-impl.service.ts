@@ -15,7 +15,7 @@ export class ConfigServiceImpl implements ConfigService {
     return `${this.configRepository.getConfiguration().HOST}`
   }
 
-  setHost(host: string): void {
-    this.configRepository.setHost(host)
+  setApiHost(host: string): void {
+    this.configRepository.setApiHost(host)
   }
 }

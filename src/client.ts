@@ -1,7 +1,6 @@
 import { container } from 'tsyringe'
 import { Anchor } from './anchor/entity/anchor.entity'
 import { AnchorService } from './anchor/service/anchor.service'
-import { ConfigEnv } from './config/entity/config-env.entity'
 import { ConfigService } from './config/service/config.service'
 import { HttpClient } from './infrastructure/http.client'
 import { Proof } from './proof/entity/proof.entity'
@@ -49,8 +48,8 @@ export class BloockClient {
    * @param  {string} host The API host to apply
    * @returns {void}
    */
-  public setHost(host: string): void {
-    return this.configService.setHost(host)
+  public setApiHost(host: string): void {
+    return this.configService.setApiHost(host)
   }
   /**
    * Sends a list of Record to Bloock.

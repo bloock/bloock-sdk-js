@@ -39,7 +39,7 @@ describe('Config Repository Tests', () => {
   it('test_set_host', async () => {
     let configService = container.resolve<ConfigService>('ConfigService')
 
-    configService.setHost('https://api.bloock.com')
-    expect(configRepositoryMock.setHost).toHaveBeenCalledTimes(1)
+    configService.setApiHost('https://api.bloock.com')
+    expect(configRepositoryMock.setApiHost).toHaveBeenCalledTimes(1)
   })
 })

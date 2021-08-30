@@ -1,7 +1,7 @@
 export class RecordWriteRequest {
-  public records: string[]
+  public messages: string[]
 
-  constructor(records: string[]) {
-    this.records = records
+  constructor(messages: string[]) {
+    this.messages = messages
   }
 }

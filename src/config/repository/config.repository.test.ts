@@ -19,7 +19,7 @@ describe('Config Service Tests', () => {
   it('test_set_host', async () => {
     let configRepository = container.resolve<ConfigRepository>('ConfigRepository')
 
-    configRepository.setHost('https://modified.bloock.com')
+    configRepository.setApiHost('https://modified.bloock.com')
     expect(configDataMock.config.HOST).toBe('https://modified.bloock.com')
   })
 })

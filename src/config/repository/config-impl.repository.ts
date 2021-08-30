@@ -11,7 +11,7 @@ export class ConfigRepositoryImpl implements ConfigRepository {
     return this.configData.getConfiguration()
   }
 
-  setHost(host: string): void {
+  setApiHost(host: string): void {
     this.configData.config.HOST = host
   }
 }

@@ -1,7 +1,7 @@
 export class RecordRetrieveRequest {
-  public records: string[]
+  public messages: string[]
 
   constructor(records: string[]) {
-    this.records = records
+    this.messages = records
   }
 }
