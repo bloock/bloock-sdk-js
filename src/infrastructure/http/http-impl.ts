@@ -42,8 +42,12 @@ export class HttpClientImpl implements HttpClient {
       if (axios.isAxiosError(err)) {
         let error = err as AxiosError
 
-        let responseError = error.response?.data
-        throw new HttpRequestException(responseError?.message)
+        if (error.response?.status == 401) {
+          throw new HttpRequestException('Invalid API Key provided')
+        } else {
+          let responseError = error.response?.data
+          throw new HttpRequestException(responseError?.message)
+        }
       } else {
         throw new HttpRequestException()
       }

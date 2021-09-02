@@ -4,7 +4,7 @@ export class HttpRequestException implements Error {
   stack?: string | undefined
 
   constructor(message?: string) {
-    if (this.message) {
+    if (!!this.message) {
       this.message = `HttpClient response was not successful: ${message}.`
     }
   }
