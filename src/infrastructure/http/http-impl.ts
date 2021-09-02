@@ -42,7 +42,6 @@ export class HttpClientImpl implements HttpClient {
       if (axios.isAxiosError(err)) {
         let error = err as AxiosError
 
-        console.log(url, body, error.response?.data)
         let responseError = error.response?.data
         throw new HttpRequestException(responseError?.message)
       } else {
