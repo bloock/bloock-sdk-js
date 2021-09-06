@@ -1,3 +1,5 @@
+import Network from '../config/entity/networks.entity'
+
 export interface BlockchainClient {
-    validateRoot(root: string): Promise<number>;
+  validateRoot(network: Network, root: string): Promise<number>
 }

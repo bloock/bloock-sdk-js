@@ -1,4 +1,4 @@
-import { BloockClient, Record, RecordReceipt } from '../src'
+import { BloockClient, Network, Record, RecordReceipt } from '../src'
 import { Anchor } from '../src/anchor/entity/anchor.entity'
 
 function getSdk(): BloockClient {
@@ -111,7 +111,7 @@ describe('Functional Tests', () => {
     let proof = await sdk.getProof(records)
     expect(proof).toBeDefined()
 
-    let timestamp = await sdk.verifyProof(proof)
+    let timestamp = await sdk.verifyProof(proof, Network.BLOOCK_CHAIN)
     expect(timestamp).toBeGreaterThan(0)
   })
 })

@@ -1,5 +1,6 @@
 import { inject, injectable } from 'tsyringe'
-import { Configuration } from '../entity/configuration.entity'
+import { Configuration, NetworkConfiguration } from '../entity/configuration.entity'
+import Network from '../entity/networks.entity'
 import { ConfigRepository } from '../repository/config.repository'
 import { ConfigService } from './config.service'
 
@@ -17,5 +18,13 @@ export class ConfigServiceImpl implements ConfigService {
 
   setApiHost(host: string): void {
     this.configRepository.setApiHost(host)
+  }
+
+  getNetworkConfiguration(network: Network): NetworkConfiguration {
+    return this.configRepository.getNetworkConfiguration(network)
+  }
+
+  setNetworkConfiguration(network: Network, config: NetworkConfiguration): void {
+    return this.configRepository.setNetworkConfiguration(network, config)
   }
 }

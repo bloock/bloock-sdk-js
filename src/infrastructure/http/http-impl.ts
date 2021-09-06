@@ -46,7 +46,9 @@ export class HttpClientImpl implements HttpClient {
           throw new HttpRequestException('Invalid API Key provided')
         } else {
           let responseError = error.response?.data
-          throw new HttpRequestException(responseError?.message)
+          throw new HttpRequestException(
+            responseError?.message ? responseError?.message : error.response?.status
+          )
         }
       } else {
         throw new HttpRequestException()

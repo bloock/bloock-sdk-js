@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import Network from '../../config/entity/networks.entity'
 import { ConfigService } from '../../config/service/config.service'
 import { BlockchainClient } from '../../infrastructure/blockchain.client'
 import { HttpClient } from '../../infrastructure/http.client'
@@ -60,7 +61,7 @@ export class ProofRepositoryImpl implements ProofRepository {
     return Record.fromHash(Utils.bytesToHex(stack[0][0]))
   }
 
-  validateRoot(root: Record): Promise<number> {
-    return this.blockchainClient.validateRoot(root.getHash())
+  validateRoot(network: Network, root: Record): Promise<number> {
+    return this.blockchainClient.validateRoot(network, root.getHash())
   }
 }

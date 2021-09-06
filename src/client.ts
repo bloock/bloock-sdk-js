@@ -1,6 +1,8 @@
 import { container } from 'tsyringe'
 import { Anchor } from './anchor/entity/anchor.entity'
 import { AnchorService } from './anchor/service/anchor.service'
+import { NetworkConfiguration } from './config/entity/configuration.entity'
+import Network from './config/entity/networks.entity'
 import { ConfigService } from './config/service/config.service'
 import { HttpClient } from './infrastructure/http.client'
 import { Proof } from './proof/entity/proof.entity'
@@ -50,6 +52,14 @@ export class BloockClient {
    */
   public setApiHost(host: string): void {
     return this.configService.setApiHost(host)
+  }
+  /**
+   * Overrides the Network configuration.
+   * @param  {string} host The API host to apply
+   * @returns {void}
+   */
+  public setNetworkConfiguration(network: Network, configuration: NetworkConfiguration): void {
+    return this.configService.setNetworkConfiguration(network, configuration)
   }
   /**
    * Sends a list of Record to Bloock.
@@ -108,21 +118,29 @@ export class BloockClient {
   /**
    * Verifies if the specified integrity Proof is valid and checks if it's currently included in the blockchain.
    * @param  {Proof} proof Proof to validate.
+   * @param  {Network} network blockchain network where the proof will be validated
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async verifyProof(proof: Proof): Promise<number> {
-    return this.proofService.verifyProof(proof)
+  public async verifyProof(
+    proof: Proof,
+    network: Network = Network.ETHEREUM_MAINNET
+  ): Promise<number> {
+    return this.proofService.verifyProof(proof, network)
   }
   /**
    * It retrieves a proof for the specified list of Anchor using getProof and verifies it using verifyProof.
    * @param  {Record[]} records list of records to validate
+   * @param  {Network} network blockchain network where the records will be validated
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {InvalidArgumentException} Informs that the input is not a number.
    * @throws {HttpRequestException} Error return by Bloock's API.
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async verifyRecords(records: Record[]): Promise<number> {
-    return this.proofService.verifyRecords(records)
+  public async verifyRecords(
+    records: Record[],
+    network: Network = Network.ETHEREUM_MAINNET
+  ): Promise<number> {
+    return this.proofService.verifyRecords(records, network)
   }
 }

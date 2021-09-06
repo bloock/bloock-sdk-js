@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import Network from '../../config/entity/networks.entity'
 import { InvalidRecordException } from '../../record/entity/exception/invalid-record.exception'
 import { Record } from '../../record/entity/record.entity'
 import { InvalidArgumentException } from '../../shared/entity/exception/invalid-argument.exception'
@@ -24,7 +25,7 @@ export class ProofServiceImpl implements ProofService {
     return this.proofRepository.retrieveProof(sorted)
   }
 
-  async verifyRecords(records: Record[]): Promise<number> {
+  async verifyRecords(records: Record[], network: Network): Promise<number> {
     if (!Array.isArray(records)) {
       throw new InvalidArgumentException()
     }
@@ -38,17 +39,17 @@ export class ProofServiceImpl implements ProofService {
       return Promise.reject("Couldn't get proof for specified records")
     }
 
-    return this.verifyProof(proof)
+    return this.verifyProof(proof, network)
   }
 
-  async verifyProof(proof: Proof): Promise<number> {
+  async verifyProof(proof: Proof, network: Network): Promise<number> {
     try {
       let root = this.proofRepository.verifyProof(proof)
       if (root == null) {
         return Promise.reject('The provided proof is invalid')
       }
 
-      return this.proofRepository.validateRoot(root)
+      return this.proofRepository.validateRoot(network, root)
     } catch (error) {
       return Promise.reject(error)
     }

@@ -1,5 +1,5 @@
 import { WaitAnchorTimeoutException } from '../src/anchor/entity/exception/timeout.exception'
-import { BloockClient, Record } from '../src/index'
+import { BloockClient, Network, Record } from '../src/index'
 import { HttpRequestException } from '../src/infrastructure/http/exception/http.exception'
 import { InvalidRecordException } from '../src/record/entity/exception/invalid-record.exception'
 import { InvalidArgumentException } from '../src/shared/entity/exception/invalid-argument.exception'
@@ -40,7 +40,7 @@ describe('Acceptance Tests', () => {
 
     // Retrieving record proof
     const proof = await sdk.getProof(records)
-    const timestamp = await sdk.verifyProof(proof)
+    const timestamp = await sdk.verifyProof(proof, Network.BLOOCK_CHAIN)
     expect(timestamp).toBeGreaterThan(0)
   })
 
@@ -199,7 +199,9 @@ describe('Acceptance Tests', () => {
       Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
     ]
 
-    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
+    await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
+      new InvalidRecordException()
+    )
   })
 
   test('test_verify_records_invalid_record_input_missing_chars', async () => {
@@ -209,7 +211,9 @@ describe('Acceptance Tests', () => {
       Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
     ]
 
-    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
+    await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
+      new InvalidRecordException()
+    )
   })
 
   test('test_verify_records_invalid_record_input_wrong_start', async () => {
@@ -219,7 +223,9 @@ describe('Acceptance Tests', () => {
       Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.verifyRecords(records)).rejects.toEqual(new InvalidRecordException())
+    await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
+      new InvalidRecordException()
+    )
   })
 
   test('test_verify_records_empty_record_input', async () => {
@@ -229,7 +235,9 @@ describe('Acceptance Tests', () => {
       Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
     ]
 
-    await expect(sdk.verifyRecords([])).rejects.toEqual(new InvalidArgumentException())
+    await expect(sdk.verifyRecords([], Network.BLOOCK_CHAIN)).rejects.toEqual(
+      new InvalidArgumentException()
+    )
   })
 
   test('test_verify_records_none_existing_leaf', async () => {
@@ -238,7 +246,7 @@ describe('Acceptance Tests', () => {
       Record.fromHash('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef')
     ]
 
-    await expect(sdk.verifyRecords(records)).rejects.toEqual(
+    await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
       new HttpRequestException(
         "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
