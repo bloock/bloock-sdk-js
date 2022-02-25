@@ -1,4 +1,3 @@
-import secp256k1 from 'secp256k1'
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
 import { Utils } from '../../shared/utils'
@@ -94,13 +93,5 @@ export class Record {
     return Utils.hexToBytes(this.hash)
   }
 
-  public sign(privateKey: string) {
-    const privKey = Buffer.from(privateKey, 'hex')
 
-    if (!secp256k1.privateKeyVerify(privKey)) {
-      throw "Sign: Invalid private key provided"
-    }
-
-    const signObj = secp256k1.ecdsaSign(this.getUint8ArrayHash(), privKey)
-  }
 }
