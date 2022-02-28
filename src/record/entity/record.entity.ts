@@ -94,7 +94,7 @@ export class Record {
     return Utils.hexToBytes(this.hash)
   }
 
-  public sign(privateKey: string) {
+  public sign(privateKey: string): Record {
     const privKey = Buffer.from(privateKey, 'hex')
 
     if (!secp256k1.privateKeyVerify(privKey)) {
@@ -102,5 +102,7 @@ export class Record {
     }
 
     const signObj = secp256k1.ecdsaSign(this.getUint8ArrayHash(), privKey)
+
+    return new Record(this.hash)
   }
 }
