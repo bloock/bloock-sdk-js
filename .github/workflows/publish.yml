@@ -17,6 +17,7 @@ jobs:
       - run: npm run test
       - run: npm run e2e
         env:
+          API_HOST: ${{secrets.API_HOST}}
           API_KEY: ${{secrets.API_KEY}}
       - run: npm run build
       - run: npm publish
