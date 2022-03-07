@@ -117,14 +117,6 @@ describe('Acceptance Tests', () => {
     await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
-  test('test_get_anchor_non_existing_anchor', async () => {
-    const sdk = getSdk()
-
-    await expect(sdk.getAnchor(666666666666666666)).rejects.toEqual(
-      new HttpRequestException('Anchor not found')
-    )
-  })
-
   test('test_get_anchor_invalid_input', async () => {
     const sdk = getSdk()
 
@@ -188,7 +180,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.getProof(records)).rejects.toEqual(
       new HttpRequestException(
-        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })
@@ -248,7 +240,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
       new HttpRequestException(
-        "Message '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
   })
