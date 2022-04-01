@@ -43,7 +43,7 @@ export class ProofServiceImpl implements ProofService {
     if (network) {
       finalNetwork = network
     } else {
-      finalNetwork = selectNetwork(proof.anchor.networks[0].name)
+      finalNetwork = selectNetwork(proof.anchor.networks)
     }
 
     let root = await this.verifyProof(proof)
