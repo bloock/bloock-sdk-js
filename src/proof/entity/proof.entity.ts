@@ -1,4 +1,4 @@
-import { Utils } from '../../shared/utils'
+import { isHex } from '../../shared/utils'
 
 /**
  * Proof is the object in charge of storing all data necessary to compute
@@ -24,17 +24,17 @@ export class Proof {
   public static isValid(proof: Proof): boolean {
     if (proof instanceof Proof) {
       try {
-        if (proof.leaves.some((l) => !Utils.isHex(l) || l.length != 64)) {
+        if (proof.leaves.some((l) => !isHex(l) || l.length != 64)) {
           return false
         }
 
-        if (proof.nodes.some((n) => !Utils.isHex(n) || n.length != 64)) {
+        if (proof.nodes.some((n) => !isHex(n) || n.length != 64)) {
           return false
         }
 
         if (
           proof.depth.length != (proof.leaves.length + proof.nodes.length) * 4 &&
-          Utils.isHex(proof.depth)
+          isHex(proof.depth)
         ) {
           return false
         }

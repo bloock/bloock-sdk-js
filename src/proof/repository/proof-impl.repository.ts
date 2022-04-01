@@ -4,7 +4,7 @@ import { ConfigService } from '../../config/service/config.service'
 import { BlockchainClient } from '../../infrastructure/blockchain.client'
 import { HttpClient } from '../../infrastructure/http.client'
 import { Record } from '../../record/entity/record.entity'
-import { Utils } from '../../shared/utils'
+import { bytesToHex, hexToBytes, hexToUint16, merge } from '../../shared/utils'
 import { ProofRetrieveRequest } from '../entity/dto/proof-retrieve-request.entity'
 import { Proof } from '../entity/proof.entity'
 import { ProofRepository } from './proof.repository'
@@ -25,9 +25,9 @@ export class ProofRepositoryImpl implements ProofRepository {
 
   verifyProof(proof: Proof): Record {
     const leaves = proof.leaves.map((leaf) => Record.fromHash(leaf).getUint8ArrayHash())
-    const hashes = proof.nodes.map((node) => Utils.hexToBytes(node))
-    const depth = Utils.hexToUint16(proof.depth)
-    const bitmap = Utils.hexToBytes(proof.bitmap)
+    const hashes = proof.nodes.map((node) => hexToBytes(node))
+    const depth = hexToUint16(proof.depth)
+    const bitmap = hexToBytes(proof.bitmap)
 
     let it_leaves = 0
     let it_hashes = 0
@@ -53,12 +53,12 @@ export class ProofRepositoryImpl implements ProofRepository {
         if (!last_hash) {
           throw new Error('Verify: Stack got empty before capturing its value.')
         }
-        act_hash = Utils.merge(last_hash[0], act_hash)
+        act_hash = merge(last_hash[0], act_hash)
         act_depth -= 1
       }
       stack.push([act_hash, act_depth])
     }
-    return Record.fromHash(Utils.bytesToHex(stack[0][0]))
+    return Record.fromHash(bytesToHex(stack[0][0]))
   }
 
   validateRoot(network: Network, root: Record): Promise<number> {

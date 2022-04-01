@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe'
 import { ConfigService } from '../../config/service/config.service'
 import { InvalidArgumentException } from '../../shared/entity/exception/invalid-argument.exception'
-import { Utils } from '../../shared/utils'
+import { sleep } from '../../shared/utils'
 import { Anchor } from '../entity/anchor.entity'
 import { AnchorNotFoundException } from '../entity/exception/anchor-not-found.exception'
 import { WaitAnchorTimeoutException } from '../entity/exception/timeout.exception'
@@ -49,11 +49,11 @@ export class AnchorServiceImpl implements AnchorService {
         if (currentTime > timeoutTime) {
           throw new WaitAnchorTimeoutException()
         }
-        await Utils.sleep(1000)
+        await sleep(1000)
       } catch (e) {
         let currentTime = new Date().getTime()
         while (currentTime < nextTry && currentTime < timeoutTime) {
-          await Utils.sleep(200)
+          await sleep(200)
           currentTime = new Date().getTime()
         }
         nextTry +=
