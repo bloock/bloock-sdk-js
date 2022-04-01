@@ -1,7 +1,9 @@
 import secp256k1 from 'secp256k1'
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
-import { Utils } from '../../shared/utils'
+import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
+import { File } from './file/file'
+import { PDFFile } from './file/pdf'
 
 /**
  * Record is the class in charge of computing and storing the
@@ -23,7 +25,7 @@ export class Record {
    * @returns {Record} Record object of the hashed input.
    */
   static fromObject(data: any): Record {
-    return Record.fromString(Utils.stringify(data))
+    return Record.fromString(stringify(data))
   }
   /**
    * Given a value already hashed creates a Record containing it.
@@ -34,12 +36,23 @@ export class Record {
     return new Record(hash)
   }
   /**
+   * Given a PDF file, returns a Record with its content hashed.
+   * @param  {Uint8Array} _uint8Array Bytes object.
+   * @returns {Record} Record object of the hashed input.
+   */
+  static async fromPDF(src: string | URL | TypedArray): Promise<Record> {
+    let pdf: File = new PDFFile(src)
+    await pdf.ready
+
+    return Record.fromTypedArray(await pdf.getContent())
+  }
+  /**
    * Given a hexadecimal string (with no 0x prefix) returns a Record with its value hashed.
    * @param  {string} hex Hexadecimal string without prefix.
    * @returns {Record} Record object of the hashed input.
    */
   static fromHex(hex: string): Record {
-    const dataArray = Utils.hexToBytes(hex)
+    const dataArray = hexToBytes(hex)
     return new Record(this.hashAlgorithm.generateHash(dataArray))
   }
   /**
@@ -48,11 +61,20 @@ export class Record {
    * @returns {Record} Record object of the hashed input.
    */
   static fromString(_string: string): Record {
-    const dataArray = Utils.stringToBytes(_string)
+    const dataArray = stringToBytes(_string)
     return new Record(this.hashAlgorithm.generateHash(dataArray))
   }
   /**
    * Given a bytes object returns a Record with its value hashed.
+   * @param  {TypedArray} src TypedArray object.
+   * @returns {Record} Record object of the hashed input.
+   */
+  static fromTypedArray(src: TypedArray): Record {
+    return new Record(this.hashAlgorithm.generateHash(src))
+  }
+  /**
+   * Given a bytes object returns a Record with its value hashed.
+   * @deprecated use fromTypedArray instead
    * @param  {Uint8Array} _uint8Array Bytes object.
    * @returns {Record} Record object of the hashed input.
    */
@@ -75,7 +97,7 @@ export class Record {
   static isValid(record: Record): boolean {
     if (record instanceof Record) {
       const _record = record.getHash()
-      if (_record && _record.length === 64 && Utils.isHex(_record)) {
+      if (_record && _record.length === 64 && isHex(_record)) {
         return true
       }
     }
@@ -91,14 +113,14 @@ export class Record {
   }
 
   public getUint8ArrayHash(): Uint8Array {
-    return Utils.hexToBytes(this.hash)
+    return hexToBytes(this.hash)
   }
 
   public sign(privateKey: string): Record {
     const privKey = Buffer.from(privateKey, 'hex')
 
     if (!secp256k1.privateKeyVerify(privKey)) {
-      throw "Sign: Invalid private key provided"
+      throw 'Sign: Invalid private key provided'
     }
 
     const signObj = secp256k1.ecdsaSign(this.getUint8ArrayHash(), privKey)
