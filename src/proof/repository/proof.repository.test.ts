@@ -1,5 +1,6 @@
 import { mock, MockProxy } from 'jest-mock-extended'
 import { container } from 'tsyringe'
+import { Anchor } from '../../anchor/entity/anchor.entity'
 import { ConfigService } from '../../config/service/config.service'
 import { BlockchainClient } from '../../infrastructure/blockchain.client'
 import { HttpClient } from '../../infrastructure/http.client'
@@ -75,9 +76,10 @@ describe('Proof Repository Tests', () => {
     const depth = '0004000400030004000400030001'
     const bitmap = '7600'
     const root = 'a1fd8b878cee593a7debf12b5bcbf081a972bbec40e103c6d82197db2751ced7'
+    const anchor = new Anchor(1, [""], [], "", "pending")
 
     let proofRepository = container.resolve<ProofRepository>('ProofRepository')
-    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(
+    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap, anchor)).getHash()).toBe(
       root
     )
   })
@@ -99,9 +101,10 @@ describe('Proof Repository Tests', () => {
     const depth = '000500050004000400040004000400030001'
     const bitmap = '6d80'
     const root = '7e1f3c7e6d3515389b6117cc8c1ef5512d51c59743dc097c70de405a91861d2b'
+    const anchor = new Anchor(1, [""], [], "", "pending")
 
     let proofRepository = container.resolve<ProofRepository>('ProofRepository')
-    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(
+    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap, anchor)).getHash()).toBe(
       root
     )
   })
@@ -112,9 +115,10 @@ describe('Proof Repository Tests', () => {
     const depth = '00010001'
     const bitmap = '4000'
     const root = '5c67902dc31624d9278c286ef4ce469451d8f1d04c1edb29a5941ca0e03ddc8d'
+    const anchor = new Anchor(1, [""], [], "", "pending")
 
     let proofRepository = container.resolve<ProofRepository>('ProofRepository')
-    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap)).getHash()).toBe(
+    expect(proofRepository.verifyProof(new Proof(leaves, nodes, depth, bitmap, anchor)).getHash()).toBe(
       root
     )
   })

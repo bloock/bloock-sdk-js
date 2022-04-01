@@ -115,23 +115,36 @@ export class BloockClient {
   public async getProof(records: Record[]): Promise<Proof> {
     return this.proofService.retrieveProof(records)
   }
+
   /**
-   * Verifies if the specified integrity Proof is valid and checks if it's currently included in the blockchain.
-   * @param  {Proof} proof Proof to validate.
-   * @param  {Network} network blockchain network where the proof will be validated
+   * Validates if the root it's currently included in the blockchain.
+   * @param {Record} root root to validate 
+   * @param {Network} network blockchain network where the record will be validated 
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async verifyProof(
-    proof: Proof,
-    network: Network = Network.ETHEREUM_MAINNET
+  public async validateRoot(
+    root: Record,
+    network: Network,
   ): Promise<number> {
-    return this.proofService.verifyProof(proof, network)
+    return this.proofService.validateRoot(root, network)
+  }
+
+  /**
+   * Verifies if the specified integrity Proof is valid.
+   * @param  {Proof} proof Proof to validate.
+   * @returns {Promise<Record>} Record prepared to validate in Blockchain
+   * @throws {ProofException} Error when verifying the proof
+   */
+  public async verifyProof(
+    proof: Proof
+  ): Promise<Record> {
+    return this.proofService.verifyProof(proof)
   }
   /**
    * It retrieves a proof for the specified list of Anchor using getProof and verifies it using verifyProof.
    * @param  {Record[]} records list of records to validate
-   * @param  {Network} network blockchain network where the records will be validated
+   * @param  {Network} network OPTIONAL. Blockchain network where the records will be validated
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {InvalidArgumentException} Informs that the input is not a number.
    * @throws {HttpRequestException} Error return by Bloock's API.
@@ -139,7 +152,7 @@ export class BloockClient {
    */
   public async verifyRecords(
     records: Record[],
-    network: Network = Network.ETHEREUM_MAINNET
+    network?: Network
   ): Promise<number> {
     return this.proofService.verifyRecords(records, network)
   }
