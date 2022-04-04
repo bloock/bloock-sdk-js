@@ -4,6 +4,7 @@ import { Proof } from '../entity/proof.entity'
 
 export interface ProofService {
   retrieveProof(records: Record[]): Promise<Proof>
-  verifyRecords(records: Record[], network: Network): Promise<number>
-  verifyProof(proof: Proof, network: Network): Promise<number>
+  verifyRecords(records: Record[], network?: Network): Promise<number>
+  verifyProof(proof: Proof): Promise<Record>
+  validateRoot(root: Record, network: Network): Promise<number>
 }

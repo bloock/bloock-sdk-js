@@ -97,7 +97,7 @@ describe('Functional Tests', () => {
     expect(proof).toBeDefined()
   })
 
-  test('testVerifyProof', async () => {
+  test('testVerifyProof & testValidateProof', async () => {
     jest.setTimeout(120000)
 
     const sdk = getSdk()
@@ -111,7 +111,10 @@ describe('Functional Tests', () => {
     let proof = await sdk.getProof(records)
     expect(proof).toBeDefined()
 
-    let timestamp = await sdk.verifyProof(proof, Network.BLOOCK_CHAIN)
+    let root = await sdk.verifyProof(proof)
+    expect(root).toBeDefined()
+
+    let timestamp = await sdk.validateRoot(root, Network.BLOOCK_CHAIN)
     expect(timestamp).toBeGreaterThan(0)
   })
 })
