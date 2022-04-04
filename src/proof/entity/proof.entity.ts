@@ -1,3 +1,4 @@
+import { Anchor } from '../../anchor/entity/anchor.entity'
 import { Utils } from '../../shared/utils'
 
 /**
@@ -9,13 +10,16 @@ export class Proof {
   public nodes: string[]
   public depth: string
   public bitmap: string
+  public anchor: Anchor
 
-  constructor(leaves: string[], nodes: string[], depth: string, bitmap: string) {
+  constructor(leaves: string[], nodes: string[], depth: string, bitmap: string, anchor: Anchor) {
     this.leaves = leaves
     this.nodes = nodes
     this.depth = depth
     this.bitmap = bitmap
+    this.anchor = anchor
   }
+
   /**
    * Checks whether the Proof was build with valid parameters or not.
    * @param  {Proof} proof Proof to validate.

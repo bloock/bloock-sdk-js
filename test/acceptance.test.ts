@@ -26,6 +26,8 @@ function getSdk(): BloockClient {
 
 describe('Acceptance Tests', () => {
   test('test_basic_e2e', async () => {
+    jest.setTimeout(120000)
+
     const sdk = getSdk()
 
     const records = [Record.fromString(randHex(64))]
@@ -40,8 +42,12 @@ describe('Acceptance Tests', () => {
 
     // Retrieving record proof
     const proof = await sdk.getProof(records)
-    const timestamp = await sdk.verifyProof(proof, Network.BLOOCK_CHAIN)
+    const root = await sdk.verifyProof(proof)
+    const timestamp = await sdk.validateRoot(root, Network.BLOOCK_CHAIN)
+    const isValid = await sdk.verifyRecords(records)
+
     expect(timestamp).toBeGreaterThan(0)
+    expect(isValid).toBeGreaterThan(0)
   })
 
   test('test_send_records_invalid_record_input_wrong_char', async () => {
