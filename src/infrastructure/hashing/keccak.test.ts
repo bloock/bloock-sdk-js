@@ -1,4 +1,4 @@
-import { Utils } from '../../shared/utils'
+import { stringToBytes } from '../../shared/utils'
 import { HashingClient } from '../hashing.client'
 import { Keccak } from './keccak'
 
@@ -7,7 +7,7 @@ describe('Keccak Tests', () => {
     const data = 'Test Data'
 
     const hashingAlgorithm: HashingClient = new Keccak()
-    expect(hashingAlgorithm.generateHash(Utils.stringToBytes(data))).toEqual(
+    expect(hashingAlgorithm.generateHash(stringToBytes(data))).toEqual(
       'e287462a142cd6237de5a89891ad82065f6aca6644c161b1a61c933c5d26117a'
     )
   })
@@ -16,7 +16,7 @@ describe('Keccak Tests', () => {
     const data = 'Bloock'
 
     const hashingAlgorithm: HashingClient = new Keccak()
-    expect(hashingAlgorithm.generateHash(Utils.stringToBytes(data))).toEqual(
+    expect(hashingAlgorithm.generateHash(stringToBytes(data))).toEqual(
       '3a7ae5d1ca472a7459e484babf13adf1aa7fe78326755969e3e2f5fc7766f6ee'
     )
   })
@@ -25,77 +25,15 @@ describe('Keccak Tests', () => {
     const data = 'testing keccak'
 
     const hashingAlgorithm: HashingClient = new Keccak()
-    expect(hashingAlgorithm.generateHash(Utils.stringToBytes(data))).toEqual(
+    expect(hashingAlgorithm.generateHash(stringToBytes(data))).toEqual(
       '7e5e383e8e70e55cdccfccf40dfc5d4bed935613dffc806b16b4675b555be139'
     )
   })
 
   it('Keccak test 4', async () => {
+    // prettier-ignore
     const array = Uint8Array.from([
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     ])
 
     const hashingAlgorithm: HashingClient = new Keccak()

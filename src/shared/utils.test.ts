@@ -1,40 +1,38 @@
-import { Utils } from "./utils";
+import { bytesToHex, hexToBytes, hexToUint16, isHex, stringify, uint16ToHex } from './utils'
 
-describe("Utils Tests", () => {
-  it("is hex - success", () => {
-    const hex = "123456789abcdef";
+describe('Utils Tests', () => {
+  it('is hex - success', () => {
+    const hex = '123456789abcdef'
 
-    expect(Utils.isHex(hex)).toBe(true);
-  });
+    expect(isHex(hex)).toBe(true)
+  })
 
-  it("is hex - error", () => {
-    const hex = "abcdefg";
+  it('is hex - error', () => {
+    const hex = 'abcdefg'
 
-    expect(Utils.isHex(hex)).toBe(false);
-  });
+    expect(isHex(hex)).toBe(false)
+  })
 
-  it("is uint16 to string - success", () => {
-    const hex = "0100";
-    var arr = Utils.hexToUint16(hex);
-    expect(arr).toStrictEqual(new Uint16Array([256]));
-    var arr2 = Utils.hexToBytes(hex);
-    expect(arr2).toStrictEqual(new Uint8Array([1, 0]));
-    expect(Utils.uint16ToHex(arr)).toStrictEqual(
-      Utils.bytesToHex(new Uint8Array([1, 0]))
-    );
-  });
+  it('is uint16 to string - success', () => {
+    const hex = '0100'
+    var arr = hexToUint16(hex)
+    expect(arr).toStrictEqual(new Uint16Array([256]))
+    var arr2 = hexToBytes(hex)
+    expect(arr2).toStrictEqual(new Uint8Array([1, 0]))
+    expect(uint16ToHex(arr)).toStrictEqual(bytesToHex(new Uint8Array([1, 0])))
+  })
 
-  it("Check JSON normalized", () => {
+  it('Check JSON normalized', () => {
     const data = {
       id: 1,
-      name: "Test",
-    };
+      name: 'Test'
+    }
 
     const invertedData = {
-      name: "Test",
-      id: 1,
-    };
+      name: 'Test',
+      id: 1
+    }
 
-    expect(Utils.stringify(data)).toEqual(Utils.stringify(invertedData));
-  });
-});
+    expect(stringify(data)).toEqual(stringify(invertedData))
+  })
+})

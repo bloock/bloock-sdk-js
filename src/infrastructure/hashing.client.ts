@@ -1,3 +1,5 @@
+import { TypedArray } from '../shared/utils'
+
 export interface HashingClient {
-    generateHash(data: Uint8Array): string
+  generateHash(data: TypedArray): string
 }

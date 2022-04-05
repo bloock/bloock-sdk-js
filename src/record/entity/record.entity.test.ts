@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { Record } from './record.entity'
 
 describe('Record entity tests', () => {
@@ -30,6 +31,27 @@ describe('Record entity tests', () => {
 
     expect(Record.fromUint8Array(array).getHash()).toEqual(
       'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994a5'
+    )
+  })
+
+  it('test_from_typedarray', () => {
+    // prettier-ignore
+    let array = Uint8Array.from([16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+        16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+        17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
+        17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17])
+
+    expect(Record.fromTypedArray(array).getHash()).toEqual(
+      'e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994a5'
+    )
+  })
+
+  it('test_from_pdf', async () => {
+    let bytes = fs.readFileSync('./test/assets/dummy.pdf')
+    let record = await Record.fromPDF(bytes)
+
+    expect(record.getHash()).toEqual(
+      'cd5d993c67b0fe1f46e5169cdee04072ee72b3b110580f052988b3e6f8726f10'
     )
   })
 
