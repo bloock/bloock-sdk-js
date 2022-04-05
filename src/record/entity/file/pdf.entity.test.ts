@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { Anchor } from '../../../anchor/entity/anchor.entity'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { PDFFile } from './pdf'
 import { RecordMetadata } from './record-metadata'
@@ -19,7 +20,7 @@ describe('PDF file tests', () => {
     await file.addRecordMetadata(
       new RecordMetadata({
         signature: ['signature1'],
-        proof: new Proof(['leave1'], ['node1'], 'depth', 'bitmap')
+        proof: new Proof(['leave1'], ['node1'], 'depth', 'bitmap', new Anchor(1, [""], [], "", "pending"))
       })
     )
 
@@ -36,7 +37,7 @@ describe('PDF file tests', () => {
     await file.addRecordMetadata(
       new RecordMetadata({
         signature: ['signature1'],
-        proof: new Proof(['leave1'], ['node1'], 'depth', 'bitmap')
+        proof: new Proof(['leave1'], ['node1'], 'depth', 'bitmap', new Anchor(1, [""], [], "", "pending"))
       })
     )
 

@@ -1,6 +1,5 @@
-import { isHex } from '../../shared/utils'
 import { Anchor } from '../../anchor/entity/anchor.entity'
-import { Utils } from '../../shared/utils'
+import { isHex } from '../../shared/utils'
 
 /**
  * Proof is the object in charge of storing all data necessary to compute
