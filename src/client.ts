@@ -68,7 +68,7 @@ export class BloockClient {
    * @throws {InvalidRecordException} At least one of the records sent was not well formed.
    * @throws {HttpRequestException} Error return by Bloock's API.
    */
-  public async sendRecords(records: Record[]): Promise<RecordReceipt[]> {
+  public async sendRecords(records: Record<any>[]): Promise<RecordReceipt[]> {
     return this.recordService.sendRecords(records)
   }
   /**
@@ -78,7 +78,7 @@ export class BloockClient {
    * @throws {InvalidRecordException} At least one of the records sent was not well formed.
    * @throws {HttpRequestException} Error return by Bloock's API.
    */
-  public async getRecords(records: Record[]): Promise<RecordReceipt[]> {
+  public async getRecords(records: Record<any>[]): Promise<RecordReceipt[]> {
     return this.recordService.getRecords(records)
   }
   /**
@@ -112,21 +112,18 @@ export class BloockClient {
    * @throws {InvalidRecordException} At least one of the records sent was not well formed.
    * @throws {HttpRequestException} Error return by Bloock's API.
    */
-  public async getProof(records: Record[]): Promise<Proof> {
+  public async getProof(records: Record<any>[]): Promise<Proof> {
     return this.proofService.retrieveProof(records)
   }
 
   /**
    * Validates if the root it's currently included in the blockchain.
-   * @param {Record} root root to validate 
-   * @param {Network} network blockchain network where the record will be validated 
+   * @param {Record} root root to validate
+   * @param {Network} network blockchain network where the record will be validated
    * @returns {Promise<number>} A number representing the timestamp in milliseconds when the anchor was registered in Blockchain
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async validateRoot(
-    root: Record,
-    network: Network,
-  ): Promise<number> {
+  public async validateRoot(root: Record<any>, network: Network): Promise<number> {
     return this.proofService.validateRoot(root, network)
   }
 
@@ -136,9 +133,7 @@ export class BloockClient {
    * @returns {Promise<Record>} Record prepared to validate in Blockchain
    * @throws {ProofException} Error when verifying the proof
    */
-  public async verifyProof(
-    proof: Proof
-  ): Promise<Record> {
+  public async verifyProof(proof: Proof): Promise<Record<any>> {
     return this.proofService.verifyProof(proof)
   }
   /**
@@ -150,10 +145,7 @@ export class BloockClient {
    * @throws {HttpRequestException} Error return by Bloock's API.
    * @throws {Web3Exception} Error connecting to blockchain.
    */
-  public async verifyRecords(
-    records: Record[],
-    network?: Network
-  ): Promise<number> {
+  public async verifyRecords(records: Record<any>[], network?: Network): Promise<number> {
     return this.proofService.verifyRecords(records, network)
   }
 }
