@@ -37,13 +37,8 @@ export class JSONDocument extends Document<JSONDocumentContent> {
   protected async buildFile(metadata: { [key: string]: any }): Promise<JSONDocumentContent> {
     if (Object.keys(metadata).length > 0) {
       let output: JSONDocumentContent = {
-        [dataKey]: this.data
-      }
-      for (let key in metadata) {
-        output[metadataKey] = {
-          ...output[metadataKey],
-          [key]: metadata[key]
-        }
+        [dataKey]: this.data,
+        [metadataKey]: metadata
       }
       return Object.assign({}, output)
     } else {

@@ -49,6 +49,7 @@ describe('Record entity tests', () => {
   it('test_from_pdf', async () => {
     let bytes = fs.readFileSync('./test/assets/dummy.pdf')
     let record = await Record.fromPDF(bytes)
+    console.log(record.getHash())
 
     expect(record.getHash()).toEqual(
       'cd5d993c67b0fe1f46e5169cdee04072ee72b3b110580f052988b3e6f8726f10'
@@ -77,12 +78,17 @@ describe('Record entity tests', () => {
 
   it('test_from_json_with_metadata', async () => {
     let json = {
-      hello: 'world'
+      _payload_: {
+        hello: 'world'
+      },
+      _metadata_: {
+        signature: ['signature1']
+      }
     }
     let record = await Record.fromJSON(json)
 
     expect(record.getHash()).toEqual(
-      '586e9b1e1681ba3ebad5ff5e6f673d3e3aa129fcdb76f92083dbc386cdde4312'
+      '42fd3e3f6c78b239cdbfc23d9e36134bac28233347e421c2c83002276d2dbbc4'
     )
   })
 
