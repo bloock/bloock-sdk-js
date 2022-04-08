@@ -49,7 +49,6 @@ describe('Record entity tests', () => {
   it('test_from_pdf', async () => {
     let bytes = fs.readFileSync('./test/assets/dummy.pdf')
     let record = await Record.fromPDF(bytes)
-    console.log(record.getHash())
 
     expect(record.getHash()).toEqual(
       'cd5d993c67b0fe1f46e5169cdee04072ee72b3b110580f052988b3e6f8726f10'
