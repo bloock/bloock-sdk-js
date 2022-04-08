@@ -10,7 +10,7 @@ import { RecordService } from './record.service'
 export class RecordServiceImpl implements RecordService {
   constructor(@inject('RecordRepository') private recordRepository: RecordRepository) {}
 
-  async sendRecords(records: Record<any>[]): Promise<RecordReceipt[]> {
+  async sendRecords(records: Record[]): Promise<RecordReceipt[]> {
     if (records.length == 0) {
       return []
     }
@@ -39,7 +39,7 @@ export class RecordServiceImpl implements RecordService {
 
     return result
   }
-  async getRecords(records: Record<any>[]): Promise<RecordReceipt[]> {
+  async getRecords(records: Record[]): Promise<RecordReceipt[]> {
     if (records.length == 0) return []
 
     if (!Array.isArray(records)) {

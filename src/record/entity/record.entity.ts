@@ -12,7 +12,7 @@ import { PDFDocument } from './document/pdf'
  * This class is intended to be used by calling "from" static
  * methods to create instances of Record.
  */
-export class Record<T> {
+export class Record<T = any> {
   private static hashAlgorithm: HashingClient = new Keccak()
 
   private hash: string
@@ -32,7 +32,7 @@ export class Record<T> {
    * @param  {string} hash Hexadecimal string without prefix and length 64.
    * @returns {Record} Record object of the hashed input.
    */
-  static fromHash(hash: string): Record<any> {
+  static fromHash(hash: string): Record {
     return new Record(hash)
   }
   /**
@@ -40,7 +40,7 @@ export class Record<T> {
    * @param  {string} hex Hexadecimal string without prefix.
    * @returns {Record} Record object of the hashed input.
    */
-  static fromHex(hex: string): Record<any> {
+  static fromHex(hex: string): Record {
     const dataArray = hexToBytes(hex)
     return new Record(this.hashAlgorithm.generateHash(dataArray))
   }
@@ -49,7 +49,7 @@ export class Record<T> {
    * @param  {string} _string String object.
    * @returns {Record} Record object of the hashed input.
    */
-  static fromString(_string: string): Record<any> {
+  static fromString(_string: string): Record {
     const dataArray = stringToBytes(_string)
     return new Record(this.hashAlgorithm.generateHash(dataArray))
   }
@@ -58,7 +58,7 @@ export class Record<T> {
    * @param  {TypedArray} src TypedArray object.
    * @returns {Record} Record object of the hashed input.
    */
-  static fromTypedArray(src: TypedArray): Record<any> {
+  static fromTypedArray(src: TypedArray): Record {
     return new Record(this.hashAlgorithm.generateHash(src))
   }
   /**
@@ -67,7 +67,7 @@ export class Record<T> {
    * @param  {Uint8Array} _uint8Array Bytes object.
    * @returns {Record} Record object of the hashed input.
    */
-  static fromUint8Array(_uint8Array: Uint8Array): Record<any> {
+  static fromUint8Array(_uint8Array: Uint8Array): Record {
     return new Record(this.hashAlgorithm.generateHash(_uint8Array))
   }
 
@@ -103,7 +103,7 @@ export class Record<T> {
    * @param  {any} data
    * @returns {Record} Record object of the hashed input.
    */
-  static fromObject(data: any): Record<any> {
+  static fromObject(data: any): Record {
     return Record.fromString(stringify(data))
   }
 

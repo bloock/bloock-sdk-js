@@ -17,13 +17,13 @@ export class ProofRepositoryImpl implements ProofRepository {
     @inject('ConfigService') private configService: ConfigService
   ) {}
 
-  retrieveProof(records: Record<any>[]): Promise<Proof> {
+  retrieveProof(records: Record[]): Promise<Proof> {
     let url = `${this.configService.getApiBaseUrl()}/core/proof`
     let body = new ProofRetrieveRequest(records.map((records) => records.getHash()))
     return this.httpClient.post(url, body)
   }
 
-  verifyProof(proof: Proof): Record<any> {
+  verifyProof(proof: Proof): Record {
     const leaves = proof.leaves.map((leaf) => Record.fromHash(leaf).getUint8ArrayHash())
     const hashes = proof.nodes.map((node) => hexToBytes(node))
     const depth = hexToUint16(proof.depth)
@@ -61,7 +61,7 @@ export class ProofRepositoryImpl implements ProofRepository {
     return Record.fromHash(bytesToHex(stack[0][0]))
   }
 
-  validateRoot(network: Network, root: Record<any>): Promise<number> {
+  validateRoot(network: Network, root: Record): Promise<number> {
     return this.blockchainClient.validateRoot(network, root.getHash())
   }
 }
