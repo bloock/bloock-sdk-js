@@ -11,7 +11,7 @@ import { ProofService } from './proof.service'
 export class ProofServiceImpl implements ProofService {
   constructor(@inject('ProofRepository') private proofRepository: ProofRepository) {}
 
-  async retrieveProof(records: Record<any>[]): Promise<Proof> {
+  async retrieveProof(records: Record[]): Promise<Proof> {
     if (!Array.isArray(records) || records.length === 0) {
       throw new InvalidArgumentException()
     }
@@ -25,7 +25,7 @@ export class ProofServiceImpl implements ProofService {
     return this.proofRepository.retrieveProof(sorted)
   }
 
-  async verifyRecords(records: Record<any>[], network?: Network): Promise<number> {
+  async verifyRecords(records: Record[], network?: Network): Promise<number> {
     if (!Array.isArray(records)) {
       throw new InvalidArgumentException()
     }
@@ -50,7 +50,7 @@ export class ProofServiceImpl implements ProofService {
     return this.validateRoot(root, finalNetwork)
   }
 
-  async verifyProof(proof: Proof): Promise<Record<any>> {
+  async verifyProof(proof: Proof): Promise<Record> {
     try {
       let root = this.proofRepository.verifyProof(proof)
       if (root == null) {
@@ -63,7 +63,7 @@ export class ProofServiceImpl implements ProofService {
     }
   }
 
-  async validateRoot(root: Record<any>, network: Network): Promise<number> {
+  async validateRoot(root: Record, network: Network): Promise<number> {
     try {
       if (root == null) {
         return Promise.reject('The provided root is invalid')
