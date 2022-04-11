@@ -8,7 +8,7 @@ import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../s
 import { Document } from './document/document'
 import { JSONDocument, JSONDocumentContent } from './document/json'
 import { PDFDocument } from './document/pdf'
-import { KeyPair, Signature } from "./document/signature/signature"
+import { KeyPair, Signature } from "./document/signature"
 
 /**
  * Record is the class in charge of computing and storing the

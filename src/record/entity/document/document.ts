@@ -1,6 +1,6 @@
 import { Proof } from '../../../proof/entity/proof.entity'
 import { TypedArray } from '../../../shared/utils'
-import { Signature } from './signature/signature'
+import { Signature } from './signature'
 
 export type DocumentLoadArgs = {}
 

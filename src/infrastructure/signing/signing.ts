@@ -3,7 +3,7 @@ import * as jose from 'jose';
 import KeyEncoder from 'key-encoder';
 import { injectable } from 'tsyringe';
 import { ConfigData } from '../../config/repository/config-data';
-import { Headers, KeyPair, Signature } from '../../record/entity/document/signature/signature';
+import { Headers, KeyPair, Signature } from '../../record/entity/document/signature';
 import { SigningClient } from '../signing.client';
 
 @injectable()

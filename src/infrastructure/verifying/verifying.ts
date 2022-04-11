@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import * as jose from 'jose';
 import KeyEncoder from 'key-encoder';
 import { injectable } from 'tsyringe';
-import { Signature } from "../../record/entity/document/signature/signature";
+import { Signature } from "../../record/entity/document/signature";
 import { VerifyingClient } from '../verifying.client';
 
 @injectable()

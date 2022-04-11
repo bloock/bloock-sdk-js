@@ -1,7 +1,7 @@
 import { Anchor } from '../../../anchor/entity/anchor.entity'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { JSONDocument } from './json'
-import { Signature } from './signature/signature'
+import { Signature } from './signature'
 
 describe('JSON document tests', () => {
   const content = { hello: 'world' }

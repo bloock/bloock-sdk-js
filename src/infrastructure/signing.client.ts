@@ -1,4 +1,4 @@
-import { KeyPair, Signature } from "../record/entity/document/signature/signature";
+import { KeyPair, Signature } from "../record/entity/document/signature";
 
 
 export interface SigningClient {

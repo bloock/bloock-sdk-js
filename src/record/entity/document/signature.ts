@@ -14,13 +14,8 @@ export type Headers = {
   [propName: string]: unknown
 }
 
-export class KeyPair {
+export type KeyPair = {
   privateKey: string
   publicKey: string
-
-  constructor(privateKey: string, publicKey: string) {
-    this.privateKey = privateKey,
-      this.publicKey = publicKey
-  }
 }
 

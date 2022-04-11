@@ -2,7 +2,7 @@ import fs from 'fs'
 import { Anchor } from '../../../anchor/entity/anchor.entity'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { PDFDocument } from './pdf'
-import { Signature } from './signature/signature'
+import { Signature } from './signature'
 
 describe('PDF document tests', () => {
   const bytes = fs.readFileSync('./test/assets/dummy.pdf')
