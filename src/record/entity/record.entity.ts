@@ -2,13 +2,11 @@ import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
 import { SigningClient } from '../../infrastructure/signing.client'
 import { Signing } from '../../infrastructure/signing/signing'
-import { VerifyingClient } from '../../infrastructure/verifying.client'
-import { Verifying } from '../../infrastructure/verifying/verifying'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
 import { Document } from './document/document'
 import { JSONDocument, JSONDocumentContent } from './document/json'
 import { PDFDocument } from './document/pdf'
-import { KeyPair, Signature } from "./document/signature"
+import { Signature } from "./document/signature"
 
 /**
  * Record is the class in charge of computing and storing the
@@ -19,7 +17,6 @@ import { KeyPair, Signature } from "./document/signature"
 export class Record<T = any> {
   private static hashAlgorithm: HashingClient = new Keccak()
   private signing: SigningClient = new Signing()
-  private verifying: VerifyingClient = new Verifying()
 
   private hash: string
   private document?: Document<T>
@@ -164,12 +161,14 @@ export class Record<T = any> {
     return hexToBytes(this.hash)
   }
 
-  public async sign(keyPair: KeyPair): Promise<Record> {
-    let signature = await this.signing.JWSSign(keyPair, this.hash)
+  public async sign(privateKey: string): Promise<Record> {
+    const signature = await this.signing.JWSSign(privateKey, this.hash)
+    this.document?.setSignature(signature)
+
     return new Record(this.hash)
   }
 
   public async verify(signature: Signature): Promise<void> {
-    await this.verifying.JWSVerify(signature)
+    await this.signing.JWSVerify(signature)
   }
 }

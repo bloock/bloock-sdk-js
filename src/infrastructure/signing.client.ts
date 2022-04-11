@@ -1,6 +1,7 @@
-import { KeyPair, Signature } from "../record/entity/document/signature";
+import { Signature } from "../record/entity/document/signature";
 
 
 export interface SigningClient {
-  JWSSign(rawKeyPair: KeyPair, payload: string, headers?: { [name: string]: string }): Promise<Signature>
+  JWSSign(rawPrivateKey: string, payload: string, headers?: { [name: string]: string }): Promise<Signature>
+  JWSVerify(jws: Signature): Promise<void>
 }

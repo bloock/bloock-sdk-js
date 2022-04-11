@@ -3,25 +3,28 @@ import * as jose from 'jose';
 import KeyEncoder from 'key-encoder';
 import { injectable } from 'tsyringe';
 import { ConfigData } from '../../config/repository/config-data';
-import { Headers, KeyPair, Signature } from '../../record/entity/document/signature';
+import { Headers, Signature } from '../../record/entity/document/signature';
 import { SigningClient } from '../signing.client';
 
 @injectable()
 export class Signing implements SigningClient {
-  async JWSSign(rawKeyPair: KeyPair, payload: string, headers?: { [name: string]: string }): Promise<Signature> {
+  async JWSSign(rawPrivateKey: string, payload: string, headers?: { [name: string]: string }): Promise<Signature> {
     const configData = new ConfigData()
-    if (!rawKeyPair.privateKey) {
+    if (!rawPrivateKey) {
       return Promise.reject('undefined private key')
     }
-    let privateKey = serializePrivateKey(rawKeyPair.privateKey)
-    let unprotectedHeader = {
-      kty: configData.config.KEY_TYPE_ALGORITHM,
-      crv: configData.config.ELLIPTIC_CURVE_KEY,
-      alg: configData.config.SIGNATURE_ALGORITHM,
-      kid: rawKeyPair.publicKey,
-      ...(headers ? headers : {})
-    }
     try {
+      let privateKey = serializePrivateKey(rawPrivateKey)
+      let publicKey = generatePublicKey(privateKey)
+
+      let unprotectedHeader = {
+        kty: configData.config.KEY_TYPE_ALGORITHM,
+        crv: configData.config.ELLIPTIC_CURVE_KEY,
+        alg: configData.config.SIGNATURE_ALGORITHM,
+        kid: publicKey,
+        ...(headers ? headers : {})
+      }
+
       const jws = await new jose.GeneralSign(
         new TextEncoder().encode(
           payload
@@ -48,6 +51,22 @@ export class Signing implements SigningClient {
       return Promise.reject(error)
     }
   }
+
+  async JWSVerify(jws: Signature): Promise<void> {
+    try {
+      for (const sig of jws.signatures) {
+        if (sig.header.kid) {
+          let publicKey = crypto.createPublicKey({ key: sig.header.kid })
+
+          await jose.generalVerify(jws, publicKey)
+        } else {
+          return Promise.reject("kid header not found")
+        }
+      }
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  }
 }
 
 function serializePrivateKey(rawPrivateKey: string): crypto.KeyObject {
@@ -60,4 +79,10 @@ function serializePrivateKey(rawPrivateKey: string): crypto.KeyObject {
   const pemPrivateKey = keyEncoder.encodePrivate(rawPrivateKey, 'raw', 'pem')
 
   return crypto.createPrivateKey({ key: pemPrivateKey })
+}
+
+function generatePublicKey(privateKey: crypto.KeyObject): string {
+  let publicKeyObject = crypto.createPublicKey(privateKey)
+
+  return publicKeyObject.export({ type: 'spki', format: 'pem' }).toString()
 } 
