@@ -1,9 +1,11 @@
-import secp256k1 from 'secp256k1'
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
+import { SigningClient } from '../../infrastructure/signing.client'
+import { Signing } from '../../infrastructure/signing/signing'
+import { VerifyingClient } from '../../infrastructure/verifying.client'
+import { Verifying } from '../../infrastructure/verifying/verifying'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
-import { File } from './file/file'
-import { PDFFile } from './file/pdf'
+import { KeyPair, Signature } from "./document/signature/signature"
 
 /**
  * Record is the class in charge of computing and storing the
@@ -13,6 +15,8 @@ import { PDFFile } from './file/pdf'
  */
 export class Record {
   private static hashAlgorithm: HashingClient = new Keccak()
+  private signing: SigningClient = new Signing()
+  private verifying: VerifyingClient = new Verifying()
 
   private hash: string
 
@@ -34,17 +38,6 @@ export class Record {
    */
   static fromHash(hash: string): Record {
     return new Record(hash)
-  }
-  /**
-   * Given a PDF file, returns a Record with its content hashed.
-   * @param  {Uint8Array} _uint8Array Bytes object.
-   * @returns {Record} Record object of the hashed input.
-   */
-  static async fromPDF(src: string | URL | TypedArray): Promise<Record> {
-    let pdf: File = new PDFFile(src)
-    await pdf.ready
-
-    return Record.fromTypedArray(await pdf.getContent())
   }
   /**
    * Given a hexadecimal string (with no 0x prefix) returns a Record with its value hashed.
@@ -116,15 +109,12 @@ export class Record {
     return hexToBytes(this.hash)
   }
 
-  public sign(privateKey: string): Record {
-    const privKey = Buffer.from(privateKey, 'hex')
-
-    if (!secp256k1.privateKeyVerify(privKey)) {
-      throw 'Sign: Invalid private key provided'
-    }
-
-    const signObj = secp256k1.ecdsaSign(this.getUint8ArrayHash(), privKey)
-
+  public async sign(keyPair: KeyPair): Promise<Record> {
+    let signature = await this.signing.JWSSign(keyPair, this.hash)
     return new Record(this.hash)
+  }
+
+  public async verify(signature: Signature): Promise<void> {
+    await this.verifying.JWSVerify(signature)
   }
 }
