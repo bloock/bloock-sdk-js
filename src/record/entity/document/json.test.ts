@@ -1,6 +1,7 @@
 import { Anchor } from '../../../anchor/entity/anchor.entity'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { JSONDocument } from './json'
+import { Signature } from './signature/signature'
 
 describe('JSON document tests', () => {
   const content = { hello: 'world' }
@@ -89,7 +90,7 @@ describe('JSON document tests', () => {
     let file = new JSONDocument(json)
     await file.ready
 
-    const signature = ['signature1']
+    const signature: Signature = { payload: "", signatures: [] }
     await file.setSignature(signature)
 
     expect(await file.getSignature()).toEqual(signature)
@@ -104,7 +105,7 @@ describe('JSON document tests', () => {
     let file = new JSONDocument(json)
     await file.ready
 
-    const signature = ['signature1']
+    const signature: Signature = { payload: "", signatures: [] }
     await file.setSignature(signature)
 
     const proof = new Proof(

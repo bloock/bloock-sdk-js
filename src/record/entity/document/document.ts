@@ -1,5 +1,6 @@
 import { Proof } from '../../../proof/entity/proof.entity'
 import { TypedArray } from '../../../shared/utils'
+import { Signature } from './signature/signature'
 
 export type DocumentLoadArgs = {}
 
@@ -7,7 +8,7 @@ export abstract class Document<T> {
   public ready: Promise<void>
   protected data?: T
   protected payload?: T
-  protected signature?: any[]
+  protected signature?: Signature
   protected proof?: Proof
 
   constructor(src: T, args: DocumentLoadArgs = {}) {
@@ -34,11 +35,11 @@ export abstract class Document<T> {
   protected async fetchProof(): Promise<Proof> {
     return await this.fetchMetadata('proof')
   }
-  protected async fetchSignature(): Promise<any[]> {
+  protected async fetchSignature(): Promise<Signature> {
     return await this.fetchMetadata('signature')
   }
   protected async fetchPayload(): Promise<T> {
-    let metadata: { signature?: any[] } = {}
+    let metadata: { signature?: Signature } = {}
     if (this.signature) {
       metadata.signature = this.signature
     }
@@ -52,7 +53,7 @@ export abstract class Document<T> {
   public getProof(): Proof | undefined {
     return this.proof
   }
-  public getSignature(): any[] | undefined {
+  public getSignature(): Signature | undefined {
     return this.signature
   }
   public getPayload(): T | undefined {
@@ -64,12 +65,12 @@ export abstract class Document<T> {
     this.proof = proof
   }
 
-  public setSignature(signature: any[]): void {
+  public setSignature(signature: Signature): void {
     this.signature = signature
   }
 
   async build(): Promise<T> {
-    let metadata: { proof?: Proof; signature?: any[] } = {}
+    let metadata: { proof?: Proof; signature?: Signature } = {}
 
     if (this.proof) {
       metadata.proof = this.proof

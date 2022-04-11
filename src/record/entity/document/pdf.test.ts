@@ -2,6 +2,7 @@ import fs from 'fs'
 import { Anchor } from '../../../anchor/entity/anchor.entity'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { PDFDocument } from './pdf'
+import { Signature } from './signature/signature'
 
 describe('PDF document tests', () => {
   const bytes = fs.readFileSync('./test/assets/dummy.pdf')
@@ -71,7 +72,7 @@ describe('PDF document tests', () => {
     let file = new PDFDocument(bytes)
     await file.ready
 
-    const signature = ['signature1']
+    const signature: Signature = { payload: "", signatures: [] }
     await file.setSignature(signature)
 
     expect(await file.getSignature()).toEqual(signature)
@@ -85,7 +86,7 @@ describe('PDF document tests', () => {
     let file = new PDFDocument(bytes)
     await file.ready
 
-    const signature = ['signature1']
+    const signature: Signature = { payload: "", signatures: [] }
     await file.setSignature(signature)
 
     const proof = new Proof(
