@@ -55,6 +55,42 @@ describe('Record entity tests', () => {
     )
   })
 
+  it('test_from_pdf_with_metadata', async () => {
+    let bytes = fs.readFileSync('./test/assets/dummy-with-metadata.pdf')
+    let record = await Record.fromPDF(bytes)
+
+    expect(record.getHash()).toEqual(
+      'c17a41c48474209c83dad03acee7a7e7cddd2f474de0466084c44e3e72acc3f0'
+    )
+  })
+
+  it('test_from_json', async () => {
+    let json = {
+      hello: 'world'
+    }
+    let record = await Record.fromJSON(json)
+
+    expect(record.getHash()).toEqual(
+      '586e9b1e1681ba3ebad5ff5e6f673d3e3aa129fcdb76f92083dbc386cdde4312'
+    )
+  })
+
+  it('test_from_json_with_metadata', async () => {
+    let json = {
+      _payload_: {
+        hello: 'world'
+      },
+      _metadata_: {
+        signature: ['signature1']
+      }
+    }
+    let record = await Record.fromJSON(json)
+
+    expect(record.getHash()).toEqual(
+      '42fd3e3f6c78b239cdbfc23d9e36134bac28233347e421c2c83002276d2dbbc4'
+    )
+  })
+
   it('test_is_valid_okay', () => {
     const record = Record.fromHash(
       '1010101010101010101010101010101010101010101010101010101010101010'

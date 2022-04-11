@@ -5,6 +5,9 @@ import { Signing } from '../../infrastructure/signing/signing'
 import { VerifyingClient } from '../../infrastructure/verifying.client'
 import { Verifying } from '../../infrastructure/verifying/verifying'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
+import { Document } from './document/document'
+import { JSONDocument, JSONDocumentContent } from './document/json'
+import { PDFDocument } from './document/pdf'
 import { KeyPair, Signature } from "./document/signature/signature"
 
 /**
@@ -13,24 +16,23 @@ import { KeyPair, Signature } from "./document/signature/signature"
  * This class is intended to be used by calling "from" static
  * methods to create instances of Record.
  */
-export class Record {
+export class Record<T = any> {
   private static hashAlgorithm: HashingClient = new Keccak()
   private signing: SigningClient = new Signing()
   private verifying: VerifyingClient = new Verifying()
 
   private hash: string
+  private document?: Document<T>
 
-  private constructor(hash: string) {
+  private constructor(hash: string, document?: Document<T>) {
     this.hash = hash
+    this.document = document
   }
-  /**
-   * Given an JSON object, returns a Record with its value hashed.
-   * @param  {any} data
-   * @returns {Record} Record object of the hashed input.
-   */
-  static fromObject(data: any): Record {
-    return Record.fromString(stringify(data))
-  }
+
+  // ------------------------------------------
+  // BASIC TYPE CONSTRUCTORS
+  // ------------------------------------------
+
   /**
    * Given a value already hashed creates a Record containing it.
    * @param  {string} hash Hexadecimal string without prefix and length 64.
@@ -75,8 +77,48 @@ export class Record {
     return new Record(this.hashAlgorithm.generateHash(_uint8Array))
   }
 
-  static sort(records: Record[]): Record[] {
-    return records.sort((a: Record, b: Record) => {
+  // ------------------------------------------
+  // DOCUMENT CONSTRUCTORS
+  // ------------------------------------------
+
+  private static async fromDocument<D>(document: Document<D>): Promise<Record<D>> {
+    await document.ready
+    return new Record(this.hashAlgorithm.generateHash(await document.getPayloadBytes()), document)
+  }
+  /**
+   * Given a PDF file, returns a Record with its content hashed.
+   * @param  {Uint8Array} _uint8Array Bytes object.
+   * @returns {Record} Record object of the hashed input.
+   */
+  static async fromPDF(src: TypedArray): Promise<Record<TypedArray>> {
+    let pdf = new PDFDocument(src)
+    return Record.fromDocument(pdf)
+  }
+  /**
+   * Given an JSON object, returns a Record with its value hashed.
+   * @param  {any} data
+   * @returns {Record} Record object of the hashed input.
+   */
+  static async fromJSON(src: JSONDocumentContent): Promise<Record<JSONDocumentContent>> {
+    let json = new JSONDocument(src)
+    return Record.fromDocument(json)
+  }
+  /**
+   * Given an JSON object, returns a Record with its value hashed.
+   * @deprecated use fromJSON method instead
+   * @param  {any} data
+   * @returns {Record} Record object of the hashed input.
+   */
+  static fromObject(data: any): Record {
+    return Record.fromString(stringify(data))
+  }
+
+  // ------------------------------------------
+  // HELPERS
+  // ------------------------------------------
+
+  static sort<T>(records: Record<T>[]): Record<T>[] {
+    return records.sort((a: Record<T>, b: Record<T>) => {
       const first = a.getHash().toUpperCase()
       const second = b.getHash().toUpperCase()
       return first < second ? -1 : first > second ? 1 : 0
@@ -87,7 +129,7 @@ export class Record {
    * @param  {Record} record Record object.
    * @returns {boolean} Boolean indicating if the Record is susceptible to be sent (True) or not (False).
    */
-  static isValid(record: Record): boolean {
+  static isValid<T>(record: Record<T>): boolean {
     if (record instanceof Record) {
       const _record = record.getHash()
       if (_record && _record.length === 64 && isHex(_record)) {
@@ -97,12 +139,25 @@ export class Record {
 
     return false
   }
+
+  // ------------------------------------------
+  // PUBLIC FUNCTIONS
+  // ------------------------------------------
+
   /**
    * Returns the hashed representation of the Record string.
    * @returns {string} String containing the Record hash as a hexadecimal (with no "0x" prefix).
    */
   public getHash(): string {
     return this.hash
+  }
+
+  /**
+   * Returns an updated version of the original data including optional metadata including signature and integrity proof attached
+   * @returns {T} A new version of the original data in the same format
+   */
+  public async retrieve(): Promise<T | undefined> {
+    return await this.document?.build()
   }
 
   public getUint8ArrayHash(): Uint8Array {

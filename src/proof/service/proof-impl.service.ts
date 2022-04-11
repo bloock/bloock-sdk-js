@@ -9,7 +9,7 @@ import { ProofService } from './proof.service'
 
 @injectable()
 export class ProofServiceImpl implements ProofService {
-  constructor(@inject('ProofRepository') private proofRepository: ProofRepository) { }
+  constructor(@inject('ProofRepository') private proofRepository: ProofRepository) {}
 
   async retrieveProof(records: Record[]): Promise<Proof> {
     if (!Array.isArray(records) || records.length === 0) {
@@ -75,7 +75,3 @@ export class ProofServiceImpl implements ProofService {
     }
   }
 }
-
-
-
-

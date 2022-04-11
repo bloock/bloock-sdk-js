@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Buffer } from 'buffer'
 import stringifyLib from 'json-stable-stringify'
 import { Record } from '../record/entity/record.entity'
@@ -13,23 +12,6 @@ export type TypedArray =
   | Uint32Array
   | Float32Array
   | Float64Array
-
-export async function fetchFile(src: string | URL): Promise<TypedArray> {
-  let url: string
-  if (src instanceof URL) {
-    url = src.toString()
-  } else {
-    url = src
-  }
-  let bytes = await axios
-    .get(url, {
-      responseType: 'arraybuffer'
-    })
-    .then((res) => {
-      return Buffer.from(res.data)
-    })
-  return new Uint8Array(bytes)
-}
 
 export function stringify(data: any): string {
   return stringifyLib(data)
