@@ -1,4 +1,13 @@
-import { bytesToHex, hexToBytes, hexToUint16, isHex, stringify, uint16ToHex } from './utils'
+import {
+  bytesToHex,
+  bytesToString,
+  hexToBytes,
+  hexToUint16,
+  isHex,
+  stringify,
+  stringToBytes,
+  uint16ToHex
+} from './utils'
 
 describe('Utils Tests', () => {
   it('is hex - success', () => {
@@ -20,6 +29,13 @@ describe('Utils Tests', () => {
     var arr2 = hexToBytes(hex)
     expect(arr2).toStrictEqual(new Uint8Array([1, 0]))
     expect(uint16ToHex(arr)).toStrictEqual(bytesToHex(new Uint8Array([1, 0])))
+  })
+
+  it('test string to bytes conversion', () => {
+    const string = 'hello world'
+    let bytes = stringToBytes(string)
+    expect(bytes).toEqual(Uint8Array.from([104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]))
+    expect(bytesToString(bytes)).toEqual(string)
   })
 
   it('Check JSON normalized', () => {

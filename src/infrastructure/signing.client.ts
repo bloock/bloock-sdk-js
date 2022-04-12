@@ -1,7 +1,29 @@
-import { Signature } from "../record/entity/document/signature";
+import { TypedArray } from '../shared/utils'
 
+export type Signature = {
+  signature: string
+  header: Headers
+}
+
+export type Headers = {
+  kty?: string
+  crv?: string
+  alg?: string
+  kid?: string
+  [propName: string]: unknown
+}
+
+export type VerifyResult = {
+  payload: Uint8Array
+  protectedHeader?: Headers
+  unprotectedHeader?: Headers
+}
 
 export interface SigningClient {
-  JWSSign(rawPrivateKey: string, payload: string, headers?: { [name: string]: string }): Promise<Signature>
-  JWSVerify(jws: Signature): Promise<void>
+  sign(
+    payload: TypedArray,
+    rawPrivateKey: string,
+    headers?: { [name: string]: string }
+  ): Promise<Signature>
+  verify(payload: TypedArray, ...signatures: Signature[]): Promise<VerifyResult[]>
 }

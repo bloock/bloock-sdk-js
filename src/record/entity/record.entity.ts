@@ -1,12 +1,13 @@
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
-import { SigningClient } from '../../infrastructure/signing.client'
-import { Signing } from '../../infrastructure/signing/signing'
+import { SigningClient, VerifyResult } from '../../infrastructure/signing.client'
+import { JWSClient } from '../../infrastructure/signing/jws'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
 import { Document } from './document/document'
 import { JSONDocument, JSONDocumentContent } from './document/json'
 import { PDFDocument } from './document/pdf'
-import { Signature } from "./document/signature"
+import { InvalidRecordTypeException } from './exception/invalid-record-type.exception'
+import { NoSignatureFoundExceptin } from './exception/no-signature-exception'
 
 /**
  * Record is the class in charge of computing and storing the
@@ -16,7 +17,7 @@ import { Signature } from "./document/signature"
  */
 export class Record<T = any> {
   private static hashAlgorithm: HashingClient = new Keccak()
-  private signing: SigningClient = new Signing()
+  private signing: SigningClient = new JWSClient()
 
   private hash: string
   private document?: Document<T>
@@ -80,7 +81,7 @@ export class Record<T = any> {
 
   private static async fromDocument<D>(document: Document<D>): Promise<Record<D>> {
     await document.ready
-    return new Record(this.hashAlgorithm.generateHash(await document.getPayloadBytes()), document)
+    return new Record(this.hashAlgorithm.generateHash(document.getPayloadBytes()), document)
   }
   /**
    * Given a PDF file, returns a Record with its content hashed.
@@ -162,13 +163,29 @@ export class Record<T = any> {
   }
 
   public async sign(privateKey: string): Promise<Record> {
-    const signature = await this.signing.JWSSign(privateKey, this.hash)
-    this.document?.setSignature(signature)
+    if (this.document) {
+      const signature = await this.signing.sign(this.document.getDataBytes(), privateKey)
+      this.document.addSignature(signature)
 
-    return new Record(this.hash)
+      return new Record(
+        Record.hashAlgorithm.generateHash(this.document.getPayloadBytes()),
+        this.document
+      )
+    }
+
+    throw new InvalidRecordTypeException()
   }
 
-  public async verify(signature: Signature): Promise<void> {
-    await this.signing.JWSVerify(signature)
+  public async verify(): Promise<VerifyResult[]> {
+    if (this.document) {
+      let signatures = this.document.getSignatures()
+      if (signatures) {
+        return await this.signing.verify(this.document.getDataBytes(), ...signatures)
+      } else {
+        throw new NoSignatureFoundExceptin()
+      }
+    }
+
+    throw new InvalidRecordTypeException()
   }
 }

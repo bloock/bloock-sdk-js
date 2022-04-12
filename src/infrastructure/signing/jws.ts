@@ -1,14 +1,18 @@
-import crypto from 'crypto';
-import * as jose from 'jose';
-import KeyEncoder from 'key-encoder';
-import { injectable } from 'tsyringe';
-import { ConfigData } from '../../config/repository/config-data';
-import { Headers, Signature } from '../../record/entity/document/signature';
-import { SigningClient } from '../signing.client';
+import crypto from 'crypto'
+import * as jose from 'jose'
+import KeyEncoder from 'key-encoder'
+import { injectable } from 'tsyringe'
+import { ConfigData } from '../../config/repository/config-data'
+import { TypedArray } from '../../shared/utils'
+import { Headers, Signature, SigningClient, VerifyResult } from '../signing.client'
 
 @injectable()
-export class Signing implements SigningClient {
-  async JWSSign(rawPrivateKey: string, payload: string, headers?: { [name: string]: string }): Promise<Signature> {
+export class JWSClient implements SigningClient {
+  async sign(
+    payload: TypedArray,
+    rawPrivateKey: string,
+    headers?: { [name: string]: string }
+  ): Promise<Signature> {
     const configData = new ConfigData()
     if (!rawPrivateKey) {
       return Promise.reject('undefined private key')
@@ -25,11 +29,8 @@ export class Signing implements SigningClient {
         ...(headers ? headers : {})
       }
 
-      const jws = await new jose.GeneralSign(
-        new TextEncoder().encode(
-          payload
-        )
-      )
+      const encoder = new TextEncoder()
+      const jws = await new jose.GeneralSign(Uint8Array.from(payload))
         .addSignature(privateKey)
         .setUnprotectedHeader(unprotectedHeader)
         .sign()
@@ -41,28 +42,31 @@ export class Signing implements SigningClient {
           let signature: string = firstSignature.signature
           let header: Headers = { ...signatureHeader }
 
-          let result: Signature = { payload: jws.payload, signatures: [{ signature: signature, header }] }
-          return result
+          return { signature, header }
         }
       }
       return Promise.reject("couldn't generate signature")
-
     } catch (error) {
       return Promise.reject(error)
     }
   }
 
-  async JWSVerify(jws: Signature): Promise<void> {
+  async verify(payload: TypedArray, ...signatures: Signature[]): Promise<VerifyResult[]> {
     try {
-      for (const sig of jws.signatures) {
-        if (sig.header.kid) {
-          let publicKey = crypto.createPublicKey({ key: sig.header.kid })
-
-          await jose.generalVerify(jws, publicKey)
+      let results: VerifyResult[] = []
+      for (const signature of signatures) {
+        if (signature.header.kid) {
+          let publicKey = crypto.createPublicKey({ key: signature.header.kid })
+          let jws: jose.GeneralJWSInput = {
+            payload: jose.base64url.encode(Uint8Array.from(payload)),
+            signatures: [signature]
+          }
+          results.push(await jose.generalVerify(jws, publicKey))
         } else {
-          return Promise.reject("kid header not found")
+          return Promise.reject('kid header not found')
         }
       }
+      return results
     } catch (error) {
       return Promise.reject(error)
     }
@@ -85,4 +89,4 @@ function generatePublicKey(privateKey: crypto.KeyObject): string {
   let publicKeyObject = crypto.createPublicKey(privateKey)
 
   return publicKeyObject.export({ type: 'spki', format: 'pem' }).toString()
-} 
+}
