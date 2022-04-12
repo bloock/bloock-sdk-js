@@ -1,6 +1,8 @@
+import { Anchor } from '../src/anchor/entity/anchor.entity'
 import { WaitAnchorTimeoutException } from '../src/anchor/entity/exception/timeout.exception'
-import { BloockClient, Network, Record } from '../src/index'
+import { BloockClient, Network, Proof, Record } from '../src/index'
 import { HttpRequestException } from '../src/infrastructure/http/exception/http.exception'
+import { JSONDocument } from '../src/record/entity/document/json'
 import { InvalidRecordException } from '../src/record/entity/exception/invalid-record.exception'
 import { InvalidArgumentException } from '../src/shared/entity/exception/invalid-argument.exception'
 
@@ -189,6 +191,48 @@ describe('Acceptance Tests', () => {
         "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
       )
     )
+  })
+
+  test('test_set_proof_from_document_without_proof', async () => {
+    const sdk = getSdk()
+    let json = { hello: 'world' }
+    let document = new JSONDocument(json)
+    await document.ready
+    let record = await Record.fromJSON(document)
+    const records = [record]
+
+    const sendReceipt = await sdk.sendRecords(records)
+    if (!sendReceipt) {
+      expect(false)
+      return
+    }
+    await sdk.waitAnchor(sendReceipt[0].anchor)
+
+    let proof = await sdk.getProof(records)
+
+    expect(proof).toEqual(records[0].getProof())
+  })
+
+  test('test_get_proof_from_document_with_proof', async () => {
+    const sdk = getSdk()
+    let data = { hello: 'world' }
+    let json = new JSONDocument(data)
+    await json.ready
+    let record = await Record.fromJSON(json)
+    const records = [record]
+
+    const proof = new Proof(
+      ['leave1'],
+      ['node1'],
+      'depth',
+      'bitmap',
+      new Anchor(1, [''], [], '', 'pending')
+    )
+    await json.setProof(proof)
+
+    let result = await sdk.getProof(records)
+
+    expect(result).toEqual(records[0].getProof())
   })
 
   test('test_verify_records_invalid_record_input_wrong_char', async () => {

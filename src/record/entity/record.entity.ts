@@ -1,6 +1,7 @@
 import secp256k1 from 'secp256k1'
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
+import { Proof } from '../../proof/entity/proof.entity'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
 import { Document } from './document/document'
 import { JSONDocument, JSONDocumentContent } from './document/json'
@@ -168,5 +169,15 @@ export class Record<T = any> {
     const signObj = secp256k1.ecdsaSign(this.getUint8ArrayHash(), privKey)
 
     return new Record(this.hash)
+  }
+
+  public getProof(): Proof | undefined {
+    return this.document ? this.document?.getProof() : undefined
+  }
+
+  public setProof(proof: Proof): void {
+    if (this.document) {
+      this.document.setProof(proof)
+    }
   }
 }
