@@ -19,12 +19,6 @@ describe('Verifying jws tests', () => {
     expect(await signing.verify(payload, response)).toBeTruthy()
   })
 
-  it('JWSVerify_invalid_private_key', async () => {
-    const signing: SigningClient = new JWSClient()
-    let response = await signing.sign(payload, 'private-key')
-    expect(await signing.verify(payload, response)).toBeTruthy()
-  })
-
   it('JWSVerify_kid_jws_not_found', async () => {
     const signing: SigningClient = new JWSClient()
     let response: Signature[] = [{ signature: '', header: {} }]
@@ -36,17 +30,12 @@ describe('Verifying jws tests', () => {
     const signing: SigningClient = new JWSClient()
     let response: Signature = {
       signature:
-        'ex7kLphJBNJmdx5tngZE0hP5KoS8VP_XAQzWfbFyeb6wceIxZjACSn19GF14wfr-TAZCwTV7o9o58jOkLkOOyQ',
+        '4NIuhdR9Hhg7tlU0sxup3cdPCw39chGLbLg0_rsvD9PTMjt0jzERHtqqeD_e4BLFq4QY6WF9xFuNm9lIQoEqpw',
       header: {
         kty: 'EC',
         crv: 'secp256k1',
         alg: '',
-        kid:
-          '-----BEGIN PUBLIC KEY-----\n' +
-          'MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE8hsrL+x1hnDCkG5oWvpr3sSjZVorzV8S\n' +
-          'yr8Ov7zIPUTroh0bqE5SDN0WPVEKHif4+APArZQce1CpG9XhFVbtrw==\n' +
-          '-----END PUBLIC KEY-----\n',
-        pub: 'publicKey'
+        kid: '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e'
       }
     }
 
@@ -61,11 +50,23 @@ describe('Verifying jws tests', () => {
         kty: 'EC',
         crv: 'secp256k1',
         alg: 'ES256K',
-        kid:
-          '-----BEGIN PUBLIC KEY-----\n' +
-          'MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAE8hsrL+x1hnDCkG5oWvpr3sSjZVorzV8S\n' +
-          'yr8Ov7zIPUTroh0bqE5SDN0WPVEKHif4+APArZQce1CpG9XhFVbtrw==\n' +
-          '-----END PUBLIC KEY-----\n',
+        kid: '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e',
+        pub: 'publicKey'
+      }
+    }
+
+    await expect(signing.verify(payload, response)).rejects.toBeTruthy()
+  })
+
+  it('JWSVerify_invalid_public_key', async () => {
+    const signing: SigningClient = new JWSClient()
+    let response: Signature = {
+      signature: '4NIuhdR9Hhg7tlU0sxup3cdPCw39chGLbLg0_rsvD9PTMjt0jzERHtqqeD_e4BLFq4QY6WF9xFuNm9lIQoEqpw',
+      header: {
+        kty: 'EC',
+        crv: 'secp256k1',
+        alg: 'ES256K',
+        kid: 'invalid-public-key',
         pub: 'publicKey'
       }
     }

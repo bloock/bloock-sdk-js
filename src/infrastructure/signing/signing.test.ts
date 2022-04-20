@@ -35,4 +35,34 @@ describe('Signing jws tests', () => {
 
     await expect(signing.sign(payload, '', headers)).rejects.toEqual('undefined private key')
   })
+
+  it('JWSSign_invalid_length_private_key', async () => {
+    const signing: SigningClient = new JWSClient()
+
+    await expect(signing.sign(payload, 'ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c945', headers)).rejects.toBeTruthy()
+  })
+
+  it('JWSSign_invalid_private_key', async () => {
+    const signing: SigningClient = new JWSClient()
+
+    await expect(signing.sign(payload, 'invalid-private-key', headers)).rejects.toBeTruthy()
+  })
+
+  it('JWSSign_invalid_private_key_other_address_format', async () => {
+    const signing: SigningClient = new JWSClient()
+
+    await expect(signing.sign(payload, 'QU2jsEnrroQ9isMzBKHS4brYreBUzp62GhVd2b5qafi7XrYsv3Lq', headers)).rejects.toBeTruthy()
+  })
+
+  it('JWSSign_invalid_private_key_doge_address_format', async () => {
+    const signing: SigningClient = new JWSClient()
+
+    await expect(signing.sign(payload, 'QU2jsEnrroQ9isMzBKHS4brYreBUzp62GhVd2b5qafi7XrYsv3Lq', headers)).rejects.toBeTruthy()
+  })
+
+  it('JWSSign_invalid_private_key_invalid_character', async () => {
+    const signing: SigningClient = new JWSClient()
+
+    await expect(signing.sign(payload, 'ecb8e5+4bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457', headers)).rejects.toBeTruthy()
+  })
 })

@@ -1,6 +1,5 @@
-import crypto from 'crypto'
 import * as jose from 'jose'
-import KeyEncoder from 'key-encoder'
+import secp256k1 from 'secp256k1'
 import { injectable } from 'tsyringe'
 import { ConfigData } from '../../config/repository/config-data'
 import { TypedArray } from '../../shared/utils'
@@ -18,20 +17,21 @@ export class JWSClient implements SigningClient {
       return Promise.reject('undefined private key')
     }
     try {
-      let privateKey = serializePrivateKey(rawPrivateKey)
-      let publicKey = generatePublicKey(privateKey)
+      const privateKey = Buffer.from(rawPrivateKey, 'hex');
+      const publicKey = secp256k1.publicKeyCreate(privateKey, false);
+
+      const josePrivateKey = await generateJWK(publicKey, privateKey)
 
       let unprotectedHeader = {
         kty: configData.config.KEY_TYPE_ALGORITHM,
         crv: configData.config.ELLIPTIC_CURVE_KEY,
         alg: configData.config.SIGNATURE_ALGORITHM,
-        kid: publicKey,
+        kid: Buffer.from(publicKey).toString('hex'),
         ...(headers ? headers : {})
       }
 
-      const encoder = new TextEncoder()
       const jws = await new jose.GeneralSign(Uint8Array.from(payload))
-        .addSignature(privateKey)
+        .addSignature(josePrivateKey)
         .setUnprotectedHeader(unprotectedHeader)
         .sign()
 
@@ -56,12 +56,14 @@ export class JWSClient implements SigningClient {
       let results: VerifyResult[] = []
       for (const signature of signatures) {
         if (signature.header.kid) {
-          let publicKey = crypto.createPublicKey({ key: signature.header.kid })
+          let signingKey = Buffer.from(signature.header.kid, 'hex');
+          let josePublicKey = await generateJWK(signingKey)
+
           let jws: jose.GeneralJWSInput = {
             payload: jose.base64url.encode(Uint8Array.from(payload)),
             signatures: [signature]
           }
-          results.push(await jose.generalVerify(jws, publicKey))
+          results.push(await jose.generalVerify(jws, josePublicKey))
         } else {
           return Promise.reject('kid header not found')
         }
@@ -73,20 +75,32 @@ export class JWSClient implements SigningClient {
   }
 }
 
-function serializePrivateKey(rawPrivateKey: string): crypto.KeyObject {
-  // ECDSA algorithm
-  const keyEncoder: KeyEncoder = new KeyEncoder('secp256k1')
+async function generateJWK(publicKey: Uint8Array, privateKey?: Buffer): Promise<jose.KeyLike | Uint8Array> {
+  const configData = new ConfigData()
 
-  // Encoding Private Keys as PEMs: format that stores an RSA private key
-  // -----BEGIN EC PRIVATE KEY-----
-  // -----END EC PRIVATE KEY-----
-  const pemPrivateKey = keyEncoder.encodePrivate(rawPrivateKey, 'raw', 'pem')
+  const x = Buffer.from(publicKey.slice(1, 33)).toString('base64url')
+  const y = Buffer.from(publicKey.slice(33, 65)).toString('base64url')
+  let params = null
 
-  return crypto.createPrivateKey({ key: pemPrivateKey })
-}
+  if (privateKey) {
+    const d = privateKey.toString('base64url')
+    params = {
+      crv: configData.config.ELLIPTIC_CURVE_KEY,
+      kty: configData.config.KEY_TYPE_ALGORITHM,
+      d: d,
+      x: x,
+      y: y
+    }
+  } else {
+    params = {
+      crv: configData.config.ELLIPTIC_CURVE_KEY,
+      kty: configData.config.KEY_TYPE_ALGORITHM,
+      x: x,
+      y: y
+    }
+  }
 
-function generatePublicKey(privateKey: crypto.KeyObject): string {
-  let publicKeyObject = crypto.createPublicKey(privateKey)
+  const josePrivateKey = await jose.importJWK(params, configData.config.SIGNATURE_ALGORITHM)
 
-  return publicKeyObject.export({ type: 'spki', format: 'pem' }).toString()
+  return josePrivateKey
 }
