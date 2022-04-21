@@ -21,6 +21,10 @@ export function stringToBytes(string: string): Uint8Array {
   return Uint8Array.from(Buffer.from(string))
 }
 
+export function bytesToString(bytes: TypedArray): string {
+  return new TextDecoder().decode(bytes)
+}
+
 export function hexToBytes(hex: string): Uint8Array {
   if (!isHex(hex)) {
     throw 'Parameter is not hexadecimal.'
