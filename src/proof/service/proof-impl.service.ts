@@ -20,9 +20,21 @@ export class ProofServiceImpl implements ProofService {
       throw new InvalidRecordException()
     }
 
-    let sorted = Record.sort(records)
+    if (records.length == 1) {
+      let proof = records[0].getProof()
+      if (proof) {
+        return proof
+      }
+    }
 
-    return this.proofRepository.retrieveProof(sorted)
+    let sorted = Record.sort(records)
+    let proof = await this.proofRepository.retrieveProof(sorted)
+
+    if (sorted.length == 1) {
+      sorted[0].setProof(proof)
+    }
+
+    return proof
   }
 
   async verifyRecords(records: Record[], network?: Network): Promise<number> {

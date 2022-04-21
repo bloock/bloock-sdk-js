@@ -2,6 +2,7 @@ import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
 import { SigningClient, VerifyResult } from '../../infrastructure/signing.client'
 import { JWSClient } from '../../infrastructure/signing/jws'
+import { Proof } from '../../proof/entity/proof.entity'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
 import { Document } from './document/document'
 import { JSONDocument, JSONDocumentContent } from './document/json'
@@ -187,5 +188,15 @@ export class Record<T = any> {
     }
 
     throw new InvalidRecordTypeException()
+  }
+
+  public getProof(): Proof | undefined {
+    return this.document ? this.document?.getProof() : undefined
+  }
+
+  public setProof(proof: Proof): void {
+    if (this.document) {
+      this.document.setProof(proof)
+    }
   }
 }
