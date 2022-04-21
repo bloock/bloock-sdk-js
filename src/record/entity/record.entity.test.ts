@@ -64,6 +64,22 @@ describe('Record entity tests', () => {
     )
   })
 
+  it('test_from_pdf_sign', async () => {
+    let bytes = fs.readFileSync('./test/assets/dummy.pdf')
+    let record = await Record.fromPDF(bytes)
+    record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457')
+
+    expect(await record.verify()).toBeTruthy()
+
+    let outputBytes = await record.retrieve()
+    expect(outputBytes).toBeTruthy()
+
+    if (outputBytes) {
+      let record2 = await Record.fromPDF(outputBytes)
+      expect(await record2.verify()).toBeTruthy()
+    }
+  })
+
   it('test_from_json', async () => {
     let json = {
       hello: 'world'
@@ -77,7 +93,7 @@ describe('Record entity tests', () => {
 
   it('test_from_json_with_metadata', async () => {
     let json = {
-      _payload_: {
+      _data_: {
         hello: 'world'
       },
       _metadata_: {
@@ -87,8 +103,28 @@ describe('Record entity tests', () => {
     let record = await Record.fromJSON(json)
 
     expect(record.getHash()).toEqual(
-      '42fd3e3f6c78b239cdbfc23d9e36134bac28233347e421c2c83002276d2dbbc4'
+      '586e9b1e1681ba3ebad5ff5e6f673d3e3aa129fcdb76f92083dbc386cdde4312'
     )
+  })
+
+  it('test_from_json_sign', async () => {
+    let json = {
+      hello: 'world'
+    }
+    let record = await Record.fromJSON(json)
+    record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457')
+
+    let output = await record.retrieve()
+
+    expect(await record.verify()).toBeTruthy()
+
+    output = await record.retrieve()
+    expect(output).toBeTruthy()
+
+    if (output) {
+      let record2 = await Record.fromJSON(output)
+      expect(await record2.verify()).toBeTruthy()
+    }
   })
 
   it('test_is_valid_okay', () => {

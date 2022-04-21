@@ -37,7 +37,7 @@ export class PDFDocument extends Document<TypedArray> {
       let clone = Object.assign(Object.create(Object.getPrototypeOf(this.source)), this.source)
       let info: PDFDict = clone['getInfoDict']()
       info.delete(PDFName.of('proof'))
-      info.delete(PDFName.of('signature'))
+      info.delete(PDFName.of('signatures'))
 
       return await this.write(clone)
     }
@@ -60,6 +60,13 @@ export class PDFDocument extends Document<TypedArray> {
   public getPayloadBytes(): TypedArray {
     if (this.payload) {
       return this.payload
+    }
+    return new Uint8Array()
+  }
+
+  public getDataBytes(): TypedArray {
+    if (this.data) {
+      return this.data
     }
     return new Uint8Array()
   }

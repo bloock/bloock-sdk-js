@@ -1,3 +1,4 @@
+import { Signature } from '../../../infrastructure/signing.client'
 import { Proof } from '../../../proof/entity/proof.entity'
 import { TypedArray } from '../../../shared/utils'
 
@@ -7,7 +8,7 @@ export abstract class Document<T> {
   public ready: Promise<void>
   protected data?: T
   protected payload?: T
-  protected signature?: any[]
+  protected signatures?: Signature[]
   protected proof?: Proof
 
   constructor(src: T, args: DocumentLoadArgs = {}) {
@@ -16,7 +17,7 @@ export abstract class Document<T> {
         await this.setup(src)
 
         this.proof = await this.fetchProof()
-        this.signature = await this.fetchSignature()
+        this.signatures = await this.fetchSignatures()
         this.data = await this.fetchData()
         this.payload = await this.fetchPayload()
 
@@ -34,13 +35,13 @@ export abstract class Document<T> {
   protected async fetchProof(): Promise<Proof> {
     return await this.fetchMetadata('proof')
   }
-  protected async fetchSignature(): Promise<any[]> {
-    return await this.fetchMetadata('signature')
+  protected async fetchSignatures(): Promise<Signature[]> {
+    return await this.fetchMetadata('signatures')
   }
   protected async fetchPayload(): Promise<T> {
-    let metadata: { signature?: any[] } = {}
-    if (this.signature) {
-      metadata.signature = this.signature
+    let metadata: { signatures?: Signature[] } = {}
+    if (this.signatures) {
+      metadata.signatures = this.signatures
     }
 
     return await this.buildFile(metadata)
@@ -52,30 +53,31 @@ export abstract class Document<T> {
   public getProof(): Proof | undefined {
     return this.proof
   }
-  public getSignature(): any[] | undefined {
-    return this.signature
+  public getSignatures(): Signature[] | undefined {
+    return this.signatures
   }
   public getPayload(): T | undefined {
     return this.payload
   }
+  abstract getDataBytes(): TypedArray
   abstract getPayloadBytes(): TypedArray
 
   public setProof(proof: Proof): void {
     this.proof = proof
   }
 
-  public setSignature(signature: any[]): void {
-    this.signature = signature
+  public addSignature(...signatures: Signature[]): void {
+    this.signatures = signatures
   }
 
   async build(): Promise<T> {
-    let metadata: { proof?: Proof; signature?: any[] } = {}
+    let metadata: { proof?: Proof; signatures?: Signature[] } = {}
 
     if (this.proof) {
       metadata.proof = this.proof
     }
-    if (this.signature) {
-      metadata.signature = this.signature
+    if (this.signatures) {
+      metadata.signatures = this.signatures
     }
 
     return await this.buildFile(metadata)

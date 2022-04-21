@@ -9,6 +9,9 @@ export class ConfigData {
     this.config.HOST = 'https://api.bloock.com'
     this.config.WAIT_MESSAGE_INTERVAL_FACTOR = 2
     this.config.WAIT_MESSAGE_INTERVAL_DEFAULT = 5000
+    this.config.KEY_TYPE_ALGORITHM = 'EC'
+    this.config.ELLIPTIC_CURVE_KEY = 'secp256k1'
+    this.config.SIGNATURE_ALGORITHM = 'ES256K'
 
     this.networksConfig.set(Network.ETHEREUM_MAINNET, {
       CONTRACT_ADDRESS: '0x522b2040CdfD247ED60921623044dF1c929524B7',

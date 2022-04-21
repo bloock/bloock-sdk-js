@@ -4,7 +4,7 @@ import { Document, DocumentLoadArgs } from './document'
 type JSONDocumentLoadArgs = DocumentLoadArgs & {}
 export type JSONDocumentContent = { [key: string]: any }
 
-const dataKey = '_payload_'
+const dataKey = '_data_'
 const metadataKey = '_metadata_'
 
 export class JSONDocument extends Document<JSONDocumentContent> {
@@ -49,6 +49,14 @@ export class JSONDocument extends Document<JSONDocumentContent> {
   public getPayloadBytes(): TypedArray {
     if (this.payload) {
       let jsonString = stringify(this.payload)
+      return stringToBytes(jsonString)
+    }
+    return new Uint8Array()
+  }
+
+  public getDataBytes(): TypedArray {
+    if (this.data) {
+      let jsonString = stringify(this.data)
       return stringToBytes(jsonString)
     }
     return new Uint8Array()
