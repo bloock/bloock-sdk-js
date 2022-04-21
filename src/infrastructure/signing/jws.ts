@@ -78,12 +78,12 @@ export class JWSClient implements SigningClient {
 async function generateJWK(publicKey: Uint8Array, privateKey?: Buffer): Promise<jose.KeyLike | Uint8Array> {
   const configData = new ConfigData()
 
-  const x = Buffer.from(publicKey.slice(1, 33)).toString('base64url')
-  const y = Buffer.from(publicKey.slice(33, 65)).toString('base64url')
+  const x = jose.base64url.encode(Buffer.from(publicKey.slice(1, 33)))
+  const y = jose.base64url.encode(Buffer.from(publicKey.slice(33, 65)))
   let params = null
 
   if (privateKey) {
-    const d = privateKey.toString('base64url')
+    const d = jose.base64url.encode(privateKey)
     params = {
       crv: configData.config.ELLIPTIC_CURVE_KEY,
       kty: configData.config.KEY_TYPE_ALGORITHM,
