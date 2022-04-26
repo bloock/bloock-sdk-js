@@ -90,7 +90,7 @@ describe('JSON document tests', () => {
     let file = new JSONDocument(json)
     await file.ready
 
-    const signatures: Signature[] = []
+    const signatures: Signature[] = [{ signature: 'signature1', header: {} }]
     await file.addSignature(...signatures)
 
     expect(await file.getSignatures()).toEqual(signatures)
@@ -105,7 +105,7 @@ describe('JSON document tests', () => {
     let file = new JSONDocument(json)
     await file.ready
 
-    const signatures: Signature[] = []
+    const signatures: Signature[] = [{ signature: 'signature1', header: {} }]
     await file.addSignature(...signatures)
 
     const proof = new Proof(

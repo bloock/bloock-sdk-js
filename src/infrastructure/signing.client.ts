@@ -13,17 +13,11 @@ export type Headers = {
   [propName: string]: unknown
 }
 
-export type VerifyResult = {
-  payload: Uint8Array
-  protectedHeader?: Headers
-  unprotectedHeader?: Headers
-}
-
 export interface SigningClient {
   sign(
     payload: TypedArray,
     rawPrivateKey: string,
     headers?: { [name: string]: string }
   ): Promise<Signature>
-  verify(payload: TypedArray, ...signatures: Signature[]): Promise<VerifyResult[]>
+  verify(payload: TypedArray, ...signatures: Signature[]): Promise<boolean>
 }

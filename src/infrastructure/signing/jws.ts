@@ -3,7 +3,7 @@ import secp256k1 from 'secp256k1'
 import { injectable } from 'tsyringe'
 import { ConfigData } from '../../config/repository/config-data'
 import { TypedArray } from '../../shared/utils'
-import { Headers, Signature, SigningClient, VerifyResult } from '../signing.client'
+import { Headers, Signature, SigningClient } from '../signing.client'
 
 @injectable()
 export class JWSClient implements SigningClient {
@@ -17,8 +17,8 @@ export class JWSClient implements SigningClient {
       return Promise.reject('undefined private key')
     }
     try {
-      const privateKey = Buffer.from(rawPrivateKey, 'hex');
-      const publicKey = secp256k1.publicKeyCreate(privateKey, false);
+      const privateKey = Buffer.from(rawPrivateKey, 'hex')
+      const publicKey = secp256k1.publicKeyCreate(privateKey, false)
 
       const josePrivateKey = await generateJWK(publicKey, privateKey)
 
@@ -51,31 +51,33 @@ export class JWSClient implements SigningClient {
     }
   }
 
-  async verify(payload: TypedArray, ...signatures: Signature[]): Promise<VerifyResult[]> {
+  async verify(payload: TypedArray, ...signatures: Signature[]): Promise<boolean> {
     try {
-      let results: VerifyResult[] = []
       for (const signature of signatures) {
         if (signature.header.kid) {
-          let signingKey = Buffer.from(signature.header.kid, 'hex');
+          let signingKey = Buffer.from(signature.header.kid, 'hex')
           let josePublicKey = await generateJWK(signingKey)
 
           let jws: jose.GeneralJWSInput = {
             payload: jose.base64url.encode(Uint8Array.from(payload)),
             signatures: [signature]
           }
-          results.push(await jose.generalVerify(jws, josePublicKey))
+          await jose.generalVerify(jws, josePublicKey)
         } else {
           return Promise.reject('kid header not found')
         }
       }
-      return results
+      return true
     } catch (error) {
       return Promise.reject(error)
     }
   }
 }
 
-async function generateJWK(publicKey: Uint8Array, privateKey?: Buffer): Promise<jose.KeyLike | Uint8Array> {
+async function generateJWK(
+  publicKey: Uint8Array,
+  privateKey?: Buffer
+): Promise<jose.KeyLike | Uint8Array> {
   const configData = new ConfigData()
 
   const x = jose.base64url.encode(Buffer.from(publicKey.slice(1, 33)))
