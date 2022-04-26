@@ -35,7 +35,8 @@ describe('Verifying jws tests', () => {
         kty: 'EC',
         crv: 'secp256k1',
         alg: '',
-        kid: '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e'
+        kid:
+          '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e'
       }
     }
 
@@ -50,7 +51,8 @@ describe('Verifying jws tests', () => {
         kty: 'EC',
         crv: 'secp256k1',
         alg: 'ES256K',
-        kid: '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e',
+        kid:
+          '042f809cad1aab1935cbfc3c5f52f776d1420a9444a65f8c89432e14c66d887ecd193cc3007bdcac62b40df3ca030a4e04be1a81f7c795b62dc6aa8ac56ba18a7e',
         pub: 'publicKey'
       }
     }
@@ -61,7 +63,8 @@ describe('Verifying jws tests', () => {
   it('JWSVerify_invalid_public_key', async () => {
     const signing: SigningClient = new JWSClient()
     let response: Signature = {
-      signature: '4NIuhdR9Hhg7tlU0sxup3cdPCw39chGLbLg0_rsvD9PTMjt0jzERHtqqeD_e4BLFq4QY6WF9xFuNm9lIQoEqpw',
+      signature:
+        '4NIuhdR9Hhg7tlU0sxup3cdPCw39chGLbLg0_rsvD9PTMjt0jzERHtqqeD_e4BLFq4QY6WF9xFuNm9lIQoEqpw',
       header: {
         kty: 'EC',
         crv: 'secp256k1',

@@ -67,7 +67,11 @@ export abstract class Document<T> {
   }
 
   public addSignature(...signatures: Signature[]): void {
-    this.signatures = signatures
+    if (!this.signatures) {
+      this.signatures = []
+    }
+
+    this.signatures.push(...signatures)
   }
 
   async build(): Promise<T> {

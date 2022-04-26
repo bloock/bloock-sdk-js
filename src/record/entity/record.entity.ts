@@ -1,6 +1,6 @@
 import { HashingClient } from '../../infrastructure/hashing.client'
 import { Keccak } from '../../infrastructure/hashing/keccak'
-import { SigningClient, VerifyResult } from '../../infrastructure/signing.client'
+import { SigningClient } from '../../infrastructure/signing.client'
 import { JWSClient } from '../../infrastructure/signing/jws'
 import { Proof } from '../../proof/entity/proof.entity'
 import { hexToBytes, isHex, stringify, stringToBytes, TypedArray } from '../../shared/utils'
@@ -177,7 +177,7 @@ export class Record<T = any> {
     throw new InvalidRecordTypeException()
   }
 
-  public async verify(): Promise<VerifyResult[]> {
+  public async verify(): Promise<boolean> {
     if (this.document) {
       let signatures = this.document.getSignatures()
       if (signatures) {
