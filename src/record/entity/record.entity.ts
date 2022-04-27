@@ -166,7 +166,7 @@ export class Record<T = any> {
   public async sign(privateKey: string): Promise<Record> {
     if (this.document) {
       const signature = await this.signing.sign(this.document.getDataBytes(), privateKey)
-      this.document.addSignature(signature)
+      this.document = await this.document.addSignature(signature)
 
       return new Record(
         Record.hashAlgorithm.generateHash(this.document.getPayloadBytes()),
@@ -187,7 +187,7 @@ export class Record<T = any> {
       }
     }
 
-    throw new InvalidRecordTypeException()
+    return true
   }
 
   public getProof(): Proof | undefined {

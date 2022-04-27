@@ -3,6 +3,7 @@ import Network, { selectNetwork } from '../../config/entity/networks.entity'
 import { InvalidRecordException } from '../../record/entity/exception/invalid-record.exception'
 import { Record } from '../../record/entity/record.entity'
 import { InvalidArgumentException } from '../../shared/entity/exception/invalid-argument.exception'
+import { InvalidSignatureException } from '../entity/exception/invalid-signature-exception'
 import { Proof } from '../entity/proof.entity'
 import { ProofRepository } from '../repository/proof.repository'
 import { ProofService } from './proof.service'
@@ -38,6 +39,11 @@ export class ProofServiceImpl implements ProofService {
   }
 
   async verifyRecords(records: Record[], network?: Network): Promise<number> {
+    let verified = await this.verifySignatures(records)
+    if (!verified) {
+      throw new InvalidSignatureException()
+    }
+
     if (!Array.isArray(records)) {
       throw new InvalidArgumentException()
     }
@@ -60,6 +66,30 @@ export class ProofServiceImpl implements ProofService {
 
     let root = await this.verifyProof(proof)
     return this.validateRoot(root, finalNetwork)
+  }
+
+  async verifySignatures(records: Record[]): Promise<boolean> {
+    if (records.length <= 0) {
+      throw new InvalidArgumentException()
+    }
+
+    for (const record of records) {
+      if (!Record.isValid(record)) {
+        throw new InvalidRecordException()
+      }
+    }
+
+    try {
+      for (const record of records) {
+        if (!(await record.verify())) {
+          return false
+        }
+      }
+    } catch (error) {
+      return false
+    }
+
+    return true
   }
 
   async verifyProof(proof: Proof): Promise<Record> {

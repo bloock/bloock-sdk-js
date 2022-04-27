@@ -282,6 +282,18 @@ describe('Acceptance Tests', () => {
     )
   })
 
+  test('test_verify_records_empty_record_input', async () => {
+    const sdk = getSdk()
+    const records = [
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
+      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
+    ]
+
+    await expect(sdk.verifyRecords([], Network.BLOOCK_CHAIN)).rejects.toEqual(
+      new InvalidArgumentException()
+    )
+  })
+
   test('test_verify_records_none_existing_leaf', async () => {
     const sdk = getSdk()
     const records = [

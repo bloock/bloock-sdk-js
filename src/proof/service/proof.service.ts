@@ -7,4 +7,5 @@ export interface ProofService {
   verifyRecords(records: Record[], network?: Network): Promise<number>
   verifyProof(proof: Proof): Promise<Record>
   validateRoot(root: Record, network: Network): Promise<number>
+  verifySignatures(records: Record[]): Promise<boolean>
 }

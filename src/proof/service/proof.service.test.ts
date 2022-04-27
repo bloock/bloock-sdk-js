@@ -133,4 +133,41 @@ describe('Proof Service Tests', () => {
     expect(proof.nodes[0]).toBe('node1')
     expect(record.getProof()).toBe(p)
   })
+
+  it('test_validate_signatures_from_records', async () => {
+    let json = { hello: 'world' }
+    let document = new JSONDocument(json)
+    await document.ready
+    let record = await Record.fromJSON(document)
+    record = await record.sign("ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457")
+
+    let json2 = { hello: 'world2' }
+    let document2 = new JSONDocument(json2)
+    await document2.ready
+    let record2 = await Record.fromJSON(document2)
+    record2 = await record2.sign("ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457")
+
+    const records = [record, record2]
+    let proofService = container.resolve<ProofService>('ProofService')
+    let valid = await proofService.verifySignatures(records)
+
+    expect(valid).toBeTruthy()
+  })
+
+  it('test_invalid_signatures_from_records', async () => {
+    let json = {
+      _payload_: {
+        hello: 'world'
+      },
+      _metadata_: {
+        signature: ['signature1']
+      }
+    }
+
+    let record = await Record.fromJSON(json)
+    let records = [record]
+    let proofService = container.resolve<ProofService>('ProofService')
+
+    expect(await proofService.verifySignatures(records)).toBeFalsy()
+  })
 })
