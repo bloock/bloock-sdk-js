@@ -62,16 +62,21 @@ export abstract class Document<T> {
   abstract getDataBytes(): TypedArray
   abstract getPayloadBytes(): TypedArray
 
-  public setProof(proof: Proof): void {
+  public setProof(proof: Proof): Document<T> {
     this.proof = proof
+    return this
   }
 
-  public addSignature(...signatures: Signature[]): void {
+  public async addSignature(...signatures: Signature[]): Promise<Document<T>> {
     if (!this.signatures) {
       this.signatures = []
     }
 
     this.signatures.push(...signatures)
+
+    this.payload = await this.fetchPayload()
+
+    return this
   }
 
   async build(): Promise<T> {

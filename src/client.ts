@@ -148,4 +148,15 @@ export class BloockClient {
   public async verifyRecords(records: Record[], network?: Network): Promise<number> {
     return this.proofService.verifyRecords(records, network)
   }
+
+  /**
+   * Verifies if the specified integrity Proof is valid.
+   * 
+   * @param  {Proof} Proof to validate.
+   * @return {Record} Integrity proof's root record.
+   * @throws {ProofNotFoundException} Proof not found.
+   */
+  public async verifySignatures(records: Record[]): Promise<boolean> {
+    return this.proofService.verifySignatures(records)
+  }
 }
