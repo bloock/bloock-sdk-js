@@ -3,8 +3,9 @@
 This SDK offers all the features available in the Bloock Toolset:
 
 - Write records
+- Signing records
 - Get records proof
-- Validate proof
+- Validate records
 - Get records details
 
 ## Installation
@@ -42,44 +43,6 @@ Record.fromHex('123456789abcdef')
 // From a string
 Record.fromString('Example Data')
 
-// From a Uint8Array with a lenght of 32
-Record.fromUint8Array(
-  new Uint8Array([
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1,
-    1
-  ])
-)
-
 // From a JSON Document
 let json = { hello: 'world' }
 Record.fromJSON(json)
@@ -89,16 +52,22 @@ let pdf = fs.readFileSync('./assets/dummy.pdf')
 Record.fromPDF(pdf)
 ```
 
-#### Sign Record
+### Sign Record
 
 You can sign a Record if it was constructed from JSON or from a PDF file. To use the sign functionality you need to provide private key as it's going to be used for the digital signature process. Remember to keep it safe!
 
 **How can I generate a private key?**
-Elliptic-curve cryptography is an approach to public-key cryptography based on the algebraic structure of elliptic curves.
-Actually we are using **secp256k1**, refers to the parameters of the elliptic curve used in Bitcoin's public-key cryptography, and is defined in Standards for Efficient Cryptography (SEC) <http://www.secg.org/sec2-v2.pdf>.   
-But to easily generate a private key you can check this website: <https://secretscan.org/generator>.
 
-This example shows how to sign records. **Records must be Documents: PDF or JSON**
+Bloock libraries uses the ES256K signature algorithm that uses the secp256k1 <http://www.secg.org/sec2-v2.pdf> elliptic curve.
+
+The private key needed to use the signing functionality needs to be specific for the elliptic curve used.
+
+There are two ways to generate one:
+
+1. Use a secp256k1 library, (i.e. <https://www.npmjs.com/package/secp256k1>)
+2. (Not recommended) Use an online tool to generate one, such as: <https://secretscan.org/generator>.
+
+This example shows how to sign records:
 
 ```javascript
 const fs = require('fs')
@@ -120,9 +89,9 @@ record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3
 console.log(await record.retrieve())
 ```
 
-#### Verify Record
+#### Verify Record signature
 
-You can verify an array of Records. The verifier it is going to check only Records of type Document: JSON or PDF. Documents must be signed before executing the verification.
+You can verify an array of Records. The verifier it is going to check only Records constructed from a JSON or a PDF file. Documents must be signed before running the verification.
 
 ```javascript
 const fs = require('fs')
@@ -135,9 +104,9 @@ const client = new BloockClient(apiKey)
 try {
   const valid = await client.verifySignatures(records)
   if (valid) {
-    console.log("VALID SIGNATURE")
+    console.log('VALID SIGNATURE')
   } else {
-    console.log("INVALID SIGNATURE")  
+    console.log('INVALID SIGNATURE')
   }
 } catch (error) {
   console.log(error)
@@ -212,10 +181,11 @@ await client.waitAnchor(receipts[0].anchor)
 
 ### Get and validate records proof
 
-This example shows a complete flow. 
-  1. Get a proof for an array of records. 
-  2. Verify the integrity proof.
-  3. Validate the proof on Blockchain.
+This example shows a complete flow.
+
+1. Get a proof for an array of records.
+2. Verify the integrity proof.
+3. Validate the proof on Blockchain.
 
 ```javascript
 const { BloockClient, Record, Network } = require('@bloock/sdk')
@@ -232,18 +202,17 @@ const records = [
 
 try {
   // Get the proof from records
-  const proof = await client.getProof(records);
+  const proof = await client.getProof(records)
   console.log(proof)
 
   // Verify the proof
-  const root = await client.verifyProof(proof);
+  const root = await client.verifyProof(proof)
   console.log(root)
 
   // Validate root from the proof on Blockchain
   const timestamp = await client.validateRoot(root, Network.ETHEREUM_MAINNET)
   console.log(timestamp)
-
-} catch(error) {
+} catch (error) {
   console.log(error)
 }
 ```
@@ -267,17 +236,17 @@ try {
   // Without specifying Network
   let timestamp = await client.verifyRecords(records)
   // Specifying Network
-  let timestamp = await client.verifyRecords(records, Network.ETHEREUM_MAINNET) 
+  let timestamp = await client.verifyRecords(records, Network.ETHEREUM_MAINNET)
 
   console.log(timestamp)
-} catch(error) {
+} catch (error) {
   console.log(error)
 }
 ```
 
 ### Full example
 
-This snippet shows a complete data cycle including: sign, write, wait for record confirmation and proof retrieval and validation. It uses the one function validation.
+This snippet shows a complete data cycle including: sign (optional), write, wait for record confirmation and proof retrieval and validation. It uses the one function validation.
 
 ```javascript
 const { BloockClient, Record } = require('@bloock/sdk')
@@ -288,6 +257,7 @@ async function main() {
 
   let json = { hello: 'world' }
   let record = await Record.fromJSON(json)
+  // Optional
   // Random Private Key: ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457
   record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457')
 
