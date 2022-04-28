@@ -91,10 +91,11 @@ Record.fromPDF(pdf)
 
 #### Sign Record
 
-You can sign a Record if it's of type Document: JSON or PDF. In order to sign a Record it's important to provide a private key. We are going to use the private key to encrypt the digital signature. The private key must be stored securely.
+You can sign a Record if it was constructed from JSON or from a PDF file. To use the sign functionality you need to provide private key as it's going to be used for the digital signature process. Remember to keep it safe!
 
 **How can I generate a private key?**
-We hightly recommend to generate the private key with a strong source of entropy.
+Elliptic-curve cryptography is an approach to public-key cryptography based on the algebraic structure of elliptic curves.
+Actually we are using **secp256k1**, refers to the parameters of the elliptic curve used in Bitcoin's public-key cryptography, and is defined in Standards for Efficient Cryptography (SEC) <http://www.secg.org/sec2-v2.pdf>.   
 But to easily generate a private key you can check this website: <https://secretscan.org/generator>.
 
 This example shows how to sign records. **Records must be Documents: PDF or JSON**
@@ -106,19 +107,22 @@ const { Record } = require('@bloock/sdk')
 // Sign a PDF
 let pdf = fs.readFileSync('./assets/dummy.pdf')
 let record = await Record.fromPDF(pdf)
-// Random Ethereum Private Key: 48c685c3af18890b5fd82cd8b62e157c9988392d8dfe0d4ad5ad723b6b8428a8
+// Random Private Key: 48c685c3af18890b5fd82cd8b62e157c9988392d8dfe0d4ad5ad723b6b8428a8
 record = await record.sign('48c685c3af18890b5fd82cd8b62e157c9988392d8dfe0d4ad5ad723b6b8428a8')
+// Retrieve signed record
+console.log(await record.retrieve())
 
 // Sign a JSON
 let json = { hello: 'world' }
 let record = await Record.fromJSON(json)
-// Random Ethereum Private Key: ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457
+// Random Private Key: ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457
 record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457')
+console.log(await record.retrieve())
 ```
 
 #### Verify Record
 
-You can verify an array of Records. The verifier it is going to check only Records of type Document: JSON or PDF. Documents must be sign before executing the verification.
+You can verify an array of Records. The verifier it is going to check only Records of type Document: JSON or PDF. Documents must be signed before executing the verification.
 
 ```javascript
 const fs = require('fs')
@@ -127,13 +131,6 @@ const { BloockClient, Record } = require('@bloock/sdk')
 const apiKey = process.env.API_KEY
 
 const client = new BloockClient(apiKey)
-
-// Sign a PDF
-let pdf = fs.readFileSync('./assets/dummy.pdf')
-let record = await Record.fromPDF(pdf)
-record = await record.sign('48c685c3af18890b5fd82cd8b62e157c9988392d8dfe0d4ad5ad723b6b8428a8')
-
-const records = [record]
 
 try {
   const valid = await client.verifySignatures(records)
@@ -280,62 +277,6 @@ try {
 
 ### Full example
 
-This snippet shows a complete data cycle including: write, wait for record confirmation and proof retrieval and validation.
-
-```javascript
-const { BloockClient, Record, Network } = require('@bloock/sdk')
-
-// Helper function to wait some time
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-// Helper function to get a random hex string
-function randHex(len) {
-  const maxlen = 8
-  const min = Math.pow(16, Math.min(len, maxlen) - 1)
-  const max = Math.pow(16, Math.min(len, maxlen)) - 1
-  const n = Math.floor(Math.random() * (max - min + 1)) + min
-  let r = n.toString(16)
-  while (r.length < len) {
-    r = r + randHex(len - maxlen)
-  }
-  return r
-}
-
-async function main() {
-  const apiKey = process.env.API_KEY
-  const sdk = new BloockClient(apiKey)
-
-  const records = [Record.fromString(randHex(64))]
-
-  const sendReceipt = await sdk.sendRecords(records)
-  console.log('Write record - Successful!')
-
-  if (!sendReceipt) {
-    expect(false)
-    return
-  }
-
-  await sdk.waitAnchor(sendReceipt[0].anchor)
-  console.log('Record reached Blockchain!')
-
-  // Retrieving record proof
-  const proof = await sdk.getProof(records)
-  const root = await sdk.verifyProof(proof)
-  const timestamp = await sdk.validateRoot(root, Network.ETHEREUM_MAINNET)
-  if (timestamp) {
-    console.log(`Record is valid - Timestamp: ${timestamp}`)
-  } else {
-    console.log(`Record is invalid`)
-  }
-}
-
-main()
-  .then(() => console.log('Finished!'))
-  .catch(console.error)
-```
-
 This snippet shows a complete data cycle including: sign, write, wait for record confirmation and proof retrieval and validation. It uses the one function validation.
 
 ```javascript
@@ -347,7 +288,7 @@ async function main() {
 
   let json = { hello: 'world' }
   let record = await Record.fromJSON(json)
-  // Random Ethereum Private Key: ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457
+  // Random Private Key: ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457
   record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3388d3e5c9457')
 
   const records = [record]
