@@ -118,7 +118,7 @@ record = await record.sign('ecb8e554bba690eff53f1bc914941d34ae7ec446e0508d14bab3
 
 #### Verify Record
 
-You can verify an array of Records. The verifier it is going to check only Records of type Document: JSON or PDF. This documents must be sign before executing the verification.
+You can verify an array of Records. The verifier it is going to check only Records of type Document: JSON or PDF. Documents must be sign before executing the verification.
 
 ```javascript
 const fs = require('fs')
@@ -233,32 +233,22 @@ const records = [
   Record.fromString('Example Data 3')
 ]
 
-client
-  .getProof(records)
-  .then((proof) => {
-    let timestamp = client.verifyProof(proof)
-    console.log(timestamp)
-  })
-  .catch((error) => {
-    console.error(error)
-  })
+try {
+  // Get the proof from records
+  const proof = await client.getProof(records);
+  console.log(proof)
 
-  try {
-    // Get the proof from records
-    const proof = await client.getProof(records);
-    console.log(proof)
+  // Verify the proof
+  const root = await client.verifyProof(proof);
+  console.log(root)
 
-    // Verify the proof
-    const root = await client.verifyProof(proof);
-    console.log(root)
+  // Validate root from the proof on Blockchain
+  const timestamp = await client.validateRoot(root, Network.ETHEREUM_MAINNET)
+  console.log(timestamp)
 
-    // Validate root from the proof on Blockchain
-    const timestamp = await client.validateRoot(root, Network.ETHEREUM_MAINNET)
-    console.log(timestamp)
-
-  } catch(error) {
-    console.log(error)
-  }
+} catch(error) {
+  console.log(error)
+}
 ```
 
 You can also validate an array of records with one simple step. Internally it is going to do all the same process. You don't need to specify the network where is going to validate.
@@ -277,9 +267,9 @@ const records = [
 ]
 
 try {
-  // Don't need to specify the Network
+  // Without specifying Network
   let timestamp = await client.verifyRecords(records)
-  // But you can specify
+  // Specifying Network
   let timestamp = await client.verifyRecords(records, Network.ETHEREUM_MAINNET) 
 
   console.log(timestamp)
@@ -349,7 +339,7 @@ main()
 This snippet shows a complete data cycle including: sign, write, wait for record confirmation and proof retrieval and validation. It uses the one function validation.
 
 ```javascript
-const { BloockClient, Record, Network } = require('@bloock/sdk')
+const { BloockClient, Record } = require('@bloock/sdk')
 
 async function main() {
   const apiKey = process.env.API_KEY
