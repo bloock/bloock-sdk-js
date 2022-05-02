@@ -1,4 +1,4 @@
-import fs from 'fs'
+import * as fs from 'fs'
 import { Record } from './record.entity'
 
 describe('Record entity tests', () => {
@@ -97,13 +97,13 @@ describe('Record entity tests', () => {
         hello: 'world'
       },
       _metadata_: {
-        signature: ['signature1']
+        signatures: [{ signature: 'signature1', header: {} }]
       }
     }
     let record = await Record.fromJSON(json)
 
     expect(record.getHash()).toEqual(
-      '586e9b1e1681ba3ebad5ff5e6f673d3e3aa129fcdb76f92083dbc386cdde4312'
+      '040b3fc3bb0a00d5056c6c18695ef13875cda75d97d7333ef5e8272befa4ae06'
     )
   })
 

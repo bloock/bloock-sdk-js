@@ -17,7 +17,7 @@ describe('JSON document tests', () => {
     let json = {
       _data_: content,
       _metadata_: {
-        signature: ['signature1']
+        signatures: [{ signature: 'signature1', header: {} }]
       }
     }
     let file = new JSONDocument(json)
@@ -45,7 +45,7 @@ describe('JSON document tests', () => {
     let json = {
       _data_: content,
       _metadata_: {
-        signature: ['signature1']
+        signatures: [{ signature: 'signature1', header: {} }]
       }
     }
     let file = new JSONDocument(json)
