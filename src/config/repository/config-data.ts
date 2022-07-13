@@ -10,8 +10,11 @@ export class ConfigData {
     this.config.WAIT_MESSAGE_INTERVAL_FACTOR = 2
     this.config.WAIT_MESSAGE_INTERVAL_DEFAULT = 5000
     this.config.KEY_TYPE_ALGORITHM = 'EC'
+    this.config.KEY_SYNC_TYPE_ALGORITHM = 'oct'
     this.config.ELLIPTIC_CURVE_KEY = 'secp256k1'
     this.config.SIGNATURE_ALGORITHM = 'ES256K'
+    this.config.SECRET_KEY_ALGORITHM = 'A256KW'
+    this.config.ENCRYPTION_ALGORITHM = 'A256GCM'
 
     this.networksConfig.set(Network.ETHEREUM_MAINNET, {
       CONTRACT_ADDRESS: '0x522b2040CdfD247ED60921623044dF1c929524B7',
