@@ -4,7 +4,10 @@ import { AnchorServiceImpl } from '../anchor/service/anchor-impl.service'
 import { ConfigData } from '../config/repository/config-data'
 import { ConfigRepositoryImpl } from '../config/repository/config-impl.repository'
 import { ConfigServiceImpl } from '../config/service/config-impl.service'
+import { EncryptionRepositoryImpl } from '../encryption/repository/encryption-impl.repository'
+import { EncryptionServiceImpl } from '../encryption/service/encryption-impl.service'
 import { Web3Client } from '../infrastructure/blockchain/web3'
+import { JWEClient } from '../infrastructure/encryption/jwe'
 import { Keccak } from '../infrastructure/hashing/keccak'
 import { HttpData } from '../infrastructure/http/http-data'
 import { HttpClientImpl } from '../infrastructure/http/http-impl'
@@ -59,6 +62,17 @@ export class DependencyInjection {
     })
     container.register('ProofService', {
       useClass: ProofServiceImpl
+    })
+
+    // Encryption module
+    container.register('EncryptionRepository', {
+      useClass: EncryptionRepositoryImpl
+    })
+    container.register('EncryptionService', {
+      useClass: EncryptionServiceImpl
+    })
+    container.register('EncryptionClient', {
+      useClass: JWEClient
     })
   }
 }

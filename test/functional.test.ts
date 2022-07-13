@@ -1,5 +1,7 @@
+import fs from 'fs'
 import { BloockClient, Network, Record, RecordReceipt } from '../src'
 import { Anchor } from '../src/anchor/entity/anchor.entity'
+import { PDFDocument } from '../src/record/entity/document/pdf'
 
 function getSdk(): BloockClient {
   const apiKey = process.env['API_KEY'] || ''
@@ -116,5 +118,26 @@ describe('Functional Tests', () => {
 
     let timestamp = await sdk.validateRoot(root, Network.BLOOCK_CHAIN)
     expect(timestamp).toBeGreaterThan(0)
+  })
+
+  test('testEncryptDocument', async () => {
+      jest.setTimeout(120000)
+
+      const sdk = getSdk()
+
+      const bytes = fs.readFileSync('./test/assets/dummy.pdf')
+      let file = new PDFDocument(bytes)
+      await file.ready
+
+      const secretKey = await sdk.generateSecretKey()
+      expect(secretKey).toBeTruthy()
+
+      let encryptedData = await sdk.encryptData(file.getDataBytes(), secretKey)
+      expect(encryptedData).toBeTruthy()
+      expect(encryptedData.ciphertext).toBeTruthy()
+
+      let decryptedData = await sdk.decryptData(encryptedData, secretKey)
+      expect(decryptedData).toBeTruthy()
+      expect(decryptedData).toEqual(file.getDataBytes())
   })
 })

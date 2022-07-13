@@ -4,6 +4,8 @@ import { AnchorService } from './anchor/service/anchor.service'
 import { NetworkConfiguration } from './config/entity/configuration.entity'
 import Network from './config/entity/networks.entity'
 import { ConfigService } from './config/service/config.service'
+import { EncryptData } from './encryption/entity/encrypt_data'
+import { EncryptionService } from './encryption/service/encryption.service'
 import { HttpClient } from './infrastructure/http.client'
 import { Proof } from './proof/entity/proof.entity'
 import { ProofService } from './proof/service/proof.service'
@@ -11,6 +13,7 @@ import { RecordReceipt } from './record/entity/record-receipt.entity'
 import { Record } from './record/entity/record.entity'
 import { RecordService } from './record/service/record.service'
 import { DependencyInjection } from './shared/dependency-injection'
+import { TypedArray } from './shared/utils'
 
 /**
  * Entrypoint to the Bloock SDK:
@@ -28,6 +31,8 @@ export class BloockClient {
 
   private httpClient: HttpClient
 
+  private encryptionService: EncryptionService
+
   /**
    * Constructor with API Key that enables accessing to Bloock's functionalities.
    * @param  {string} apiKey Client API Key.
@@ -40,6 +45,7 @@ export class BloockClient {
     this.configService = container.resolve<ConfigService>('ConfigService')
     this.recordService = container.resolve<RecordService>('RecordService')
     this.proofService = container.resolve<ProofService>('ProofService')
+    this.encryptionService = container.resolve<EncryptionService>('EncryptionService')
 
     this.httpClient = container.resolve<HttpClient>('HttpClient')
 
@@ -158,5 +164,17 @@ export class BloockClient {
    */
   public async verifySignatures(records: Record[]): Promise<boolean> {
     return this.proofService.verifySignatures(records)
+  }
+
+  public async generateSecretKey(): Promise<string> {
+    return this.encryptionService.generateSecretKey()
+  }
+
+  public async encryptData(data: TypedArray, secret: string): Promise<EncryptData> {
+    return this.encryptionService.encrypt(data, secret)
+  }
+
+  public async decryptData(encrypt_data: EncryptData, secret: string): Promise<TypedArray> {
+    return this.encryptionService.decrypt(encrypt_data, secret)
   }
 }

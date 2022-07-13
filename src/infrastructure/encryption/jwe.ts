@@ -1,10 +1,12 @@
 import * as jose from 'jose';
+import { injectable } from 'tsyringe';
 import { ConfigData } from '../../config/repository/config-data';
 import { TypedArray } from "../../shared/utils";
 import { Encryption, EncryptionClient, Headers } from "../encryption.client";
 
-
+@injectable()
 export class JWEClient implements EncryptionClient {
+
   async encrypt(payload: TypedArray, rawSecretKey: string): Promise<Encryption> {
     const configData = new ConfigData()
     

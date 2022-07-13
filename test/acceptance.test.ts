@@ -31,7 +31,7 @@ describe('Acceptance Tests', () => {
     jest.setTimeout(120000)
 
     const sdk = getSdk()
-
+    
     const records = [Record.fromString(randHex(64))]
 
     const sendReceipt = await sdk.sendRecords(records)
