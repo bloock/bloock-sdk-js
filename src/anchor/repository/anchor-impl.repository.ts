@@ -16,7 +16,7 @@ export class AnchorRepositoryImpl implements AnchorRepository {
     let url = `${this.configService.getApiBaseUrl()}/core/anchor/${anchor}`
     let response = await this.httpClient.get<AnchorRetrieveResponse>(url)
     return new Anchor(
-      response.anchor_id,
+      response.id,
       response.block_roots,
       response.networks,
       response.root,
