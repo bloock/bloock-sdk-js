@@ -188,7 +188,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.getProof(records)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Internal Server Error"
       )
     )
   })
@@ -302,7 +302,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Internal Server Error"
       )
     )
   })

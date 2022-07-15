@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { BloockClient, Network, Record, RecordReceipt } from '../src'
+import { BloockClient, BloockEncryptionClient, Network, Record, RecordReceipt } from '../src'
 import { Anchor } from '../src/anchor/entity/anchor.entity'
 import { PDFDocument } from '../src/record/entity/document/pdf'
 
@@ -11,7 +11,14 @@ function getSdk(): BloockClient {
   return client
 }
 
+function getEncryptionSDK(): BloockEncryptionClient {
+  const apiKey = process.env['API_KEY'] || ''
+  let client = new BloockEncryptionClient(apiKey)
+  return client
+}
+
 describe('Functional Tests', () => {
+  
   test('testSendRecord', async () => {
     jest.setTimeout(120000)
 
@@ -38,9 +45,9 @@ describe('Functional Tests', () => {
     const sdk = getSdk()
 
     const records = [
-      Record.fromString('Example Data 1'),
-      Record.fromString('Example Data 2'),
-      Record.fromString('Example Data 3')
+      Record.fromString('Example Data 4'),
+      Record.fromString('Example Data 5'),
+      Record.fromString('Example Data 6')
     ]
 
     const sendReceipt = await sdk.sendRecords(records)
@@ -64,9 +71,9 @@ describe('Functional Tests', () => {
     const sdk = getSdk()
 
     const records = [
-      Record.fromString('Example Data 1'),
-      Record.fromString('Example Data 2'),
-      Record.fromString('Example Data 3')
+      Record.fromString('Example Data 7'),
+      Record.fromString('Example Data 8'),
+      Record.fromString('Example Data 9')
     ]
 
     const sendReceipt = await sdk.sendRecords(records)
@@ -90,9 +97,9 @@ describe('Functional Tests', () => {
     const sdk = getSdk()
 
     const records = [
-      Record.fromString('Example Data 1'),
-      Record.fromString('Example Data 2'),
-      Record.fromString('Example Data 3')
+      Record.fromString('Example Data 4'),
+      Record.fromString('Example Data 5'),
+      Record.fromString('Example Data 6')
     ]
 
     let proof = await sdk.getProof(records)
@@ -105,9 +112,9 @@ describe('Functional Tests', () => {
     const sdk = getSdk()
 
     const records = [
-      Record.fromString('Example Data 1'),
-      Record.fromString('Example Data 2'),
-      Record.fromString('Example Data 3')
+      Record.fromString('Example Data 4'),
+      Record.fromString('Example Data 5'),
+      Record.fromString('Example Data 6')
     ]
 
     let proof = await sdk.getProof(records)
@@ -123,7 +130,7 @@ describe('Functional Tests', () => {
   test('testEncryptDocument', async () => {
       jest.setTimeout(120000)
 
-      const sdk = getSdk()
+      const sdk = getEncryptionSDK()
 
       const bytes = fs.readFileSync('./test/assets/dummy.pdf')
       let file = new PDFDocument(bytes)
@@ -141,3 +148,9 @@ describe('Functional Tests', () => {
       expect(decryptedData).toEqual(file.getDataBytes())
   })
 })
+
+function sleep(ms: number | undefined) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
