@@ -1,6 +1,6 @@
 {
   "name": "@bloock/sdk",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "description": "",
   "keywords": [],
   "main": "dist/lib/index.js",
@@ -17,11 +17,13 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs",
-    "start": "tsc --module commonjs && node dist/lib/index.js",
+    "start": "npm run build && node dist/lib/index.js",
     "test": "jest ./src",
     "e2e": "jest ./test --testTimeout=60000"
   },
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.3",
+    "analytics": "^0.8.1",
     "axios": "^0.21.1",
     "blakejs": "^1.1.0",
     "buffer": "^5.6.0",
@@ -46,6 +48,7 @@
     "@types/pdfmake": "^0.1.21",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
+    "browserify": "^17.0.0",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-prettier": "^3.4.0",

@@ -27,7 +27,7 @@ describe('Anchor Repository Tests', () => {
 
     httpClientMock.get.mockResolvedValueOnce(
       new AnchorRetrieveResponse({
-        anchor_id: 1,
+        id: 1,
         block_roots: ['block_root'],
         networks: [],
         root: 'root',

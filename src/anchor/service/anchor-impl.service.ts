@@ -28,7 +28,7 @@ export class AnchorServiceImpl implements AnchorService {
 
     return anchor
   }
-  async waitAnchor(anchorId: number, timeout: number = 120000): Promise<Anchor> {
+  async waitAnchor(anchorId: number, timeout: number = 300000): Promise<Anchor> {
     if (!Number.isInteger(anchorId) || !Number.isInteger(timeout)) {
       throw new InvalidArgumentException()
     }
@@ -49,7 +49,7 @@ export class AnchorServiceImpl implements AnchorService {
         if (currentTime > timeoutTime) {
           throw new WaitAnchorTimeoutException()
         }
-        await sleep(1000)
+        await sleep(10000)
       } catch (e) {
         let currentTime = new Date().getTime()
         while (currentTime < nextTry && currentTime < timeoutTime) {
