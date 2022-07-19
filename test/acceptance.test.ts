@@ -31,7 +31,7 @@ describe('Acceptance Tests', () => {
     jest.setTimeout(120000)
 
     const sdk = getSdk()
-
+    
     const records = [Record.fromString(randHex(64))]
 
     const sendReceipt = await sdk.sendRecords(records)
@@ -94,35 +94,6 @@ describe('Acceptance Tests', () => {
     const result = await sdk.sendRecords([])
 
     expect(result).toEqual([])
-  })
-
-  test('test_get_records_invalid_record_input_wrong_char', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
-  })
-
-  test('test_get_records_invalid_record_input_missing_chars', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
-  })
-
-  test('test_get_records_invalid_record_input_wrong_start', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
   })
 
   test('test_get_anchor_invalid_input', async () => {
@@ -188,7 +159,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.getProof(records)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Internal Server Error"
       )
     )
   })
@@ -302,7 +273,7 @@ describe('Acceptance Tests', () => {
 
     await expect(sdk.verifyRecords(records, Network.BLOOCK_CHAIN)).rejects.toEqual(
       new HttpRequestException(
-        "Record '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef' not found."
+        "Internal Server Error"
       )
     )
   })

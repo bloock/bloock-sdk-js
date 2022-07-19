@@ -54,15 +54,15 @@ export class RecordServiceImpl implements RecordService {
     if (response == null) {
       return []
     }
-
+   
     return response.map(
-      (record) =>
+      (record) => 
         new RecordReceipt(
           record.anchor || 0,
           record.client || '',
           record.message || '',
           record.status || ''
-        )
+      )
     )
   }
 }
