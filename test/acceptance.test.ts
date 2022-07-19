@@ -96,35 +96,6 @@ describe('Acceptance Tests', () => {
     expect(result).toEqual([])
   })
 
-  test('test_get_records_invalid_record_input_wrong_char', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aG')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
-  })
-
-  test('test_get_records_invalid_record_input_missing_chars', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Record.fromHash('e016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
-  })
-
-  test('test_get_records_invalid_record_input_wrong_start', async () => {
-    const sdk = getSdk()
-    const records = [
-      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994aa'),
-      Record.fromHash('0xe016214a5c4abb88b8b614a916b1a6f075dfcf6fbc16c1e9d6e8ebcec81994bb')
-    ]
-
-    await expect(sdk.getRecords(records)).rejects.toEqual(new InvalidRecordException())
-  })
-
   test('test_get_anchor_invalid_input', async () => {
     const sdk = getSdk()
 

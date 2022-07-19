@@ -65,7 +65,7 @@ describe('Functional Tests', () => {
     expect(receipt.status.length).toBeGreaterThan(0)
   })
 
-  test('testFetchRecords', async () => {
+  test('testGetAnchor', async () => {
     jest.setTimeout(120000)
 
     const sdk = getSdk()
@@ -83,12 +83,10 @@ describe('Functional Tests', () => {
       return
     }
 
-    await sdk.waitAnchor(sendReceipt[0].anchor)
+    const anchor = await sdk.waitAnchor(sendReceipt[0].anchor)
 
-    let recordReceipts = await sdk.getRecords(records)
-    for (let recordReceipt of recordReceipts) {
-      expect(recordReceipt.status).toBe('Success')
-    }
+    let anchorResp = await sdk.getAnchor(anchor.id)
+    expect(anchorResp.status).toBe("Success")
   })
 
   test('testGetProof', async () => {
